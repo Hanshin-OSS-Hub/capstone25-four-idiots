@@ -7,9 +7,8 @@
 플레이어는 체험장, 훈련장, 아레나 모드에서 수학 문제를 풀이하며 실력을 키우고,  
 교관 캐릭터와 함께 튜토리얼, 퀘스트, 보상 시스템을 통해 꾸준히 성장할 수 있습니다.  
 
-<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/e3286d21-12fd-46c8-ac0f-8a92c52f0c7d" />
-임시이미지
-
+임시이미지  
+<img src="https://github.com/user-attachments/assets/e3286d21-12fd-46c8-ac0f-8a92c52f0c7d" width="400" />
 
 ---
 
@@ -31,6 +30,6 @@
 ---
 
 ## 👨‍💻 팀 정보
-- 팀명: 캡스톤 두뇌게임 팀
+- 팀명: 네얼간이
 - 프로젝트명: MATH ARENA
-- 소속: ○○대학교 캡스톤 디자인
+- 소속: 한신대학교 캡스톤 디자인
