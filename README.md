@@ -2,14 +2,6 @@
 수학을 **경쟁**과 **보상**으로 즐기는 에듀테인먼트.  
 체험장 → 훈련장 → 아레나 플로우로 실력을 전투력과 티어로 증명한다.
 
-<p align="left">
-  <img alt="Unity" src="https://img.shields.io/badge/Unity-2022%2B-black?logo=unity">
-  <img alt="Flask" src="https://img.shields.io/badge/Flask-API-blue?logo=flask">
-  <img alt="MySQL" src="https://img.shields.io/badge/MySQL-8%2B-4479A1?logo=mysql&logoColor=white">
-  <img alt="Redis" src="https://img.shields.io/badge/Redis-6%2B-CB2029?logo=redis&logoColor=white">
-  <img alt="License" src="https://img.shields.io/badge/License-TBD-lightgrey">
-</p>
-
 ---
 
 ## 📘 프로젝트 개요
