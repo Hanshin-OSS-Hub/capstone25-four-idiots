@@ -33,10 +33,12 @@
 *(제안서 내용 통합 섹션)*
 
 ### 🏗 시스템 구성도
-![system-architecture](docs/img/system-architecture.png)
+<img width="492" height="159" alt="image" src="https://github.com/user-attachments/assets/146a7ef8-9b7b-4190-881c-e4f9fbfe6e58" />
+
 
 ### 🖥 서버 아키텍처 설계
-![server-architecture](docs/img/server-architecture.png)
+<img width="490" height="214" alt="image" src="https://github.com/user-attachments/assets/8e669468-2672-4825-9c49-3f667d989787" />
+
 
 **요약**
 - Unity 클라이언트 ↔ Flask API/SocketIO 서버
