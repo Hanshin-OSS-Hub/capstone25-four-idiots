@@ -29,4 +29,21 @@
 
 ---
 
+## 🧩 시스템 및 서버 아키텍처  
+*(제안서 내용 통합 섹션)*
+
+### 🏗 시스템 구성도
+![system-architecture](docs/img/system-architecture.png)
+
+### 🖥 서버 아키텍처 설계
+![server-architecture](docs/img/server-architecture.png)
+
+**요약**
+- Unity 클라이언트 ↔ Flask API/SocketIO 서버
+- MySQL: 사용자·전투력·코스튬 등 영구 저장
+- Redis: 세션·매칭·랭킹 캐시
+- Tesseract OCR: 필기 인식(연산/실전 모드)
+- API 구성: 로그인·회원가입·아레나·훈련장·상점·퀘스트  
+- 실시간 매칭: Flask-SocketIO 기반 HP/공격 동기화
+
 ## 📂 실행방법 및 환경(임시)
