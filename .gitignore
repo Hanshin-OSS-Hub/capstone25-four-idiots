@@ -1,0 +1,24 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+
+# Rider / VS / VSCode
+.vs/
+.vscode/
+.idea/
+
+# Crashlytics / 기타
+*.apk
+*.aab
+*.log
+*.stacktrace
+
+# OS files
+.DS_Store
+Thumbs.db
