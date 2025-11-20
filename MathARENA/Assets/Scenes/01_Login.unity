@@ -3935,10 +3935,11 @@ PrefabInstance:
       value: Canvas_Login
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4931185525627082915, guid: 817c9093c19753248b85191a13c64dee, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7340382303720134573, guid: 817c9093c19753248b85191a13c64dee, type: 3}
-      insertIndex: 1
+      insertIndex: -1
       addedObject: {fileID: 462157664}
     - targetCorrespondingSourceObject: {fileID: 7340382303720134573, guid: 817c9093c19753248b85191a13c64dee, type: 3}
       insertIndex: -1
