@@ -48,4 +48,101 @@
 - API 구성: 로그인·회원가입·아레나·훈련장·상점·퀘스트  
 - 실시간 매칭: Flask-SocketIO 기반 HP/공격 동기화
 
+---
+
+## 🎨 UI Development Progress (Login · Lobby)
+
+Unity 6 기반으로 구현 중인 **01_Login** 및 **02_Lobby** 화면의 개발 현황이다.  
+UI는 Figma 디자인 시안을 기준으로 Anchor(Shift/Alt 조합) 및 SafeArea 대응을 적용하여 모바일 환경에서 안정적으로 표시되도록 구성했다.
+
+---
+
+### 1. 로그인 화면 (01_Login)
+
+> *(로그인 화면 이미지 삽입 예정)*
+
+**구성 요소**
+- 아이디/비밀번호 입력 필드  
+- 일반 로그인 버튼  
+- Google / Apple 로그인  
+- 회원가입 / 계정찾기 버튼  
+
+**구현 사항**
+- 자동 로그인 구조 준비  
+- TextMeshPro 입력 필드 구성  
+- Anchor 조정 기준  
+  - **Shift + 드래그**: 균등 확장  
+  - **Alt + 드래그**: Pivot 기준 크기 조절  
+- SafeArea 적용  
+- 모바일 종횡비 대응 완료  
+
+---
+
+### 2. 로비 화면 (02_Lobby)
+
+> *(로비 메인 화면 이미지 삽입 예정)*
+
+**구성 요소**
+- 햄버거 메뉴 버튼  
+- 프로필 요약 카드(레벨, 티어, 골드, 아레나 티켓)  
+- 체험장 / 훈련장 / 아레나 메뉴 카드  
+
+**구현 사항**
+- LayoutGroup 최소 사용 → Anchor 기반 정적 배치  
+- 프로필 더미 데이터 바인딩  
+- 이후 실제 API 연동을 위한 구조 사전 준비  
+- 씬 전환 구조 설계 진행  
+
+---
+
+### 3. 사이드 메뉴 (Lobby Side Menu)
+
+> *(사이드 메뉴 이미지 삽입 예정)*
+
+**메뉴 구성**
+- 코스튬  
+- 상점  
+- 설정  
+- 로그아웃  
+
+**구현 사항**
+- `Panel_SideMenuRoot` 슬라이드 인/아웃 애니메이션 구현  
+- Dimmed Panel을 활용한 UI 입력 차단 처리  
+- `LobbySideMenuController`에서 열림/닫힘 전체 제어  
+- 스크립트를 잘못된 오브젝트에 붙여 메뉴가 동작하지 않던 문제 해결  
+  (Canvas_Lobby에 스크립트 재배치 후 정상 작동)  
+
+---
+
+### 4. 현재 UI 오브젝트 구조
+
+**01_Login**
+- Panel_LoginRoot  
+- Panel_SNS  
+- Panel_Register  
+- Panel_FindAccount  
+
+**02_Lobby**
+- Panel_TopBar  
+- Panel_ProfileSummary  
+- Panel_MainMenu  
+- Panel_SideMenuRoot  
+- Panel_Dimmed  
+
+---
+
+### 5. UI 최적화
+
+**반응형 대응**
+- Anchor 기반 레이아웃  
+- SafeArea 지원  
+- Canvas Scaler: `Scale With Screen Size`  
+
+**성능 고려**
+- 정적 UI로 Instantiate 최소화  
+- Sprite Atlas 계획  
+- 텍스트/아이콘 수 최소화  
+
+---
+
 ## 📂 실행방법 및 환경(임시)
