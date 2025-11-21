@@ -55,6 +55,8 @@
 Unity 6 기반으로 구현 중인 **01_Login** 및 **02_Lobby** 화면의 개발 현황이다.  
 UI는 Figma 디자인 시안을 기준으로 Anchor(Shift/Alt 조합) 및 SafeArea 대응을 적용하여 모바일 환경에서 안정적으로 표시되도록 구성했다.
 
+https://github.com/user-attachments/assets/e95fdc5d-dfd2-4c3c-9eca-ead43f7a52bc
+
 ### 1. 로그인 화면 (01_Login)
 
 > *(로그인 화면 이미지 삽입 예정)*
