@@ -11,6 +11,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/02_Lobby.unity
     guid: 0d63ce9391f1409448d4495c108c4c7a
+  - enabled: 1
+    path: Assets/Scenes/03_Profile.unity
+    guid: f1bd8d5ec50ed2645a657912b35e42a8
+  - enabled: 1
+    path: Assets/Scenes/04_Inventory.unity
+    guid: 31e5222979ca631498b56917a1232077
+  - enabled: 1
+    path: Assets/Scenes/05_ExperienceSelect.unity
+    guid: b8708e21075a4c54e8b18fb97e4f0f65
+  - enabled: 1
+    path: Assets/Scenes/06_ExperienceBattle.unity
+    guid: 5b54f7284da218547bf1ea16fb822975
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
