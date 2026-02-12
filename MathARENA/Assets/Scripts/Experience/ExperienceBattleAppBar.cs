@@ -2,12 +2,19 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-//지금은 기능만 필요한 상태라
-//시간 끝나면 isRunning=false로 멈추기만 하고
-//실제 패배 처리/결과 화면은 TODO로 남겨둔 상태다.
-
-public class ExperienceBattleAppBar : MonoBehaviour
+public sealed class ExperienceBattleAppBar : MonoBehaviour
 {
+    public enum BattleMode
+    {
+        Experience,
+        Training,
+        Arena,
+    }
+
+    [Header("Mode")]
+    [SerializeField]
+    private BattleMode mode = BattleMode.Experience;
+
     [Header("UI References")]
     [SerializeField]
     private TMP_Text titleText; // 왼쪽: "훈련장-개념이해"
@@ -15,20 +22,37 @@ public class ExperienceBattleAppBar : MonoBehaviour
     [SerializeField]
     private TMP_Text timerText; // 가운데: "5:00"
 
+    [Header("Exit Scene")]
+    [SerializeField]
+    private string exitSceneName = "05_ExperienceSelect"; // 훈련은 "07_TrainingSelect" 등
+
     [Header("Timer Settings")]
     [SerializeField]
-    private int startMinutes = 5; // 시작 시간(분 단위)
+    private int startMinutes = 5;
 
-    private float remainingTime; // 초 단위로 카운트다운
+    private float remainingTime;
     private bool isRunning = true;
+
+    private enum CommonCategory
+    {
+        Concept,
+        Calc,
+        Idea,
+        Design,
+        Practice,
+    }
+
+    private CommonCategory currentCategory;
 
     private void Start()
     {
-        // 시작 시간(분)을 초 단위로 변환
         remainingTime = startMinutes * 60f;
 
-        SetupTitleByCategory();
-        UpdateTimerText(); // 처음에 5:00 표시
+        // 카테고리 읽기
+        currentCategory = ReadCurrentCategory();
+
+        SetupTitle();
+        UpdateTimerText();
     }
 
     private void Update()
@@ -41,33 +65,76 @@ public class ExperienceBattleAppBar : MonoBehaviour
         {
             remainingTime = 0f;
             isRunning = false;
-            // TODO: 시간 초과 처리 (자동 패배, 결과 화면 등)
+            // TODO: 시간 초과 처리
         }
 
         UpdateTimerText();
     }
 
-    private void SetupTitleByCategory()
+    private CommonCategory ReadCurrentCategory()
+    {
+        switch (mode)
+        {
+            case BattleMode.Training:
+                return TrainingSession.CurrentCategory switch
+                {
+                    TrainingCategory.Concept => CommonCategory.Concept,
+                    TrainingCategory.Calc => CommonCategory.Calc,
+                    TrainingCategory.Idea => CommonCategory.Idea,
+                    TrainingCategory.Design => CommonCategory.Design,
+                    TrainingCategory.Practice => CommonCategory.Practice,
+                    _ => CommonCategory.Concept,
+                };
+
+            case BattleMode.Arena:
+                // 아레나가 어떤 세션을 쓸지 확정되면 맞춰서 수정
+                return ExperienceSession.CurrentCategory switch
+                {
+                    ExperienceCategory.Concept => CommonCategory.Concept,
+                    ExperienceCategory.Calc => CommonCategory.Calc,
+                    ExperienceCategory.Idea => CommonCategory.Idea,
+                    ExperienceCategory.Design => CommonCategory.Design,
+                    ExperienceCategory.Practice => CommonCategory.Practice,
+                    _ => CommonCategory.Concept,
+                };
+
+            case BattleMode.Experience:
+            default:
+                return ExperienceSession.CurrentCategory switch
+                {
+                    ExperienceCategory.Concept => CommonCategory.Concept,
+                    ExperienceCategory.Calc => CommonCategory.Calc,
+                    ExperienceCategory.Idea => CommonCategory.Idea,
+                    ExperienceCategory.Design => CommonCategory.Design,
+                    ExperienceCategory.Practice => CommonCategory.Practice,
+                    _ => CommonCategory.Concept,
+                };
+        }
+    }
+
+    private void SetupTitle()
     {
         if (titleText == null)
             return;
 
-        // 현재 선택된 체험장 종목 가져오기
-        ExperienceCategory category = ExperienceSession.CurrentCategory;
-
-        string categoryKorean = category switch
+        string prefix = mode switch
         {
-            ExperienceCategory.Concept => "개념이해",
-            ExperienceCategory.Calc => "연산",
-            ExperienceCategory.Idea => "발상",
-            ExperienceCategory.Design => "설계",
-            ExperienceCategory.Practice => "실전",
+            BattleMode.Training => "훈련장",
+            BattleMode.Arena => "아레나",
+            _ => "체험장",
+        };
+
+        string categoryKorean = currentCategory switch
+        {
+            CommonCategory.Concept => "개념이해",
+            CommonCategory.Calc => "연산",
+            CommonCategory.Idea => "발상",
+            CommonCategory.Design => "설계",
+            CommonCategory.Practice => "실전",
             _ => "개념이해",
         };
 
-        // 여기만 고치면 됨
-        titleText.text = $"체험장-{categoryKorean}";
-        // 체험장 화면이라면 "체험장-{categoryKorean}" 로 바꾸면 되고
+        titleText.text = $"{prefix}-{categoryKorean}";
     }
 
     private void UpdateTimerText()
@@ -79,17 +146,16 @@ public class ExperienceBattleAppBar : MonoBehaviour
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
 
-        // 5:00, 4:59 형식으로 출력
         timerText.text = $"{minutes}:{seconds:00}";
     }
 
-    // 나가기 버튼에서 호출
     public void OnClickExit()
     {
-        // 시간 멈춤
         isRunning = false;
 
-        // 체험장 선택 화면으로 이동
-        SceneManager.LoadScene("05_ExperienceSelect");
+        if (string.IsNullOrEmpty(exitSceneName))
+            exitSceneName = "02_Lobby";
+
+        SceneManager.LoadScene(exitSceneName);
     }
 }
