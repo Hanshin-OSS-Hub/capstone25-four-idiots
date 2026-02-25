@@ -1,0 +1,12 @@
+# ninja log v5
+95	500	7925996368149673	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	4d0373fdb2e50ad3
+507	749	7925996370598578	C:/Users/Mawang/Desktop/four/capstone25-four-idiots/MathARENA/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/134c5n64/obj/arm64-v8a/libswappywrapper.so	402fa719dfba7900
+43	1831	7925996380939398	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	f546fa6b5b1c0f3b
+33	1842	7925996381061117	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	5faa22f0193b3532
+11	1875	7925996381463716	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	f3b6f02f600cf620
+78	1878	7925996381656942	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	18b950be6dc5294c
+1	1915	7925996382134514	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	f93fc16db2afdd32
+55	2166	7925996384752087	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	507bec04d387c2ea
+67	2692	7925996384980732	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	f3da7b9517d71b58
+22	2694	7925996386181614	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	3eea9a5dcf84c0be
+2695	2972	7925996392680986	C:/Users/Mawang/Desktop/four/capstone25-four-idiots/MathARENA/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/134c5n64/obj/arm64-v8a/libgame.so	7464c56230d03d75
