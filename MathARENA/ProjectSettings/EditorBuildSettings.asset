@@ -11,10 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/02_Lobby.unity
     guid: 0d63ce9391f1409448d4495c108c4c7a
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/03_Profile.unity
     guid: f1bd8d5ec50ed2645a657912b35e42a8
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/04_Inventory.unity
     guid: 31e5222979ca631498b56917a1232077
   - enabled: 0
