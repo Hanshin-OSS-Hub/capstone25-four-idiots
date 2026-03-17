@@ -11,18 +11,20 @@ public enum ExperienceCategory
 
 public enum ExperienceDifficulty
 {
-    VeryEasy = 1,  // 😊 Very Easy
-    Easy     = 2,  // 🙂 Easy
-    Hard     = 3,  // 😠 Hard
-    VeryHard = 4,   // 😡 Very Hard (필요하면 더 추가)
-    Tough    = 5,    // 추가
-    VeryTough = 6    // 추가
+    VeryEasy = 1,
+    Easy     = 2,
+    Hard     = 3,
+    VeryHard = 4,
+    Tough    = 5,
+    VeryTough = 6
 }
 
 public static class ExperienceSession
 {
     public static ExperienceCategory CurrentCategory = ExperienceCategory.Concept;
-
-    // 기본값은 VeryEasy
     public static ExperienceDifficulty CurrentDifficulty = ExperienceDifficulty.VeryEasy;
+
+    // --- 아래 두 줄을 반드시 추가하세요 ---
+    public static int TotalExpScore = 0;        
+    public static int CurrentQuestionCount = 0; 
 }
