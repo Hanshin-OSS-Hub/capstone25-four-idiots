@@ -17,10 +17,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/04_Inventory.unity
     guid: 31e5222979ca631498b56917a1232077
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/05_ExperienceSelect.unity
     guid: b8708e21075a4c54e8b18fb97e4f0f65
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/06_ExperienceBattle.unity
     guid: 5b54f7284da218547bf1ea16fb822975
   - enabled: 0

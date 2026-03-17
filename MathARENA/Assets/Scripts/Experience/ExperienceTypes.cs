@@ -14,7 +14,9 @@ public enum ExperienceDifficulty
     VeryEasy = 1,  // 😊 Very Easy
     Easy     = 2,  // 🙂 Easy
     Hard     = 3,  // 😠 Hard
-    VeryHard = 4   // 😡 Very Hard (필요하면 더 추가)
+    VeryHard = 4,   // 😡 Very Hard (필요하면 더 추가)
+    Tough    = 5,    // 추가
+    VeryTough = 6    // 추가
 }
 
 public static class ExperienceSession
