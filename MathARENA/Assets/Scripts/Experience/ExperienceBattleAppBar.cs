@@ -17,14 +17,14 @@ public sealed class ExperienceBattleAppBar : MonoBehaviour
 
     [Header("UI References")]
     [SerializeField]
-    private TMP_Text titleText; // 왼쪽: "훈련장-개념이해"
+    private TMP_Text titleText; // 왼쪽: "아레나-설계" 등
 
     [SerializeField]
-    private TMP_Text timerText; // 가운데: "5:00"
+    private TMP_Text timerText; // 가운데: "60"
 
     [Header("Exit Scene")]
     [SerializeField]
-    private string exitSceneName = "05_ExperienceSelect"; // 훈련은 "07_TrainingSelect" 등
+    private string exitSceneName = "02_Lobby";
 
     [Header("Timer Settings")]
     [SerializeField]
@@ -46,13 +46,14 @@ public sealed class ExperienceBattleAppBar : MonoBehaviour
 
     private void Start()
     {
-        ResetTimer(); // 시작 시 타이머 초기화
+        ResetTimer();
         currentCategory = ReadCurrentCategory();
         SetupTitle();
     }
 
     public void ResetTimer()
     {
+        // 명세서에 따라 체험장은 설정된 시간, 그 외는 세션의 제한시간을 따릅니다.
         remainingTime =
             (mode == BattleMode.Experience)
                 ? startMinutes * 60f
@@ -71,20 +72,34 @@ public sealed class ExperienceBattleAppBar : MonoBehaviour
             remainingTime = 0f;
             isRunning = false;
 
-            // 시간 초과 시 오답 처리 및 다음 로직 호출 (컨트롤러와 연결 필요)
+            // 시간 초과 시 오답 처리
             if (mode != BattleMode.Experience)
             {
-                Object.FindFirstObjectByType<ExperienceBattleController>().OnTimeOut();
+                Object.FindFirstObjectByType<ExperienceBattleController>()?.OnTimeOut();
             }
         }
         UpdateTimerText();
     }
 
+    // [버그 수정 포인트] 아레나 모드일 때 ArenaSession을 정확히 참조하도록 수정했습니다.
     private CommonCategory ReadCurrentCategory()
     {
         switch (mode)
         {
+            case BattleMode.Arena:
+                // 아레나 세션 데이터 로드
+                return ArenaSession.CurrentCategory switch
+                {
+                    ArenaCategory.Concept => CommonCategory.Concept,
+                    ArenaCategory.Calc => CommonCategory.Calc,
+                    ArenaCategory.Idea => CommonCategory.Idea,
+                    ArenaCategory.Design => CommonCategory.Design,
+                    ArenaCategory.Practice => CommonCategory.Practice,
+                    _ => CommonCategory.Concept,
+                };
+
             case BattleMode.Training:
+                // 훈련장 세션 데이터 로드
                 return TrainingSession.CurrentCategory switch
                 {
                     TrainingCategory.Concept => CommonCategory.Concept,
@@ -95,20 +110,9 @@ public sealed class ExperienceBattleAppBar : MonoBehaviour
                     _ => CommonCategory.Concept,
                 };
 
-            case BattleMode.Arena:
-                // 아레나가 어떤 세션을 쓸지 확정되면 맞춰서 수정
-                return ExperienceSession.CurrentCategory switch
-                {
-                    ExperienceCategory.Concept => CommonCategory.Concept,
-                    ExperienceCategory.Calc => CommonCategory.Calc,
-                    ExperienceCategory.Idea => CommonCategory.Idea,
-                    ExperienceCategory.Design => CommonCategory.Design,
-                    ExperienceCategory.Practice => CommonCategory.Practice,
-                    _ => CommonCategory.Concept,
-                };
-
             case BattleMode.Experience:
             default:
+                // 체험장 세션 데이터 로드
                 return ExperienceSession.CurrentCategory switch
                 {
                     ExperienceCategory.Concept => CommonCategory.Concept,
@@ -143,6 +147,7 @@ public sealed class ExperienceBattleAppBar : MonoBehaviour
             _ => "개념이해",
         };
 
+        // UI에 최종 텍스트 적용
         titleText.text = $"{prefix}-{categoryKorean}";
     }
 
@@ -151,20 +156,15 @@ public sealed class ExperienceBattleAppBar : MonoBehaviour
         if (timerText == null)
             return;
 
-        // 전체 시간을 초 단위로 올림 처리합니다. (예: 59.1초 -> 60초)
         int totalSeconds = Mathf.CeilToInt(remainingTime);
-
-        // "60", "59" 처럼 숫자만 나오게 하거나 뒤에 "초"를 붙일 수 있습니다.
         timerText.text = totalSeconds.ToString();
-
-        // 만약 "60초"라고 표시하고 싶다면 아래 코드를 사용하세요.
-        // timerText.text = $"{totalSeconds}초";
     }
 
     public void OnClickExit()
     {
         isRunning = false;
 
+        // 명세서 상의 퇴장 씬 설정
         if (string.IsNullOrEmpty(exitSceneName))
             exitSceneName = "02_Lobby";
 

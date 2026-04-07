@@ -4,38 +4,25 @@ using UnityEngine.SceneManagement;
 public class ArenaSelectUI : MonoBehaviour
 {
     [SerializeField]
-    private string arenaBattleSceneName = "06_ExperienceBattle";
+    private string arenaMatchingSceneName = "10_Arena"; // 이동할 매칭 씬 이름
 
-    // 아레나가 사용할 배틀 씬 이름
-    // (공용 배틀 컨트롤러에서 mode = Arena로 설정돼 있어야 함)
+    // 각 종목 버튼의 On Click() 이벤트에 연결하세요.
+    public void OnClickConcept() => SetCategoryAndLoad(ArenaCategory.Concept);
 
-    public void OnClickConcept()
+    public void OnClickCalc() => SetCategoryAndLoad(ArenaCategory.Calc);
+
+    public void OnClickIdea() => SetCategoryAndLoad(ArenaCategory.Idea);
+
+    public void OnClickDesign() => SetCategoryAndLoad(ArenaCategory.Design);
+
+    public void OnClickPractice() => SetCategoryAndLoad(ArenaCategory.Practice);
+
+    private void SetCategoryAndLoad(ArenaCategory category)
     {
-        ArenaSession.CurrentCategory = ArenaCategory.Concept;
-        SceneManager.LoadScene(arenaBattleSceneName);
-    }
+        // 1. 선택한 카테고리를 정적 세션에 저장 (씬이 바뀌어도 유지됨)
+        ArenaSession.CurrentCategory = category;
 
-    public void OnClickCalc()
-    {
-        ArenaSession.CurrentCategory = ArenaCategory.Calc;
-        SceneManager.LoadScene(arenaBattleSceneName);
-    }
-
-    public void OnClickIdea()
-    {
-        ArenaSession.CurrentCategory = ArenaCategory.Idea;
-        SceneManager.LoadScene(arenaBattleSceneName);
-    }
-
-    public void OnClickDesign()
-    {
-        ArenaSession.CurrentCategory = ArenaCategory.Design;
-        SceneManager.LoadScene(arenaBattleSceneName);
-    }
-
-    public void OnClickPractice()
-    {
-        ArenaSession.CurrentCategory = ArenaCategory.Practice;
-        SceneManager.LoadScene(arenaBattleSceneName);
+        // 2. 매칭 화면 씬으로 이동
+        SceneManager.LoadScene(arenaMatchingSceneName);
     }
 }

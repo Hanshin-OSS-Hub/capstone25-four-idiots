@@ -3825,6 +3825,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 462157664}
+  - component: {fileID: 462157665}
   m_Layer: 5
   m_Name: Panel_Root
   m_TagString: Untagged
@@ -3857,6 +3858,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 32}
   m_SizeDelta: {x: 900, y: 1600}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &462157665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 462157663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e650cf92d9a76e3449c2b51a747aa6ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeyboardAreaHandler
+  targetPanel: {fileID: 462157664}
+  bottomMargin: 50
+  smoothSpeed: 10
 --- !u!1 &475673344
 GameObject:
   m_ObjectHideFlags: 0
