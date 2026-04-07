@@ -1,3 +1,5 @@
+using MathArena.Network; // 에서 정의한 네임스페이스
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,10 +35,32 @@ public sealed class SignUpStepController : MonoBehaviour
     [SerializeField]
     private Button buttonServiceNext;
 
-    [Header("Form UI")]
+    [Header("Form UI (Registration Inputs)")]
+    [SerializeField]
+    private TMP_InputField idInput;
+
+    [SerializeField]
+    private TMP_InputField pwInput;
+
+    [SerializeField]
+    private TMP_InputField pwConfirmInput;
+
+    [SerializeField]
+    private TMP_InputField nicknameInput;
+
+    [SerializeField]
+    private TMP_InputField emailInput;
+
+    [SerializeField]
+    private TMP_InputField phoneInput;
+
     [SerializeField]
     private Button buttonFormPrev;
 
+    [SerializeField]
+    private Button buttonFormSubmit; // [신규] 최종 가입 버튼
+
+    [Header("Common References")]
     [SerializeField]
     private GameObject popupRoot;
 
@@ -51,90 +75,98 @@ public sealed class SignUpStepController : MonoBehaviour
 
     private void OnEnable()
     {
-        // 초기 화면은 Privacy
-        ShowStep(Step.Privacy);
+        ShowStep(Step.Privacy); // 팝업 켜질 때 항상 약관부터 시작
 
-        // 약관 토글 → Next 활성
-        if (togglePrivacyAgree != null)
-            togglePrivacyAgree.onValueChanged.AddListener(OnPrivacyAgreeChanged);
-        if (toggleServiceAgree != null)
-            toggleServiceAgree.onValueChanged.AddListener(OnServiceAgreeChanged);
+        // 리스너 등록
+        togglePrivacyAgree.onValueChanged.AddListener(OnPrivacyAgreeChanged);
+        toggleServiceAgree.onValueChanged.AddListener(OnServiceAgreeChanged);
 
-        // 버튼 연결
-        if (buttonPrivacyPrev != null)
-            buttonPrivacyPrev.onClick.AddListener(OnPrivacyPrev);
-        if (buttonPrivacyNext != null)
-            buttonPrivacyNext.onClick.AddListener(() => ShowStep(Step.Service));
+        buttonPrivacyPrev.onClick.AddListener(OnPrivacyPrev);
+        buttonPrivacyNext.onClick.AddListener(() => ShowStep(Step.Service));
 
-        if (buttonServicePrev != null)
-            buttonServicePrev.onClick.AddListener(() => ShowStep(Step.Privacy));
-        if (buttonServiceNext != null)
-            buttonServiceNext.onClick.AddListener(() => ShowStep(Step.Form));
+        buttonServicePrev.onClick.AddListener(() => ShowStep(Step.Privacy));
+        buttonServiceNext.onClick.AddListener(() => ShowStep(Step.Form));
 
-        if (buttonFormPrev != null)
-            buttonFormPrev.onClick.AddListener(() => ShowStep(Step.Service));
-
-        // 초기 Next 상태 반영
-        OnPrivacyAgreeChanged(togglePrivacyAgree != null && togglePrivacyAgree.isOn);
-        OnServiceAgreeChanged(toggleServiceAgree != null && toggleServiceAgree.isOn);
+        buttonFormPrev.onClick.AddListener(() => ShowStep(Step.Service));
+        buttonFormSubmit.onClick.AddListener(OnClickCompleteRegister); // 서버 전송 버튼 연결
     }
 
     private void OnDisable()
     {
-        // 중복 리스너/누수 방지
-        if (togglePrivacyAgree != null)
-            togglePrivacyAgree.onValueChanged.RemoveListener(OnPrivacyAgreeChanged);
-        if (toggleServiceAgree != null)
-            toggleServiceAgree.onValueChanged.RemoveListener(OnServiceAgreeChanged);
-
-        if (buttonPrivacyPrev != null)
-            buttonPrivacyPrev.onClick.RemoveListener(OnPrivacyPrev);
-        if (buttonPrivacyNext != null)
-            buttonPrivacyNext.onClick.RemoveAllListeners();
-
-        if (buttonServicePrev != null)
-            buttonServicePrev.onClick.RemoveAllListeners();
-        if (buttonServiceNext != null)
-            buttonServiceNext.onClick.RemoveAllListeners();
-
-        if (buttonFormPrev != null)
-            buttonFormPrev.onClick.RemoveAllListeners();
+        // 중복 방지를 위해 리스너 제거
+        togglePrivacyAgree.onValueChanged.RemoveAllListeners();
+        toggleServiceAgree.onValueChanged.RemoveAllListeners();
+        buttonPrivacyPrev.onClick.RemoveAllListeners();
+        buttonPrivacyNext.onClick.RemoveAllListeners();
+        buttonServicePrev.onClick.RemoveAllListeners();
+        buttonServiceNext.onClick.RemoveAllListeners();
+        buttonFormPrev.onClick.RemoveAllListeners();
+        buttonFormSubmit.onClick.RemoveAllListeners();
     }
 
     private void ShowStep(Step step)
     {
         _step = step;
+        panelTermsPrivacy.SetActive(step == Step.Privacy);
+        panelTermsService.SetActive(step == Step.Service);
+        panelSignUpForm.SetActive(step == Step.Form);
 
-        if (panelTermsPrivacy != null)
-            panelTermsPrivacy.SetActive(step == Step.Privacy);
-        if (panelTermsService != null)
-            panelTermsService.SetActive(step == Step.Service);
-        if (panelSignUpForm != null)
-            panelSignUpForm.SetActive(step == Step.Form);
-
-        // Step 진입 시 Next 상태 업데이트(토글이 이미 체크된 경우 대비)
         if (step == Step.Privacy)
-            OnPrivacyAgreeChanged(togglePrivacyAgree != null && togglePrivacyAgree.isOn);
-
+            OnPrivacyAgreeChanged(togglePrivacyAgree.isOn);
         if (step == Step.Service)
-            OnServiceAgreeChanged(toggleServiceAgree != null && toggleServiceAgree.isOn);
+            OnServiceAgreeChanged(toggleServiceAgree.isOn);
     }
 
-    private void OnPrivacyAgreeChanged(bool on)
-    {
-        if (buttonPrivacyNext != null)
-            buttonPrivacyNext.interactable = on;
-    }
+    private void OnPrivacyAgreeChanged(bool on) => buttonPrivacyNext.interactable = on;
 
-    private void OnServiceAgreeChanged(bool on)
-    {
-        if (buttonServiceNext != null)
-            buttonServiceNext.interactable = on;
-    }
+    private void OnServiceAgreeChanged(bool on) => buttonServiceNext.interactable = on;
 
     private void OnPrivacyPrev()
     {
         if (popupRoot != null)
             popupRoot.SetActive(false);
+    }
+
+    // ***** [핵심] 실제 서버에 회원가입 요청을 보내는 함수 *****
+    public void OnClickCompleteRegister()
+    {
+        // 1. 유효성 검사 (비밀번호 확인 등)
+        if (pwInput.text != pwConfirmInput.text)
+        {
+            Debug.LogError("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        // 2. 서버 규격에 맞게 데이터 구성
+        RegisterRequest regData = new RegisterRequest
+        {
+            id = idInput.text,
+            pw = pwInput.text,
+            pw_confirm = pwConfirmInput.text,
+            nickname = nicknameInput.text,
+            email = emailInput.text,
+            phone = phoneInput.text,
+            auth_id = "VERIFIED_ID_123", // 임시: 나중에 휴대전화 인증 성공 시 받은 ID를 넣으세요
+        };
+
+        // 3. NetworkManager를 통해 POST 요청 전송
+        NetworkManager.Instance.PostRequest<AuthResponse<object>>(
+            "/v1/auth/register",
+            regData,
+            (res) =>
+            {
+                if (res.success)
+                {
+                    Debug.Log("회원가입 성공! 이제 로그인해 보세요.");
+                    if (popupRoot != null)
+                        popupRoot.SetActive(false); // 가입 성공 시 팝업 닫기
+                }
+                else
+                {
+                    Debug.LogError($"가입 실패: {res.error.message}");
+                }
+            },
+            (err) => Debug.LogError($"네트워크 오류: {err}")
+        );
     }
 }

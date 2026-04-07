@@ -2161,8 +2161,15 @@ MonoBehaviour:
   toggleServiceAgree: {fileID: 822519465}
   buttonServicePrev: {fileID: 1660678250}
   buttonServiceNext: {fileID: 128578609}
+  idInput: {fileID: 1873812408}
+  pwInput: {fileID: 1682340673}
+  pwConfirmInput: {fileID: 1886587035}
+  nicknameInput: {fileID: 501525945}
+  emailInput: {fileID: 1604006884}
+  phoneInput: {fileID: 1670563229}
   buttonFormPrev: {fileID: 849226103}
-  popupRoot: {fileID: 1928992146}
+  buttonFormSubmit: {fileID: 117773461}
+  popupRoot: {fileID: 176612580}
 --- !u!1 &192856773
 GameObject:
   m_ObjectHideFlags: 0
@@ -5701,7 +5708,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idInput: {fileID: 1841724452}
   pwInput: {fileID: 1984402494}
-  loginPanel: {fileID: 462157663}
   popupRoot: {fileID: 1109481678}
 --- !u!1 &809975490
 GameObject:
@@ -9649,6 +9655,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1362770712}
   m_CullTransparentMesh: 1
+--- !u!1 &1375876792
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1375876794}
+  - component: {fileID: 1375876793}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1375876793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375876792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce2acda0ea816644e8090b153ba20d70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkManager
+  baseUrl: http://127.0.0.1:8001/
+--- !u!4 &1375876794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375876792}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 307.26013, y: 1068.2782, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1381569234
 GameObject:
   m_ObjectHideFlags: 0
@@ -15256,11 +15307,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1899205779}
   m_CullTransparentMesh: 1
---- !u!1 &1928992146 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6255300590579302818, guid: 14b59b00deb32fc479e251e06770e5bb, type: 3}
-  m_PrefabInstance: {fileID: 1141953526179943789}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1928992147 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 549084476893519439, guid: 14b59b00deb32fc479e251e06770e5bb, type: 3}
@@ -17397,3 +17443,4 @@ SceneRoots:
   - {fileID: 5152805953696494557}
   - {fileID: 1936454283}
   - {fileID: 1772088970}
+  - {fileID: 1375876794}
