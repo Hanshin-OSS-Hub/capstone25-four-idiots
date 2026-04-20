@@ -133,7 +133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1279883517671423070, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       propertyPath: targetSceneName
-      value: 09_Arena
+      value: 02_Lobby
       objectReference: {fileID: 0}
     - target: {fileID: 2879228308360888785, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -162,6 +162,14 @@ PrefabInstance:
     - target: {fileID: 3504131175131824301, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       propertyPath: m_Name
       value: Canvas_TrainingSelect 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3737402296757227629, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3737402296757227629, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      propertyPath: m_ChildAlignment
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4484119826365843645, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       propertyPath: m_AnchorMax.y
@@ -220,6 +228,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6009904011156662954, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 153.5723
+      objectReference: {fileID: 0}
+    - target: {fileID: 6009904011156662954, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 74.8697
+      objectReference: {fileID: 0}
+    - target: {fileID: 6009904011156662954, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -270,6 +286,14 @@ PrefabInstance:
     - target: {fileID: 6660988243773412246, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995769533140352233, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995769533140352233, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7066780589163266312, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       propertyPath: m_Pivot.x
