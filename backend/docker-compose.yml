@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: arena-server
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - FLASK_ENV=development     
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1       # [추가] 로그가 지연 없이 즉시 출력되도록 설정
+      # DB 접속 정보 (config.py에서 os.getenv로 불러다 쓰세요)
+      - DB_HOST=mysql            # 서비스 이름이 호스트가 됨
+      - DB_PORT=3306             # 내부 포트 사용
+      - DB_USER=arena_user
+      - DB_PASSWORD=arena_pw
+      - DB_NAME=arena
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - .:/app
+    # [변경] sleep 대신 실패 시 자동 재시작 설정이 더 깔끔합니다.
+    restart: on-failure 
+    command: python app.py
+
+  mysql:
+    # [참고] 만약 M1/M2 맥북이라면 platform: linux/amd64 옵션이 필요할 수 있습니다.
+    image: mysql:8.0
+    container_name: arena-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: arena
+      MYSQL_USER: arena_user
+      MYSQL_PASSWORD: arena_pw
+    ports:
+      - "3307:3306" # 로컬 호스트의 3307 포트를 컨테이너 3306에 연결
+    command: 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password # [추가] 가끔 발생하는 인증 에러 방지
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7
+    container_name: arena-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:
