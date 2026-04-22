@@ -2,7 +2,6 @@ using UnityEngine;
 
 public static class TierManager
 {
-    // 명세서에 따른 영문 명칭
     private static readonly string[] Tiers =
     {
         "Bronze",
@@ -26,26 +25,23 @@ public static class TierManager
 
     public struct TierInfo
     {
-        public string fullName; // "Normal Bronze"
-        public int tierIdx; // 0 ~ 6
-        public int gradeIdx; // 0 ~ 6
-        public int spriteIdx; // 0 ~ 48 (이미지가 49개일 경우)
+        public string fullName;
+        public int tierIdx;
+        public int gradeIdx;
     }
 
-    public static TierInfo GetTierInfo(int totalAR)
+    public static TierInfo GetTierInfo(int ar)
     {
-        // 점수가 음수일 경우를 대비한 클램프
-        int ar = Mathf.Max(0, totalAR);
-
-        int tIdx = Mathf.Min(ar / 700, Tiers.Length - 1); // 티어 (0~6)
-        int gIdx = Mathf.Min((ar % 700) / 100, Grades.Length - 1); // 단계 (0~6)
+        int totalAR = Mathf.Max(0, ar);
+        int totalSteps = totalAR / 100;
+        int tIdx = Mathf.Min(totalSteps / 7, Tiers.Length - 1);
+        int gIdx = Mathf.Min(totalSteps % 7, Grades.Length - 1);
 
         return new TierInfo
         {
             fullName = $"{Grades[gIdx]} {Tiers[tIdx]}",
             tierIdx = tIdx,
             gradeIdx = gIdx,
-            spriteIdx = (tIdx * 7) + gIdx, // 49개 이미지 매핑용 인덱스
         };
     }
 }

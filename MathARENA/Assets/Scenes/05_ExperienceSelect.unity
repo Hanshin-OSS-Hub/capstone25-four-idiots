@@ -347,6 +347,7 @@ GameObject:
   - component: {fileID: 404332878}
   - component: {fileID: 404332877}
   - component: {fileID: 404332876}
+  - component: {fileID: 404332879}
   m_Layer: 5
   m_Name: Item_Concept (4)
   m_TagString: Untagged
@@ -468,6 +469,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 404332874}
   m_CullTransparentMesh: 1
+--- !u!114 &404332879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404332874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &536090816
 GameObject:
   m_ObjectHideFlags: 0
@@ -684,6 +698,7 @@ GameObject:
   - component: {fileID: 863834096}
   - component: {fileID: 863834095}
   - component: {fileID: 863834094}
+  - component: {fileID: 863834097}
   m_Layer: 5
   m_Name: Item_Concept (1)
   m_TagString: Untagged
@@ -805,6 +820,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 863834092}
   m_CullTransparentMesh: 1
+--- !u!114 &863834097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863834092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &1048562879
 GameObject:
   m_ObjectHideFlags: 0
@@ -1345,6 +1373,7 @@ GameObject:
   - component: {fileID: 1366441930}
   - component: {fileID: 1366441929}
   - component: {fileID: 1366441928}
+  - component: {fileID: 1366441931}
   m_Layer: 5
   m_Name: Item_Concept
   m_TagString: Untagged
@@ -1466,6 +1495,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1366441926}
   m_CullTransparentMesh: 1
+--- !u!114 &1366441931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366441926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &1421086324
 GameObject:
   m_ObjectHideFlags: 0
@@ -1615,6 +1657,7 @@ GameObject:
   - component: {fileID: 1481108799}
   - component: {fileID: 1481108798}
   - component: {fileID: 1481108797}
+  - component: {fileID: 1481108800}
   m_Layer: 5
   m_Name: Item_Concept (3)
   m_TagString: Untagged
@@ -1736,6 +1779,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1481108795}
   m_CullTransparentMesh: 1
+--- !u!114 &1481108800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481108795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &1798908363
 GameObject:
   m_ObjectHideFlags: 0
@@ -1748,6 +1804,7 @@ GameObject:
   - component: {fileID: 1798908367}
   - component: {fileID: 1798908366}
   - component: {fileID: 1798908365}
+  - component: {fileID: 1798908368}
   m_Layer: 5
   m_Name: Item_Concept (2)
   m_TagString: Untagged
@@ -1869,6 +1926,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1798908363}
   m_CullTransparentMesh: 1
+--- !u!114 &1798908368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798908363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &1832734603
 GameObject:
   m_ObjectHideFlags: 0

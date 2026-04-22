@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1851420943681474292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 514704707397590047}
+  - component: {fileID: 4976321852370397664}
+  m_Layer: 0
+  m_Name: BattleSequenceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &514704707397590047
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1851420943681474292}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 518.29156, y: 1191.8015, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4976321852370397664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1851420943681474292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6be069b0c383794fb275be02ba8d6dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleSequenceManager
+  iconO: {fileID: 0}
+  iconX: {fileID: 0}
+  heroDisplay: {fileID: 0}
+  enemyDisplay: {fileID: 0}
+  heroDefault: {fileID: 3091963200351999620, guid: 733125aced3e14242b01ae2becda4c6e, type: 3}
+  heroAttack: {fileID: -1068632862216922794, guid: bd7baa0b9f352c643a9796cf9b04defc, type: 3}
+  heroHit: {fileID: 3194811441155758570, guid: 99bf39f439ef828429d849d8e5380e27, type: 3}
+  enemyDefault: {fileID: -524001638863404317, guid: 8b1fc3fbc14d6b94895845feea03109c, type: 3}
+  enemyAttack: {fileID: 3887701916920764558, guid: 1a0d3d512eda6524aa848494daff5e1b, type: 3}
+  enemyHit: {fileID: -4841029485177105484, guid: 431442e86cc218340bc7847a74d27db8, type: 3}
+  correctSFX: {fileID: 8300000, guid: 0eab37e74f0eebf46a9dabcc891c5118, type: 3}
+  wrongSFX: {fileID: 8300000, guid: c8a8acc611ad36c47a2d7e11611d10cd, type: 3}
+  hitSFX: {fileID: 8300000, guid: aade117c255fa164aa1f4b3e95055f80, type: 3}

@@ -2,40 +2,43 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance;
+    public static AudioManager Instance { get; private set; }
 
-    [Header("BGM")]
-    [SerializeField] private AudioSource bgmSource;
+    [Header("Audio Sources")]
+    [SerializeField]
+    private AudioSource bgmSource; // BGM용
+
+    [SerializeField]
+    private AudioSource sfxSource; // SFX용 (이게 있어야 에러가 안 납니다)
 
     private void Awake()
     {
-        // 싱글톤 중복 방지
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
+    // BGM 재생 로직
     public void PlayBGM(AudioClip clip)
     {
-        if (bgmSource.clip == clip)
+        if (clip == null || bgmSource.clip == clip)
             return;
-
+        bgmSource.Stop();
         bgmSource.clip = clip;
+        bgmSource.loop = true;
         bgmSource.Play();
     }
 
-    public void StopBGM()
+    // [에러 해결 포인트] 효과음 재생 함수
+    public void PlaySFX(AudioClip clip)
     {
-        bgmSource.Stop();
-    }
-
-    public void SetVolume(float volume)
-    {
-        bgmSource.volume = volume;
+        if (clip != null && sfxSource != null)
+        {
+            sfxSource.PlayOneShot(clip);
+        }
     }
 }

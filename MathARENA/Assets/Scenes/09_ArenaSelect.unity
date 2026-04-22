@@ -408,6 +408,21 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1354308022779306321, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 838806331}
+    - targetCorrespondingSourceObject: {fileID: 4013897852776320952, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 838806330}
+    - targetCorrespondingSourceObject: {fileID: 7042956271590044106, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 838806329}
+    - targetCorrespondingSourceObject: {fileID: 7730366614070225818, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 838806328}
+    - targetCorrespondingSourceObject: {fileID: 3408977540770659809, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 838806327}
     - targetCorrespondingSourceObject: {fileID: 762516686045885654, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 838806321}
@@ -430,6 +445,96 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArenaSelectUI
   arenaMatchingSceneName: 10_Arena
+--- !u!1 &838806322 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3408977540770659809, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+  m_PrefabInstance: {fileID: 838806319}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &838806323 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7730366614070225818, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+  m_PrefabInstance: {fileID: 838806319}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &838806324 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7042956271590044106, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+  m_PrefabInstance: {fileID: 838806319}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &838806325 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4013897852776320952, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+  m_PrefabInstance: {fileID: 838806319}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &838806326 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1354308022779306321, guid: 989fefdc0a0f72b4fb9a98d43468bfaa, type: 3}
+  m_PrefabInstance: {fileID: 838806319}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &838806327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838806322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
+--- !u!114 &838806328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838806323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
+--- !u!114 &838806329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838806324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
+--- !u!114 &838806330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838806325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
+--- !u!114 &838806331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838806326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &1051065394
 GameObject:
   m_ObjectHideFlags: 0

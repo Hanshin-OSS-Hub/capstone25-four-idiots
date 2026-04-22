@@ -144,7 +144,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 184321775}
-  - component: {fileID: 184321774}
+  - component: {fileID: 184321776}
   m_Layer: 0
   m_Name: BGM_Lobby
   m_TagString: Untagged
@@ -152,19 +152,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &184321774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 184321773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c00976aafa37c940a3f2f9d763bf4dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LobbyBGMStarter
-  lobbyBGM: {fileID: 8300000, guid: 63337e2b6373a5445bec1bd7be9f68bc, type: 3}
 --- !u!4 &184321775
 Transform:
   m_ObjectHideFlags: 0
@@ -180,6 +167,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &184321776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184321773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c7951db3346b274da188e36255c828c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneBGMStarter
+  sceneBGM: {fileID: 8300000, guid: 63337e2b6373a5445bec1bd7be9f68bc, type: 3}
 --- !u!1 &511798280 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2239901577929182032, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
@@ -198,6 +198,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetSceneName: 05_ExperienceSelect
+--- !u!114 &511798288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511798280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,17 +384,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577497993}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 135723239a6a911479d6d6566d8a9b5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LobbyProfileController
-  imgTierIcon: {fileID: 668007344}
+  textNickname: {fileID: 0}
+  textAverageCP: {fileID: 668007342}
   textTierName: {fileID: 668007343}
-  textBattlePower: {fileID: 668007342}
+  imgTierIcon: {fileID: 668007344}
   textGold: {fileID: 668007341}
   textTicket: {fileID: 668007340}
-  detailedProfilePanel: {fileID: 668007345}
 --- !u!114 &577497999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -577,11 +590,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &668007345 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7716914743377962891, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
-  m_PrefabInstance: {fileID: 1958373742666941156}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &737635340
 GameObject:
   m_ObjectHideFlags: 0
@@ -793,6 +801,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1597901985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958373742666941157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1 &1649196421
 GameObject:
   m_ObjectHideFlags: 0
@@ -1321,6 +1342,10 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2978858640345995970, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 5820104916542628897, guid: 04882ad8f91319c429c05ca31fa1cd92, type: 3}
     - target: {fileID: 2985752892354946666, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -2246,12 +2271,21 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2239901577929182032, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       insertIndex: -1
       addedObject: {fileID: 511798286}
+    - targetCorrespondingSourceObject: {fileID: 2239901577929182032, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 511798288}
     - targetCorrespondingSourceObject: {fileID: 847033061213631891, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1958373742666941158}
+    - targetCorrespondingSourceObject: {fileID: 847033061213631891, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1597901985}
     - targetCorrespondingSourceObject: {fileID: 7007669397593176349, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1958373742666941160}
+    - targetCorrespondingSourceObject: {fileID: 7007669397593176349, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1958373742666941165}
   m_SourcePrefab: {fileID: 100100000, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
 --- !u!1 &1958373742666941157 stripped
 GameObject:
@@ -2319,12 +2353,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135723239a6a911479d6d6566d8a9b5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LobbyProfileController
-  imgTierIcon: {fileID: 668007344}
+  textNickname: {fileID: 0}
+  textAverageCP: {fileID: 0}
   textTierName: {fileID: 668007343}
-  textBattlePower: {fileID: 668007342}
+  imgTierIcon: {fileID: 668007344}
   textGold: {fileID: 668007341}
   textTicket: {fileID: 668007340}
-  detailedProfilePanel: {fileID: 668007345}
+--- !u!114 &1958373742666941165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958373742666941159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130f8722f2fc24b498d690a4440d1e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommonButtonSFX
+  clickSFX: {fileID: 8300000, guid: 4c1e63d5a218a894ba67e5931c3cdce0, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

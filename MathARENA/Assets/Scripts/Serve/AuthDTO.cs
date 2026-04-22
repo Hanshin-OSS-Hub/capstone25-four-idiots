@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 
 namespace MathArena.Network
 {
-    // --- 공통 응답 구조 ---
     [Serializable]
     public class AuthResponse<T>
     {
@@ -18,7 +18,6 @@ namespace MathArena.Network
         public string message;
     }
 
-    // --- 로그인 (Login) ---
     [Serializable]
     public class LoginRequest
     {
@@ -31,11 +30,9 @@ namespace MathArena.Network
     {
         public string access_token;
         public string nickname;
-        public string tier;
         public int arena_rating;
     }
 
-    // --- 회원가입 (Register) ---
     [Serializable]
     public class RegisterRequest
     {
@@ -46,5 +43,23 @@ namespace MathArena.Network
         public string email;
         public string phone;
         public string auth_id;
+    }
+
+    // 각 문제별 상세 기록
+    [Serializable]
+    public class QuestionResultData
+    {
+        public string q_id; // 문제 식별자
+        public int solve_time_sec; // 풀이 시간
+        public bool is_correct; // 정답 여부
+    }
+
+    // 최종 서버 전송용 DTO
+    [Serializable]
+    public class BattleResultRequest
+    {
+        public string category_name; // 종목명
+        public int total_score; // 총 점수
+        public List<QuestionResultData> results = new List<QuestionResultData>(); // 문제별 상세 기록
     }
 }
