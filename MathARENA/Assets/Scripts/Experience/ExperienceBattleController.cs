@@ -84,7 +84,10 @@ public class ExperienceBattleController : MonoBehaviour
     [SerializeField]
     private TrainingResultUI trainingResultUI;
 
-    [Header("Life UI")]
+    [Header("Life UI (User)")]
+    [SerializeField]
+    private GameObject userLifePanel;
+
     [SerializeField]
     private TMP_Text lifeText;
 
@@ -97,6 +100,19 @@ public class ExperienceBattleController : MonoBehaviour
     [SerializeField]
     private Sprite inactiveHeartSprite;
 
+    [Header("Life UI (Opponent - Arena Only)")]
+    [SerializeField]
+    private GameObject opponentLifePanel;
+
+    [SerializeField]
+    private Image[] opponentHeartIcons = new Image[4];
+
+    [SerializeField]
+    private Sprite opponentActiveHeartSprite;
+
+    [SerializeField]
+    private Sprite opponentInactiveHeartSprite;
+
     [Header("OCR Systems")]
     [SerializeField]
     private SentisOCRManager ocrManager;
@@ -104,30 +120,27 @@ public class ExperienceBattleController : MonoBehaviour
     [SerializeField]
     private DrawingCanvas drawingCanvas;
 
+    // --- 내부 상태 변수 ---
     private List<QuestionResultData> battleRecords = new List<QuestionResultData>();
+    private List<QuestionResultData> opponentRecords = new List<QuestionResultData>();
     private List<string> solvedQuestionIds = new List<string>();
+
     private float questionStartTime;
     private string currentQuestionId;
-
-    // 에러 해결: 클래스 멤버로 선언
     private string currentDiffName = "VERY EASY";
+    private int opponentLife = 4;
+    private int currentOpponentRecordIndex = 0;
 
-    private CommonCategory currentCategory;
+    private ExperienceCategory currentCategory;
     private string correctAnswerText = "";
     private int totalQuestionLimit = 30;
+
+    // --- [중요] 연타 방지를 위한 플래그 ---
+    private bool isProcessingAnswer = false;
 
     private List<int> designUserSequence = new List<int>();
     private int[] designCorrectSequence;
     private string[] designOriginalTexts;
-
-    private enum CommonCategory
-    {
-        Concept,
-        Calc,
-        Idea,
-        Design,
-        Practice,
-    }
 
     private void Awake()
     {
@@ -138,20 +151,33 @@ public class ExperienceBattleController : MonoBehaviour
 
     private void InitializeBattle()
     {
-        currentCategory = ReadCurrentCategory();
+        currentCategory = ExperienceSession.CurrentCategory;
         SetTotalQuestionLimit();
 
         ExperienceSession.CurrentLife = ExperienceSession.MaxLife;
+        opponentLife = 4;
+        isProcessingAnswer = false; // 초기화
+
+        if (userLifePanel != null)
+            userLifePanel.SetActive(mode != BattleMode.Experience);
+        if (opponentLifePanel != null)
+            opponentLifePanel.SetActive(mode == BattleMode.Arena);
+
         UpdateLifeUI();
 
         ExperienceSession.TotalExpScore = 0;
         ExperienceSession.CurrentQuestionCount = 0;
+        currentOpponentRecordIndex = 0;
 
         battleRecords.Clear();
         solvedQuestionIds.Clear();
 
         SetupModeByCategory();
-        SetupQuestionByCategory();
+
+        if (mode == BattleMode.Arena)
+            LoadArenaOpponentData();
+        else
+            SetupQuestionByCategory();
     }
 
     private void SetTotalQuestionLimit()
@@ -167,61 +193,47 @@ public class ExperienceBattleController : MonoBehaviour
 
     private int GetCurrentCategoryCP()
     {
-        // [수정] Profile -> UserProfile (에러 CS0117 해결)
         var p = ExperienceSession.UserProfile;
         if (p == null)
             return 0;
-
-        switch (currentCategory)
+        return currentCategory switch
         {
-            case CommonCategory.Concept:
-                return p.cp_concept;
-            case CommonCategory.Calc:
-                return p.cp_calc;
-            case CommonCategory.Idea:
-                return p.cp_idea;
-            case CommonCategory.Design:
-                return p.cp_design;
-            default:
-                return p.cp_practical;
-        }
-    }
-
-    private CommonCategory ReadCurrentCategory()
-    {
-        if (mode == BattleMode.Arena)
-        {
-            switch (ArenaSession.CurrentCategory)
-            {
-                case ArenaCategory.Concept:
-                    return CommonCategory.Concept;
-                case ArenaCategory.Calc:
-                    return CommonCategory.Calc;
-                case ArenaCategory.Idea:
-                    return CommonCategory.Idea;
-                case ArenaCategory.Design:
-                    return CommonCategory.Design;
-                case ArenaCategory.Practice:
-                    return CommonCategory.Practice;
-                default:
-                    return CommonCategory.Concept;
-            }
-        }
-        return CommonCategory.Concept;
+            ExperienceCategory.Concept => p.cp_concept,
+            ExperienceCategory.Calc => p.cp_calc,
+            ExperienceCategory.Idea => p.cp_idea,
+            ExperienceCategory.Design => p.cp_design,
+            ExperienceCategory.Practice => p.cp_practical,
+            _ => 0,
+        };
     }
 
     private void SetupModeByCategory()
     {
-        if (panelChoices != null)
-            panelChoices.SetActive(
-                currentCategory == CommonCategory.Concept || currentCategory == CommonCategory.Idea
-            );
-        if (panelDesign != null)
-            panelDesign.SetActive(currentCategory == CommonCategory.Design);
-        if (panelInput != null)
-            panelInput.SetActive(
-                currentCategory == CommonCategory.Calc || currentCategory == CommonCategory.Practice
-            );
+        panelChoices?.SetActive(
+            currentCategory == ExperienceCategory.Concept
+                || currentCategory == ExperienceCategory.Idea
+        );
+        panelDesign?.SetActive(currentCategory == ExperienceCategory.Design);
+        panelInput?.SetActive(
+            currentCategory == ExperienceCategory.Calc
+                || currentCategory == ExperienceCategory.Practice
+        );
+    }
+
+    private void LoadArenaOpponentData()
+    {
+        if (NetworkManager.Instance == null)
+        {
+            SetupQuestionByCategory();
+            return;
+        }
+        NetworkManager.Instance.GetRankingList(
+            (res) =>
+            {
+                SetupQuestionByCategory();
+            },
+            (err) => Debug.LogError(err)
+        );
     }
 
     private void SetupQuestionByCategory()
@@ -230,7 +242,8 @@ public class ExperienceBattleController : MonoBehaviour
         string category = currentCategory.ToString();
         string excludeList = string.Join(",", solvedQuestionIds.ToArray());
 
-        // [수정] 인자 5개를 전달하도록 변경 (에러 CS1501 해결)
+        if (NetworkManager.Instance == null)
+            return;
         NetworkManager.Instance.GetQuestion(
             category,
             difficulty,
@@ -243,29 +256,21 @@ public class ExperienceBattleController : MonoBehaviour
                     ApplyServerDataToUI(response.data);
                 }
             },
-            (error) => Debug.LogError(error)
+            (error) =>
+            {
+                Debug.LogError(error);
+                isProcessingAnswer = false; // 에러 시 다시 입력 가능하게 해제
+            }
         );
-    }
-
-    private void OnQuestionLoaded(AuthResponse<ServerQuestionData> response)
-    {
-        if (response.success && response.data != null)
-        {
-            solvedQuestionIds.Add(response.data.q_id);
-            ApplyServerDataToUI(response.data);
-        }
-    }
-
-    private void OnQuestionLoadFailed(string error)
-    {
-        Debug.LogError("네트워크 통신 실패: " + error);
     }
 
     private string DetermineDifficulty()
     {
+        if (mode == BattleMode.Experience)
+            return (ExperienceSession.CurrentQuestionCount + 1 <= 20) ? "VERY EASY" : "EASY";
+
         int qIdx = ExperienceSession.CurrentQuestionCount + 1;
         int cp = GetCurrentCategoryCP();
-
         if (cp >= 500)
         {
             if (qIdx <= 5)
@@ -300,19 +305,21 @@ public class ExperienceBattleController : MonoBehaviour
         currentDiffName = data.diff_name;
         questionStartTime = Time.time;
 
-        if (difficultyBar != null)
-            difficultyBar.ApplyDifficulty(ParseDifficulty(data.diff_name));
+        difficultyBar?.ApplyDifficulty(ParseDifficulty(data.diff_name));
 
-        if (currentCategory == CommonCategory.Concept || currentCategory == CommonCategory.Idea)
+        if (
+            currentCategory == ExperienceCategory.Concept
+            || currentCategory == ExperienceCategory.Idea
+        )
         {
-            List<ChoiceData> choices = new List<ChoiceData>();
-            choices.Add(new ChoiceData { text = data.opt1, originalIndex = "0" });
-            choices.Add(new ChoiceData { text = data.opt2, originalIndex = "1" });
-            choices.Add(new ChoiceData { text = data.opt3, originalIndex = "2" });
-            choices.Add(new ChoiceData { text = data.opt4, originalIndex = "3" });
-
+            List<ChoiceData> choices = new List<ChoiceData>
+            {
+                new ChoiceData { text = data.opt1, originalIndex = "0" },
+                new ChoiceData { text = data.opt2, originalIndex = "1" },
+                new ChoiceData { text = data.opt3, originalIndex = "2" },
+                new ChoiceData { text = data.opt4, originalIndex = "3" },
+            };
             Shuffle(choices);
-
             for (int i = 0; i < 4; i++)
             {
                 choiceTexts[i].text = choices[i].text;
@@ -321,13 +328,16 @@ public class ExperienceBattleController : MonoBehaviour
             }
         }
         else if (
-            currentCategory == CommonCategory.Calc
-            || currentCategory == CommonCategory.Practice
+            currentCategory == ExperienceCategory.Calc
+            || currentCategory == ExperienceCategory.Practice
         )
         {
             correctAnswerText = data.ocr_answer;
+            drawingCanvas?.ClearCanvas();
+            if (inputField != null)
+                inputField.text = "";
         }
-        else if (currentCategory == CommonCategory.Design)
+        else if (currentCategory == ExperienceCategory.Design)
         {
             List<string> designChoices = new List<string>
             {
@@ -338,57 +348,64 @@ public class ExperienceBattleController : MonoBehaviour
             };
             Shuffle(designChoices);
             designOriginalTexts = designChoices.ToArray();
-            designCorrectSequence = data.order_answer.Split(',').Select(int.Parse).ToArray();
+            designCorrectSequence = data.order_answer.Split('-').Select(int.Parse).ToArray();
             designUserSequence.Clear();
             UpdateDesignUI();
         }
+
+        // --- [중요] 새로운 문제가 완전히 준비되었을 때만 입력을 다시 허용 ---
+        isProcessingAnswer = false;
     }
 
-    private void Shuffle<T>(IList<T> list)
-    {
-        int n = list.Count;
-        while (n > 1)
-        {
-            n--;
-            int k = UnityEngine.Random.Range(0, n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
-    }
-
-    public void OnTimeOut()
-    {
-        ProcessAnswer(false);
-    }
+    public void OnTimeOut() => ProcessAnswer(false);
 
     private void ProcessAnswer(bool isCorrect)
     {
-        float solveTime = Time.time - questionStartTime;
-        if (solveTime > 60f)
-            isCorrect = false;
+        // --- [중요] 이미 정답 처리 중이라면 입력을 무시함 ---
+        if (isProcessingAnswer)
+            return;
+        isProcessingAnswer = true;
 
-        QuestionResultData record = new QuestionResultData
+        float solveTime = Time.time - questionStartTime;
+        QuestionResultData userRecord = new QuestionResultData
         {
             q_id = currentQuestionId,
             is_correct = isCorrect,
-            // [수정] Time.Min -> Mathf.Min (에러 CS0117 해결)
             solve_time_sec = Mathf.RoundToInt(Mathf.Min(solveTime, 60f)),
         };
-        battleRecords.Add(record);
+        battleRecords.Add(userRecord);
 
-        if (isCorrect)
-            ExperienceSession.TotalExpScore += GetDifficultyScore(ParseDifficulty(currentDiffName));
-        else
+        bool userAttacks = isCorrect;
+        bool opponentAttacks = !isCorrect;
+
+        if (mode == BattleMode.Arena && opponentRecords.Count > 0)
         {
-            ExperienceSession.CurrentLife--;
-            UpdateLifeUI();
+            var opRec = opponentRecords[currentOpponentRecordIndex];
+            userAttacks =
+                isCorrect
+                && (!opRec.is_correct || userRecord.solve_time_sec < opRec.solve_time_sec);
+            opponentAttacks =
+                opRec.is_correct
+                && (!isCorrect || opRec.solve_time_sec < userRecord.solve_time_sec);
+            currentOpponentRecordIndex = (currentOpponentRecordIndex + 1) % opponentRecords.Count;
         }
+
+        if (userAttacks)
+        {
+            if (mode == BattleMode.Arena)
+                opponentLife--;
+            ExperienceSession.TotalExpScore += GetDifficultyScore(ParseDifficulty(currentDiffName));
+        }
+
+        if (opponentAttacks && mode != BattleMode.Experience)
+            ExperienceSession.CurrentLife--;
+
+        UpdateLifeUI();
 
         if (sequenceManager != null)
         {
             sequenceManager.OnSequenceComplete = ContinueBattleProcess;
-            sequenceManager.PlaySequence(isCorrect);
+            sequenceManager.PlaySequence(userAttacks);
         }
         else
             ContinueBattleProcess();
@@ -397,10 +414,17 @@ public class ExperienceBattleController : MonoBehaviour
     private void ContinueBattleProcess()
     {
         ExperienceSession.CurrentQuestionCount++;
-        if (
-            ExperienceSession.CurrentLife <= 0
-            || ExperienceSession.CurrentQuestionCount >= totalQuestionLimit
-        )
+        bool isGameOver;
+
+        if (mode == BattleMode.Experience)
+            isGameOver = ExperienceSession.CurrentQuestionCount >= totalQuestionLimit;
+        else
+            isGameOver =
+                ExperienceSession.CurrentLife <= 0
+                || (mode == BattleMode.Arena && opponentLife <= 0)
+                || ExperienceSession.CurrentQuestionCount >= totalQuestionLimit;
+
+        if (isGameOver)
             FinishBattle();
         else
         {
@@ -411,45 +435,78 @@ public class ExperienceBattleController : MonoBehaviour
 
     private void FinishBattle()
     {
+        int finalScore = ExperienceSession.TotalExpScore;
+        int previousBP = GetCurrentCategoryCP();
+
+        if (mode == BattleMode.Training)
+        {
+            if (finalScore > previousBP)
+                SaveResultToServer(finalScore);
+            else
+                ShowFinalResult(finalScore, false);
+        }
+        else if (mode == BattleMode.Arena)
+            SaveResultToServer(finalScore);
+        else
+            ShowFinalResult(finalScore, false);
+    }
+
+    private void SaveResultToServer(int score)
+    {
+        if (NetworkManager.Instance == null)
+            return;
         BattleResultRequest request = new BattleResultRequest
         {
             category_name = currentCategory.ToString(),
-            total_score = ExperienceSession.TotalExpScore,
+            total_score = score,
             results = battleRecords,
         };
-
-        NetworkManager.Instance.SaveBattleResult(request, OnSaveSuccess, OnSaveFail);
+        NetworkManager.Instance.SaveBattleResult(
+            request,
+            (res) => ShowFinalResult(score, true),
+            (err) => ShowFinalResult(score, false)
+        );
     }
 
-    private void OnSaveSuccess(AuthResponse<string> response)
-    {
-        if (response.success)
-            ShowResultUI();
-    }
-
-    private void OnSaveFail(string error)
-    {
-        Debug.LogError("결과 저장 실패: " + error);
-        ShowResultUI();
-    }
-
-    private void ShowResultUI()
+    private void ShowFinalResult(int totalScore, bool isUpdated)
     {
         if (mode == BattleMode.Experience)
-            resultUI.gameObject.SetActive(true);
+        {
+            int correct = battleRecords.Count(r => r.is_correct);
+            resultUI?.Show(correct, ExperienceSession.CurrentQuestionCount, totalScore);
+        }
         else if (mode == BattleMode.Arena)
-            arenaResultUI.gameObject.SetActive(true);
+        {
+            arenaResultUI?.Show(opponentLife <= 0, 1000, 1000, 10, "티어", null);
+            arenaResultUI?.gameObject.SetActive(true);
+        }
         else
-            trainingResultUI.gameObject.SetActive(true);
+            trainingResultUI?.Show(totalScore, isUpdated ? "전투력이 업데이트 되었습니다!" : "");
     }
 
     private void UpdateLifeUI()
     {
+        if (mode == BattleMode.Experience)
+            return;
         if (lifeText != null)
             lifeText.text = ExperienceSession.CurrentLife + " / " + ExperienceSession.MaxLife;
         for (int i = 0; i < heartIcons.Length; i++)
-            heartIcons[i].sprite =
-                (i < ExperienceSession.CurrentLife) ? activeHeartSprite : inactiveHeartSprite;
+        {
+            if (heartIcons[i] != null)
+                heartIcons[i].sprite =
+                    (i < ExperienceSession.CurrentLife) ? activeHeartSprite : inactiveHeartSprite;
+        }
+        if (mode == BattleMode.Arena)
+        {
+            for (int i = 0; i < opponentHeartIcons.Length; i++)
+            {
+                if (opponentHeartIcons[i] != null)
+                    opponentHeartIcons[i].sprite =
+                        (i < opponentLife)
+                            ? opponentActiveHeartSprite
+                            : opponentInactiveHeartSprite;
+            }
+        }
     }
 
     private void UpdateQuestionCounterUI()
@@ -468,55 +525,16 @@ public class ExperienceBattleController : MonoBehaviour
         }
     }
 
-    private void HookAllButtons()
+    private void Shuffle<T>(IList<T> list)
     {
-        for (int i = 0; i < choiceButtons.Length; i++)
+        int n = list.Count;
+        while (n > 1)
         {
-            int index = i;
-            choiceButtons[index].onClick.RemoveAllListeners();
-            choiceButtons[index]
-                .onClick.AddListener(
-                    delegate
-                    {
-                        ProcessAnswer(index.ToString() == correctAnswerText);
-                    }
-                );
-        }
-
-        if (submitButton != null)
-        {
-            submitButton.onClick.RemoveAllListeners();
-            submitButton.onClick.AddListener(
-                delegate
-                {
-                    ProcessAnswer(inputField.text == correctAnswerText);
-                }
-            );
-        }
-
-        if (designSubmitButton != null)
-        {
-            designSubmitButton.onClick.RemoveAllListeners();
-            designSubmitButton.onClick.AddListener(
-                delegate
-                {
-                    ProcessAnswer(designUserSequence.SequenceEqual(designCorrectSequence));
-                }
-            );
-        }
-
-        for (int i = 0; i < designChoiceButtons.Length; i++)
-        {
-            int index = i;
-            designChoiceButtons[index].onClick.RemoveAllListeners();
-            designChoiceButtons[index]
-                .onClick.AddListener(
-                    delegate
-                    {
-                        designUserSequence.Add(index);
-                        UpdateDesignUI();
-                    }
-                );
+            n--;
+            int k = UnityEngine.Random.Range(0, n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
         }
     }
 
@@ -524,36 +542,60 @@ public class ExperienceBattleController : MonoBehaviour
     {
         if (string.IsNullOrEmpty(diffName))
             return ExperienceDifficulty.VeryEasy;
-        string normalized = diffName.Replace(" ", "").ToUpper();
-        if (normalized == "VERYEASY")
-            return ExperienceDifficulty.VeryEasy;
-        if (normalized == "EASY")
-            return ExperienceDifficulty.Easy;
-        if (normalized == "HARD")
-            return ExperienceDifficulty.Hard;
-        if (normalized == "VERYHARD")
-            return ExperienceDifficulty.VeryHard;
-        if (normalized == "TOUGH")
-            return ExperienceDifficulty.Tough;
-        if (normalized == "VERYTOUGH")
-            return ExperienceDifficulty.VeryTough;
-        return ExperienceDifficulty.VeryEasy;
+        string n = diffName.Replace(" ", "").ToUpper();
+        return n switch
+        {
+            "VERYEASY" => ExperienceDifficulty.VeryEasy,
+            "EASY" => ExperienceDifficulty.Easy,
+            "HARD" => ExperienceDifficulty.Hard,
+            "VERYHARD" => ExperienceDifficulty.VeryHard,
+            "TOUGH" => ExperienceDifficulty.Tough,
+            "VERYTOUGH" => ExperienceDifficulty.VeryTough,
+            _ => ExperienceDifficulty.VeryEasy,
+        };
     }
 
     private int GetDifficultyScore(ExperienceDifficulty diff)
     {
-        if (diff == ExperienceDifficulty.VeryEasy)
-            return 5;
-        if (diff == ExperienceDifficulty.Easy)
-            return 10;
-        if (diff == ExperienceDifficulty.Hard)
-            return 15;
-        if (diff == ExperienceDifficulty.VeryHard)
-            return 20;
-        if (diff == ExperienceDifficulty.Tough)
-            return 25;
-        if (diff == ExperienceDifficulty.VeryTough)
-            return 30;
-        return 0;
+        return diff switch
+        {
+            ExperienceDifficulty.VeryEasy => 5,
+            ExperienceDifficulty.Easy => 10,
+            ExperienceDifficulty.Hard => 15,
+            ExperienceDifficulty.VeryHard => 20,
+            ExperienceDifficulty.Tough => 25,
+            ExperienceDifficulty.VeryTough => 30,
+            _ => 0,
+        };
+    }
+
+    private void HookAllButtons()
+    {
+        for (int i = 0; i < choiceButtons.Length; i++)
+        {
+            int index = i;
+            choiceButtons[index].onClick.RemoveAllListeners();
+            choiceButtons[index]
+                .onClick.AddListener(() => ProcessAnswer(index.ToString() == correctAnswerText));
+        }
+        submitButton?.onClick.RemoveAllListeners();
+        submitButton?.onClick.AddListener(() =>
+            ProcessAnswer(inputField.text == correctAnswerText)
+        );
+        designSubmitButton?.onClick.RemoveAllListeners();
+        designSubmitButton?.onClick.AddListener(() =>
+            ProcessAnswer(designUserSequence.SequenceEqual(designCorrectSequence))
+        );
+        for (int i = 0; i < designChoiceButtons.Length; i++)
+        {
+            int index = i;
+            designChoiceButtons[index].onClick.RemoveAllListeners();
+            designChoiceButtons[index]
+                .onClick.AddListener(() =>
+                {
+                    designUserSequence.Add(index);
+                    UpdateDesignUI();
+                });
+        }
     }
 }

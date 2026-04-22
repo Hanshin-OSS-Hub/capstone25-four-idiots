@@ -867,17 +867,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 619659753}
   m_CullTransparentMesh: 1
---- !u!114 &703338207 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7316865976020452299, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
-  m_PrefabInstance: {fileID: 6257324591733815018}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &741261728 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8238900545083942696, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
@@ -1190,6 +1179,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &862782002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2027842134329926931, guid: 66ad4cdd202d33744ade12f15f59a1cb, type: 3}
+  m_PrefabInstance: {fileID: 862781999}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &862782003 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2501992264485641499, guid: 66ad4cdd202d33744ade12f15f59a1cb, type: 3}
+  m_PrefabInstance: {fileID: 862781999}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &862782004 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 408772373166352791, guid: 66ad4cdd202d33744ade12f15f59a1cb, type: 3}
+  m_PrefabInstance: {fileID: 862781999}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &862782005 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7080791183587714683, guid: 66ad4cdd202d33744ade12f15f59a1cb, type: 3}
+  m_PrefabInstance: {fileID: 862781999}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!1 &862782006 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8351578528806885193, guid: 66ad4cdd202d33744ade12f15f59a1cb, type: 3}
+  m_PrefabInstance: {fileID: 862781999}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &881711571
 GameObject:
   m_ObjectHideFlags: 0
@@ -3743,8 +3781,8 @@ MonoBehaviour:
   panelDesign: {fileID: 1906545600}
   panelInput: {fileID: 741261728}
   sequenceManager: {fileID: 1283387789}
+  difficultyBar: {fileID: 2638937218314847091}
   questionCounterText: {fileID: 0}
-  effectScale: 1.2
   questionText: {fileID: 2070358031732762603}
   choiceButtons:
   - {fileID: 1968437010676301462}
@@ -3769,7 +3807,6 @@ MonoBehaviour:
   designSubmitButton: {fileID: 834938571}
   inputField: {fileID: 0}
   submitButton: {fileID: 1487771521}
-  difficultyBar: {fileID: 2638937218314847091}
   resultUI: {fileID: 0}
   arenaResultUI: {fileID: 7627668433929203165}
   trainingResultUI: {fileID: 0}
@@ -3781,9 +3818,16 @@ MonoBehaviour:
   - {fileID: 2062976286}
   activeHeartSprite: {fileID: 21300000, guid: 2745c8fc27cb3a94684cba63df23aca3, type: 3}
   inactiveHeartSprite: {fileID: 21300000, guid: 0918cf891679c1840ae0056074615166, type: 3}
+  opponentLifePanel: {fileID: 862782006}
+  opponentHeartIcons:
+  - {fileID: 862782005}
+  - {fileID: 862782004}
+  - {fileID: 862782003}
+  - {fileID: 862782002}
+  opponentActiveHeartSprite: {fileID: 737159033194041724, guid: 80a92a95fe057b84c937532f9b790fab, type: 3}
+  opponentInactiveHeartSprite: {fileID: 21300000, guid: 0918cf891679c1840ae0056074615166, type: 3}
   ocrManager: {fileID: 16926787}
   drawingCanvas: {fileID: 491682548}
-  verifiedDigitText: {fileID: 703338207}
 --- !u!1 &2719672754936653408
 GameObject:
   m_ObjectHideFlags: 0
