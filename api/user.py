@@ -5,7 +5,7 @@ from common.responses import fail, ok
 from database import get_db
 from models.profile import DEFAULT_TIER_NAME, Profile
 from models.user import User
-from services.tier_service import tier_name_to_api
+from services.tier_service import split_tier_name, tier_name_to_api
 from .auth import require_user
 
 bp = Blueprint("user", __name__, url_prefix="/v1/user")
@@ -35,6 +35,7 @@ def get_profile():
 
         tier_name = profile.tier_name or DEFAULT_TIER_NAME
         api_tier_name = tier_name_to_api(tier_name)
+        tier_parts = split_tier_name(tier_name)
         tier_row = db.execute(
             text(
                 """
@@ -64,13 +65,23 @@ def get_profile():
                 "phone": user.phone,
                 "tier": {
                     "name": api_tier_name,
+                    "base": tier_parts["base"],
+                    "stage": tier_parts["stage"],
+                    "stage_index": None if tier_parts["stage_index"] is None else int(tier_parts["stage_index"]) + 1,
+                    "base_index": None if tier_parts["base_index"] is None else int(tier_parts["base_index"]) + 1,
                     "arena_rating": int(profile.arena_rating or 0),
                     "icon_url": tier_icon_url,
+                    "icon_key": api_tier_name,
                 },
                 "powers": powers,
                 # Backward-compatible flat fields for existing clients.
                 "arena_rating": int(profile.arena_rating or 0),
+                "tier_name": api_tier_name,
+                "tier_base": tier_parts["base"],
+                "tier_stage": tier_parts["stage"],
+                "tier_stage_index": None if tier_parts["stage_index"] is None else int(tier_parts["stage_index"]) + 1,
                 "tier_icon_url": tier_icon_url,
+                "tier_icon_key": api_tier_name,
                 "cp_concept": powers["concept"],
                 "cp_calc": powers["calc"],
                 "cp_idea": powers["idea"],

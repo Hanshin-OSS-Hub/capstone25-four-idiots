@@ -8,6 +8,7 @@ from database import get_db
 from .auth import require_user
 from services.runtime_state import create_experience_session, get_experience_session, pop_experience_session, save_experience_session
 from services.question_service import (
+    CATEGORY_DISPLAY_NAMES,
     get_user_history as _get_user_history,
     load_question as _load_question,
     load_random_question as _load_random_question,
@@ -71,7 +72,7 @@ def _experience_difficulty(question_count, current_power):
 @require_user
 def start_experience():
     data = request.get_json(silent=True) or {}
-    category = _normalize_category(data.get("category"))
+    category = _normalize_category(data.get("category") or data.get("categoryName"))
     if not category:
         return fail("BAD_REQUEST", "category is required", 400)
 
@@ -98,6 +99,7 @@ def start_experience():
         {
             "session_id": session_id,
             "category": category,
+            "category_name": CATEGORY_DISPLAY_NAMES[category],
             "question_count": 0,
             "correct_count": 0,
             "current_power": current_power,
@@ -146,6 +148,7 @@ def get_experience_question():
         payload.update(
             {
                 "session_id": session_id,
+                "category_name": CATEGORY_DISPLAY_NAMES[category],
                 "recycled": recycled,
                 "question_order": session["question_count"] + 1,
                 "correct_count": session["correct_count"],
@@ -167,6 +170,10 @@ def submit_experience_answer():
         session_id = data.get("session_id")
         question_id = data.get("question_id")
         submitted_answer = data.get("answer")
+        if submitted_answer is None:
+            submitted_answer = data.get("choice")
+        if submitted_answer is None:
+            submitted_answer = data.get("answer_order", data.get("answerOrder"))
 
         if not session_id or not question_id:
             return fail("BAD_REQUEST", "session_id and question_id are required", 400)
@@ -185,7 +192,10 @@ def submit_experience_answer():
 
         correct_answer = str(row["correct_answer"]).strip()
         correct_answer = session["served_answers"].get(question_id, correct_answer)
-        user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
+        if isinstance(submitted_answer, list):
+            user_answer = "-".join(str(item).strip() for item in submitted_answer)
+        else:
+            user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
         is_correct = user_answer == correct_answer
         earned_score = int(row["score"] or 0) if is_correct else 0
 
@@ -203,6 +213,7 @@ def submit_experience_answer():
             {
                 "session_id": session_id,
                 "category": category,
+                "category_name": CATEGORY_DISPLAY_NAMES[category],
                 "question_id": question_id,
                 "correct": is_correct,
                 "earned_score": earned_score,
@@ -232,6 +243,7 @@ def finish_experience():
     result = {
         "session_id": session_id,
         "category": session["category"],
+        "category_name": CATEGORY_DISPLAY_NAMES[session["category"]],
         "question_count": session["question_count"],
         "correct_count": session["correct_count"],
         "max_questions": session["max_questions"],

@@ -33,7 +33,10 @@ def load_opponent_set(db, set_id, category):
 def score_answer(question, submitted_answer, time_ms):
     timed_out = time_ms >= MAX_ARENA_TIME_MS
     correct_answer = str(question["correct_answer"]).strip()
-    user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
+    if isinstance(submitted_answer, list):
+        user_answer = "-".join(str(item).strip() for item in submitted_answer)
+    else:
+        user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
     is_correct = (not timed_out) and user_answer == correct_answer
     earned_score = int(question["score"] or 0) if is_correct else 0
     return is_correct, timed_out, earned_score

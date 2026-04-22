@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 MAX_LIVES = 4
 MAX_TIME_SEC = 60
 from services.question_service import (
+    CATEGORY_DISPLAY_NAMES,
     get_user_history as _get_user_history,
     load_question as _load_question,
     load_random_question as _load_random_question,
@@ -34,11 +35,17 @@ from services.training_service import (
 
 def _create_training_session(user_id, category):
     session_id = f"train-{uuid4().hex[:10]}"
+    db = get_db()
+    profile = _load_profile_stats(db, user_id)
+    starting_power = 0
+    if profile:
+        starting_power = int(profile[PROFILE_CP_COLUMNS[category]] or 0)
     create_training_session(
         session_id,
         {
             "user_id": user_id,
             "category": category,
+            "starting_power": starting_power,
             "lives": MAX_LIVES,
             "total_power": 0,
             "question_count": 0,
@@ -63,7 +70,7 @@ def _internal_error_response(action):
 @require_user
 def start_training():
     data = request.get_json(silent=True) or {}
-    category = _normalize_category(data.get("category"))
+    category = _normalize_category(data.get("category") or data.get("categoryName"))
 
     if not category:
         return fail("BAD_REQUEST", "category is required", 400)
@@ -74,6 +81,8 @@ def start_training():
         {
             "session_id": session_id,
             "category": category,
+            "category_name": CATEGORY_DISPLAY_NAMES[category],
+            "starting_power": session.get("starting_power", 0),
             "lives": session["lives"],
             "total_power": session["total_power"],
             "question_count": session["question_count"],
@@ -87,7 +96,7 @@ def start_training():
 def get_random_question():
     try:
         db = get_db()
-        category = _normalize_category(request.args.get("category"))
+        category = _normalize_category(request.args.get("category") or request.args.get("categoryName"))
         difficulty = request.args.get("difficulty")
         session_id = request.args.get("session_id")
         user_id = g.get("user_id")
@@ -99,7 +108,10 @@ def get_random_question():
             if session["lives"] <= 0:
                 return fail("FINISHED", "training session already finished", 409)
             category = session["category"]
-            difficulty = _pick_difficulty(session["question_count"], session["total_power"])
+            difficulty = _pick_difficulty(
+                session["question_count"],
+                int(session.get("starting_power", 0) or 0),
+            )
             excluded_ids = set(session["asked_ids"])
         else:
             excluded_ids = set()
@@ -142,9 +154,13 @@ def submit_result():
         db = get_db()
         data = request.get_json(silent=True) or {}
 
-        category = _normalize_category(data.get("category"))
+        category = _normalize_category(data.get("category") or data.get("categoryName"))
         question_id = data.get("question_id")
         submitted_answer = data.get("answer")
+        if submitted_answer is None:
+            submitted_answer = data.get("choice")
+        if submitted_answer is None:
+            submitted_answer = data.get("answer_order", data.get("answerOrder"))
         time_sec = int(data.get("time_sec", 0))
         session_id = data.get("session_id")
         user_id = g.get("user_id")
@@ -173,7 +189,10 @@ def submit_result():
         correct_answer = str(row["correct_answer"]).strip()
         if session:
             correct_answer = session["served_answers"].get(question_id, correct_answer)
-        user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
+        if isinstance(submitted_answer, list):
+            user_answer = "-".join(str(item).strip() for item in submitted_answer)
+        else:
+            user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
         is_correct = (not timed_out) and user_answer == correct_answer
         earned_score = row["score"] if is_correct else 0
 
