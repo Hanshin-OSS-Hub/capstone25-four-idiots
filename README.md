@@ -91,7 +91,15 @@ Math ARENA는 중등 수학을 기반으로
 ---
 
 ## 🚀 실행 방법
-(작성 예정)
+
+이 프로젝트는 Android 환경에서 플레이할 수 있습니다. 
+아래 버튼을 눌러 최신 버전의 APK 파일을 다운로드하세요.
+
+[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/Hanshin-OSS-Hub/capstone25-four-idiots/releases/download/v0.0.1/MathArena.apk)
+
+1. 위 버튼을 클릭하여 `.apk` 파일을 다운로드합니다.
+2. 안드로이드 기기에서 파일을 실행하여 설치합니다. (출처를 알 수 없는 앱 설치 허용 필요)
+3. 앱을 실행하고 로그인을 진행합니다.
 
 ---
 
