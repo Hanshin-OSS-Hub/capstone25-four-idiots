@@ -57,7 +57,7 @@ def find_match():
     try:
         db = get_db()
         data = request.get_json(silent=True) or {}
-        category = _normalize_category(data.get("category"))
+        category = _normalize_category(data.get("category") or data.get("categoryName"))
 
         if not category:
             return fail("BAD_REQUEST", "category is required", 400)
@@ -87,8 +87,9 @@ def find_match():
             JOIN PROFILE p ON p.user_id = rbm.user_id
             WHERE rbm.category_name = :category_name
               AND rbm.user_id <> :user_id
+              AND rbm.updated_cp = p.{cp_column}
             ORDER BY cp_gap ASC, rbm.created_at DESC
-            LIMIT 10
+            LIMIT 30
             """
         )
         rows = db.execute(
@@ -101,7 +102,11 @@ def find_match():
         ).mappings().all()
 
         candidates = []
+        seen_opponents = set()
         for row in rows:
+            if row["opponent_id"] in seen_opponents:
+                continue
+            seen_opponents.add(row["opponent_id"])
             match_id = f"match-{uuid4().hex[:8]}"
             room_id = f"room-{uuid4().hex[:8]}"
             create_arena_match(match_id, {
@@ -138,6 +143,8 @@ def find_match():
                     "cp_gap": int(row["cp_gap"] or 0),
                 }
             )
+            if len(candidates) >= 10:
+                break
 
         return ok(
             {
@@ -245,6 +252,8 @@ def submit_battle_answer():
         match_id = data.get("match_id")
         question_id = data.get("question_id")
         submitted_answer = data.get("answer", data.get("choice"))
+        if submitted_answer is None:
+            submitted_answer = data.get("answer_order", data.get("answerOrder"))
         time_ms = int(data.get("time_ms", 0))
 
         if not match_id or not question_id:
@@ -338,6 +347,8 @@ def finish_battle():
 
         response = {
             "match_id": match_id,
+            "category": match["category"],
+            "opponent_nickname": match["opponent_nickname"],
             "result": result,
             "my_score": match["my_score"],
             "opponent_score": match["opponent_score"],
