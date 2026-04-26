@@ -1,233 +1,135 @@
-﻿# capstone1_server
+# Math ARENA 🧮⚔️
+수학을 **경쟁**과 **보상**으로 즐기는 에듀테인먼트 게임
 
-Math Arena backend server built with Flask and MySQL.
+---
 
-## Current Structure
+## 📘 소개 (About)
 
-```text
-capstone1_server/
-|-- app.py
-|-- config.py
-|-- database.py
-|-- README.md
-|-- .env
-|-- api/
-|   |-- __init__.py
-|   |-- auth.py
-|   |-- user.py
-|   |-- sessions.py
-|   |-- experience.py
-|   |-- training.py
-|   `-- match.py
-|-- services/
-|   |-- __init__.py
-|   |-- auth.py
-|   |-- runtime_state.py
-|   |-- question_service.py
-|   |-- training_service.py
-|   `-- arena_service.py
-|-- models/
-|   |-- __init__.py
-|   |-- base.py
-|   |-- user.py
-|   `-- profile.py
-|-- scripts/
-|   `-- import_concept_csv.py
-|-- common/
-|   |-- __init__.py
-|   |-- errors.py
-|   `-- responses.py
-|-- migrations/
-`-- legacy/
-    |-- api/
-    |-- models/
-    |-- services/
-    `-- scripts/
-```
+Math ARENA는 중등 수학을 기반으로  
+**체험장 → 훈련장 → 아레나**로 이어지는 경쟁 구조를 가진 교육형 게임이다.
 
-## Directory Overview
+- 에듀테크 + 게이미피케이션 결합  
+- 실력 기반 PvP(아레나), 전투력 시스템  
+- 5개 종목  
+  - 개념이해 · 연산 · 발상 · 설계 · 실전(OCR)  
+- Tesseract OCR로 손글씨 인식(연산/실전 모드)
 
-### app.py
-- Flask application entry point
-- Loads configuration
-- Registers blueprints
-- Sets logging behavior
+> 전체 기획·요구사항 문서는 `/docs` 폴더에서 확인 가능
 
-### config.py
-- Loads environment values from `.env`
-- Manages DB URL, JWT secret, port, and flags
+---
 
-### database.py
-- Creates SQLAlchemy engine and session factory
-- Provides `get_db()` for request-scoped DB access
+## 🧱 기술 스택
 
-### api/
-HTTP request/response layer.
+### Client
+- Unity 6  
+- C#  
+- TextMeshPro  
+- Tesseract OCR (Unity Wrapper)
 
-- `auth.py`
-  - register
-  - login / JWT
-  - phone auth request / verify
-  - find user id
-  - reset password
-  - delete account
-- `user.py`
-  - profile read API
-- `sessions.py`
-  - active session info
-  - logout response
-- `experience.py`
-  - experience mode start / question / submit / finish
-- `training.py`
-  - training mode start / question / submit / finish
-- `match.py`
-  - arena find / start / submit / finish
+### Server
+- Flask (REST API)  
+- Flask-SocketIO (Real-time)  
+- MySQL  
+- Redis
 
-### services/
-Business logic layer.
+### Tools
+- Figma  
+- GitHub
 
-- `auth.py`
-  - account rules and auth workflows
-- `runtime_state.py`
-  - persistent runtime state for training / experience / arena
-- `question_service.py`
-  - category normalization
-  - question lookup
-  - duplicate prevention
-  - choice shuffle
-  - design answer remapping
-- `training_service.py`
-  - training difficulty progression
-  - power update rules
-  - record set save logic
-- `arena_service.py`
-  - round resolution
-  - AR delta logic
-  - tier progression logic
-  - arena progress save logic
+---
 
-### models/
-Only active ORM models remain here.
+## 🎮 핵심 기능
 
-- `user.py` -> USER table model
-- `profile.py` -> PROFILE table model
-- `base.py` -> shared SQLAlchemy Base
+- **체험장**: 기록 미반영, 자유 연습  
+- **훈련장**: 전투력 증가, 난이도 해금  
+- **아레나(PvP)**: 실력 기반 매칭 · 티어 시스템  
+- **프로필**: 레벨 · 티어 · 전투력 · 코스튬 정보  
+- **인벤토리/코스튬 시스템**  
+- **상점(IAP 구조 준비)**  
+- **퀘스트/보상 시스템**
 
-### scripts/
-Operational helper scripts.
+### OCR 적용 콘텐츠
+- 연산, 실전 종목 → 손글씨 입력 → OCR → 판정
 
-- `import_concept_csv.py`
-  - imports concept questions from CSV into `Q_CONCEPT`
+---
 
-### common/
-Shared error and response helpers.
+## 📱 UI 개발 현황
 
-- `errors.py` -> app error definitions
-- `responses.py` -> `ok()` / `fail()` response helpers
+### 01_Login 씬
+- 아이디/비밀번호 입력  
+- Google/Apple 로그인 버튼  
+- 회원가입/계정찾기 버튼  
+- Anchor 기반 모바일 대응  
+- Scene 전환 기능 구현
 
-### legacy/
-Old code moved out of the active backend path.
-These files are kept only for reference and backward compatibility.
+사용 스크립트:  
+- LoginUI.cs  
+- SceneChangeButton.cs
 
-Examples:
-- old generic problem model
-- old session model
-- old store API
-- old dummy game logic
-- old seed script
+---
 
-## Active Domains
+### 02_Lobby 씬
+- 프로필 요약바  
+- 체험장/훈련장/아레나 메뉴  
+- 햄버거 메뉴 슬라이드 구현
 
-### 1. Auth and Account
-- register
-- login / JWT
-- phone verification
-- find user id
-- reset password
-- delete account
+사용 스크립트:  
+- LobbySideMenuController.cs
 
-### 2. Question System
-- category-specific question loading
-- difficulty score mapping
-- duplicate prevention
-- recycle when exhausted
-- choice order randomization
-- design answer order remapping
+---
 
-### 3. Profile
-- nickname
-- per-category power
-- average power
-- tier and arena rating
-- icon URL fields
+### 04_Inventory 씬
+- 카테고리별 아이템 필터링  
+- Grid 자동 생성  
+- 장착 버튼 기능 포함
 
-### 4. Experience
-- start / question / submit / finish
-- max question count based on current power
-- correct answer count summary
+사용 스크립트:  
+- InventoryUI.cs  
+- InventoryItemCardView.cs  
+- InventoryTypes.cs
 
-### 5. Training
-- 4 lives
-- 60 second time limit per question
-- accumulated power scoring
-- update PROFILE only on new high score
-- save `RECORD_BATTLE_MATCH` and `TRAINING_Q_SET_RECORD` only on new high score
+---
 
-### 6. Arena
-- opponent recommendation
-- sorted by closest power gap
-- question replay from opponent training record set
-- resume progress support
-- win/lose resolution
-- AR calculation
-- tier promotion / demotion
-- immediate PROFILE update
+## 🚀 실행 방법
+(작성 예정)
 
-## Run Server
+---
 
-```powershell
-cd D:\capstone1_server
-.\.venv\Scripts\Activate.ps1
-python app.py
-```
+## 🔌 서버 연동 준비 상태
 
-## Deploy To Render
+- 로그인/회원가입 API 연동 지점 준비됨  
+- 아레나 실시간 통신(WebSocket) 구조 설계 완료  
+- 실제 서버 연결 시 확장할 요소  
+  - 로그인 인증  
+  - 프로필/전투력 동기화  
+  - 인벤토리/코스튬 DB 연동  
+  - 결제(IAP) 검증 로직
 
-Render reference:
-- Web services should bind to `0.0.0.0` and use the `PORT` environment variable.
-- Render supports Docker-based web services.
-- Render can also run MySQL as a separate private service.
+전체 서버 구조 문서: `/docs` 폴더 참고
 
-This repo now includes:
-- `Dockerfile` for Render Docker deploys
-- `render.yaml` for a basic Render web service definition
+---
 
-Recommended Render setup:
-1. Push this repo to GitHub.
-2. In Render, create a new Web Service from the repo.
-3. Use the `Dockerfile` in this repo.
-4. Set `DB_URL` to your MySQL connection string.
-5. Set `REDIS_URL` if you use Redis outside the default local fallback.
-6. Keep `PORT=10000` or let Render provide its default web port.
+## 👥 팀 구성
 
-Example DB URL:
+| 이름 | 역할 |
+|------|------|
+| 유상혁 | 팀장 · DB 개발 |
+| 김형준 | 서버 개발 |
+| 최호건 | Unity 클라이언트 개발 |
+| 허준하 | UI/UX 디자인 |
 
-```text
-mysql+pymysql://USER:PASSWORD@HOST:3306/DATABASE?charset=utf8mb4
-```
+---
 
-If you want MySQL on Render too:
-1. Create a separate private MySQL service on Render.
-2. Use that internal host and port in `DB_URL`.
-3. Deploy this Flask web service in the same region/workspace.
+## 📌 개발 로드맵
 
-## Syntax Check Example
+- [ ] 서버 로그인 API 연동  
+- [ ] 체험장/훈련장 문제 데이터 연동  
+- [ ] 실시간 아레나 배틀 테스트  
+- [ ] 코스튬/인벤토리 서버 바인딩  
+- [ ] 상점(IAP) 구현  
+- [ ] 퀘스트/보상 시스템 개발  
 
-```powershell
-D:\capstone1_server\.venv\Scripts\python.exe -m py_compile D:/capstone1_server/api/training.py D:/capstone1_server/api/match.py
-```
+---
 
-## Notes
-- The active database is MySQL `math_arena`.
-- Old SQLite test flow is no longer the main runtime path.
-- Legacy files were moved into `legacy/` instead of being deleted.
+## 📄 라이선스
+TBD
