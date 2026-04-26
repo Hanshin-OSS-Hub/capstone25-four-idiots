@@ -10,11 +10,11 @@ PROFILE_CP_COLUMNS = {
     "practice": "cp_practical",
 }
 CATEGORY_DISPLAY_NAMES = {
-    "concept": "????",
-    "calc": "??",
-    "idea": "??",
-    "design": "??",
-    "practice": "??",
+    "concept": "\uac1c\ub150\uc774\ud574",
+    "calc": "\uc5f0\uc0b0",
+    "idea": "\ubc1c\uc0c1",
+    "design": "\uc124\uacc4",
+    "practice": "\uc2e4\uc804",
 }
 CATEGORY_TABLES = {
     "concept": {"table": "Q_CONCEPT", "answer_type": "choice"},
@@ -30,6 +30,7 @@ def normalize_category(raw_category):
         return None
 
     normalized = str(raw_category).strip().lower()
+    compact = normalized.replace(" ", "").replace("-", "").replace("_", "")
     aliases = {
         "concept": "concept",
         "calc": "calc",
@@ -38,13 +39,21 @@ def normalize_category(raw_category):
         "design": "design",
         "practice": "practice",
         "practical": "practice",
-        "????": "concept",
-        "??": "calc",
-        "??": "idea",
-        "??": "design",
-        "??": "practice",
+        "conceptunderstanding": "concept",
+        "gaenyeom": "concept",
+        "gaenyeomihae": "concept",
+        "\uac1c\ub150\uc774\ud574": "concept",
+        "\uac1c\ub150": "concept",
+        "yeonsan": "calc",
+        "\uc5f0\uc0b0": "calc",
+        "balsang": "idea",
+        "\ubc1c\uc0c1": "idea",
+        "seolgye": "design",
+        "\uc124\uacc4": "design",
+        "siljeon": "practice",
+        "\uc2e4\uc804": "practice",
     }
-    return aliases.get(normalized)
+    return aliases.get(normalized) or aliases.get(compact)
 
 
 def ensure_user_solved_question_table(db):

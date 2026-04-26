@@ -191,6 +191,36 @@ cd D:\capstone1_server
 python app.py
 ```
 
+## Deploy To Render
+
+Render reference:
+- Web services should bind to `0.0.0.0` and use the `PORT` environment variable.
+- Render supports Docker-based web services.
+- Render can also run MySQL as a separate private service.
+
+This repo now includes:
+- `Dockerfile` for Render Docker deploys
+- `render.yaml` for a basic Render web service definition
+
+Recommended Render setup:
+1. Push this repo to GitHub.
+2. In Render, create a new Web Service from the repo.
+3. Use the `Dockerfile` in this repo.
+4. Set `DB_URL` to your MySQL connection string.
+5. Set `REDIS_URL` if you use Redis outside the default local fallback.
+6. Keep `PORT=10000` or let Render provide its default web port.
+
+Example DB URL:
+
+```text
+mysql+pymysql://USER:PASSWORD@HOST:3306/DATABASE?charset=utf8mb4
+```
+
+If you want MySQL on Render too:
+1. Create a separate private MySQL service on Render.
+2. Use that internal host and port in `DB_URL`.
+3. Deploy this Flask web service in the same region/workspace.
+
 ## Syntax Check Example
 
 ```powershell

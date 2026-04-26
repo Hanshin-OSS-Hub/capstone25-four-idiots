@@ -12,7 +12,7 @@ from werkzeug.exceptions import HTTPException
 from common.responses import ok, fail
 from common.errors import AppError
 from config import load_config
-from database import init_db, db_session
+from database import get_db, init_db
 from services.runtime_state import ensure_runtime_state_table
 
 # --------------------------------------------
@@ -56,8 +56,10 @@ def create_app():
     # 3截뤴깵 DB ?몄뀡 ?뺣━ (?꾩닔)
     @app.teardown_appcontext
     def shutdown_session(exception=None):
-        if db_session:
-            db_session.remove()
+        try:
+            get_db().remove()
+        except Exception:
+            pass
 
     # 4截뤴깵 CORS ?ㅼ젙
     CORS(app, resources={r"/*": {"origins": "*"}})
@@ -145,7 +147,7 @@ def create_app():
         status = "ok"
         try:
             from sqlalchemy import text
-            db_session.execute(text("SELECT 1"))
+            get_db().execute(text("SELECT 1"))
         except Exception:
             status = "db_error"
         return ok({"status": status})
