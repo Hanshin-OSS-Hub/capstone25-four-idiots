@@ -76,7 +76,7 @@ REDIS_URL=redis://localhost:6379/0
 
 FLASK_ENV=development
 FLASK_DEBUG=true
-APP_PORT=8000
+APP_PORT=8001
 ```
 
 ## 7. 환경변수 설명
@@ -182,13 +182,13 @@ python app.py
 로컬 접속 주소 예시:
 
 ```text
-http://127.0.0.1:8000
+http://127.0.0.1:8001
 ```
 
 또는
 
 ```text
-http://localhost:8000
+http://localhost:8001
 ```
 
 ## 11. 헬스체크 확인
@@ -202,7 +202,7 @@ GET /healthz
 예시:
 
 ```text
-http://127.0.0.1:8000/healthz
+http://127.0.0.1:8001/healthz
 ```
 
 DB까지 정상 연결되면 정상 응답이 와야 합니다.
@@ -231,7 +231,7 @@ python app.py
 ### 2단계. ngrok 실행
 
 ```bash
-ngrok http 8000
+ngrok http 8001
 ```
 
 예시 공개 주소:

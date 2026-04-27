@@ -168,7 +168,7 @@ REDIS_URL=redis://localhost:6379/0
 
 FLASK_ENV=development
 FLASK_DEBUG=true
-APP_PORT=8000
+APP_PORT=8001
 ```
 
 5. MySQL을 실행한 뒤 아래 SQL 파일을 적용합니다.
@@ -203,7 +203,7 @@ python app.py
 7. 서버가 실행되면 아래 주소로 상태를 확인합니다.
 
 ```text
-http://127.0.0.1:8000/healthz
+http://127.0.0.1:8001/healthz
 ```
 
 #### 다른 기기에서 테스트할 때
@@ -211,7 +211,7 @@ http://127.0.0.1:8000/healthz
 프론트가 다른 기기 또는 다른 네트워크에서 접속해야 한다면 `ngrok`을 사용할 수 있습니다.
 
 ```bash
-ngrok http 8000
+ngrok http 8001
 ```
 
 생성된 주소를 프론트의 API Base URL로 사용하면 됩니다.
