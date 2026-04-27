@@ -1,27 +1,27 @@
-﻿# Math ARENA Backend Setup Guide
+# Math ARENA 백엔드 실행 가이드
 
-This document explains how to run the backend server locally, prepare MySQL, test from other devices, and deploy to Render.
+이 문서는 처음 프로젝트를 받은 사람도 그대로 따라 하면 로컬에서 백엔드 서버를 실행하고, MySQL을 준비하고, 다른 기기 테스트와 Render 배포까지 진행할 수 있도록 작성된 가이드입니다.
 
-## 1. Backend Location
+## 1. 백엔드 위치
 
-All backend work should be done inside the `backend/` folder.
+백엔드 관련 작업은 모두 `backend/` 폴더 안에서 진행합니다.
 
 ```bash
 cd backend
 ```
 
-## 2. Required Software
+## 2. 준비 프로그램
 
-Install the following first:
+먼저 아래 프로그램이 설치되어 있어야 합니다.
 
 - Git
-- Python 3.11 recommended
-- MySQL 8.x recommended
-- Optional: ngrok
-- Optional: Render account
-- Optional: MySQL Workbench / DBeaver / TablePlus
+- Python 3.11 권장
+- MySQL 8.x 권장
+- 선택: ngrok
+- 선택: Render 계정
+- 선택: MySQL Workbench / DBeaver / TablePlus
 
-## 3. Clone the Repository
+## 3. 저장소 받기
 
 ```bash
 git clone <repository-url>
@@ -29,7 +29,7 @@ cd capstone25-four-idiots
 cd backend
 ```
 
-## 4. Create a Virtual Environment
+## 4. 가상환경 생성
 
 ### Windows PowerShell
 
@@ -45,19 +45,19 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-If the environment is activated correctly, your shell prompt usually shows `(.venv)`.
+정상적으로 활성화되면 보통 프롬프트 앞에 `(.venv)`가 표시됩니다.
 
-## 5. Install Python Packages
+## 5. Python 패키지 설치
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 6. Create the `.env` File
+## 6. `.env` 파일 생성
 
-Create a file named `.env` inside the `backend/` folder.
+`backend/` 폴더 안에 `.env` 파일을 생성합니다.
 
-Example:
+예시:
 
 ```env
 JWT_SECRET=change-this-secret
@@ -79,46 +79,46 @@ FLASK_DEBUG=true
 APP_PORT=8000
 ```
 
-## 7. Environment Variable Notes
+## 7. 환경변수 설명
 
-### Auth
+### 인증 관련
 
-- `JWT_SECRET`: JWT signing secret
-- `AUTH_OFF`: set to `true` only for temporary local test bypassing auth
-- `DEV_TOKEN`: local development token fallback
+- `JWT_SECRET`: JWT 서명용 비밀키
+- `AUTH_OFF`: 인증을 잠시 우회할 때만 `true` 사용
+- `DEV_TOKEN`: 개발용 기본 토큰 값
 
-### Database
+### 데이터베이스 관련
 
-- `MYSQL_HOST`: MySQL server host
-- `MYSQL_PORT`: MySQL server port
-- `MYSQL_USER`: MySQL user
-- `MYSQL_PASSWORD`: MySQL password
-- `MYSQL_DATABASE`: database name
-- `DB_URL`: final SQLAlchemy connection string used by the app
+- `MYSQL_HOST`: MySQL 서버 주소
+- `MYSQL_PORT`: MySQL 포트
+- `MYSQL_USER`: MySQL 계정
+- `MYSQL_PASSWORD`: MySQL 비밀번호
+- `MYSQL_DATABASE`: 사용할 DB 이름
+- `DB_URL`: 서버가 실제로 사용하는 최종 SQLAlchemy 연결 문자열
 
-`DB_URL` format:
+`DB_URL` 형식:
 
 ```text
 mysql+pymysql://USER:PASSWORD@HOST:PORT/DATABASE?charset=utf8mb4
 ```
 
-### Flask
+### Flask 관련
 
-- `FLASK_ENV`: `development` or `production`
-- `FLASK_DEBUG`: local debug flag
-- `APP_PORT`: local server port
+- `FLASK_ENV`: `development` 또는 `production`
+- `FLASK_DEBUG`: 로컬 디버그 여부
+- `APP_PORT`: 로컬 서버 포트
 
-## 8. Prepare MySQL
+## 8. MySQL 준비
 
-Start MySQL first.
+먼저 MySQL 서버를 실행합니다.
 
-Recommended database name:
+권장 데이터베이스 이름:
 
 ```sql
 CREATE DATABASE math_arena DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Optional user setup:
+필요하면 사용자도 생성합니다.
 
 ```sql
 CREATE USER 'arena_user'@'%' IDENTIFIED BY 'arena_pw';
@@ -126,42 +126,42 @@ GRANT ALL PRIVILEGES ON math_arena.* TO 'arena_user'@'%';
 FLUSH PRIVILEGES;
 ```
 
-Important:
+중요:
 
-- The provided SQL file uses `math_arena`
-- Your `.env` file should also use `math_arena`
-- If the DB name does not match, many APIs will fail
+- 제공된 SQL 파일은 `math_arena`를 기준으로 작성되어 있습니다
+- `.env`의 DB 이름도 `math_arena`로 맞추는 것을 권장합니다
+- DB 이름이 다르면 API가 정상 동작하지 않을 수 있습니다
 
-## 9. Import the Project SQL
+## 9. 프로젝트 SQL 적용
 
-Use the schema file below:
+아래 스키마 파일을 사용합니다.
 
 ```text
 SQL/4. Math ARENA_MySQL.sql
 ```
 
-This file creates:
+이 파일에는 다음이 포함됩니다.
 
-- database and core tables
-- user/profile/tier/difficulty tables
-- question tables
-- arena and training-related records
+- 데이터베이스 및 핵심 테이블
+- USER / PROFILE / TIER / DIFFICULTY 관련 테이블
+- 문제 테이블
+- 아레나 / 훈련장 관련 기록 테이블
 
-### Option A. Import with GUI Tool
+### 방법 A. GUI 툴로 적용
 
-Use MySQL Workbench, DBeaver, or another SQL client:
+MySQL Workbench, DBeaver 등으로:
 
-1. Connect to MySQL
-2. Open `4. Math ARENA_MySQL.sql`
-3. Execute the full file
+1. MySQL 접속
+2. `4. Math ARENA_MySQL.sql` 파일 열기
+3. 전체 실행
 
-### Option B. Import with CLI
+### 방법 B. CLI로 적용
 
 ```bash
 mysql -u arena_user -p math_arena < "4. Math ARENA_MySQL.sql"
 ```
 
-## 10. Run the Backend Server
+## 10. 백엔드 서버 실행
 
 ### Windows PowerShell
 
@@ -179,37 +179,37 @@ source .venv/bin/activate
 python app.py
 ```
 
-Expected local address:
+로컬 접속 주소 예시:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-or
+또는
 
 ```text
 http://localhost:8000
 ```
 
-## 11. Health Check
+## 11. 헬스체크 확인
 
-Test the server first with:
+먼저 아래 엔드포인트로 서버 상태를 확인합니다.
 
 ```text
 GET /healthz
 ```
 
-Example:
+예시:
 
 ```text
 http://127.0.0.1:8000/healthz
 ```
 
-If DB is connected correctly, this endpoint should return a normal healthy response.
+DB까지 정상 연결되면 정상 응답이 와야 합니다.
 
-## 12. Commonly Tested API Endpoints
+## 12. 처음 확인하기 좋은 API
 
-Recommended initial API checks:
+초기 연동 시 아래 API부터 확인하는 것을 권장합니다.
 
 - `GET /healthz`
 - `POST /v1/auth/login`
@@ -218,61 +218,57 @@ Recommended initial API checks:
 - `POST /v1/training/start`
 - `GET /v1/match/recommendations`
 
-## 13. Test from Another Device with ngrok
+## 13. 다른 기기에서 ngrok으로 테스트
 
-If the frontend is running on a different network or device, local `localhost` is not enough.
-Use ngrok.
+프론트가 다른 네트워크 또는 다른 기기에서 접속해야 하면 로컬 `localhost`만으로는 부족합니다. 이때 `ngrok`을 사용합니다.
 
-### Step 1. Run the backend locally
+### 1단계. 로컬 서버 실행
 
 ```bash
 python app.py
 ```
 
-### Step 2. Start ngrok
+### 2단계. ngrok 실행
 
 ```bash
 ngrok http 8000
 ```
 
-Example public URL:
+예시 공개 주소:
 
 ```text
 https://xxxx.ngrok-free.app
 ```
 
-### Step 3. Use the ngrok URL in the frontend
+### 3단계. 프론트에서 ngrok 주소 사용
 
-Set the frontend API base URL to the ngrok address.
+프론트의 API Base URL을 ngrok 주소로 바꿉니다.
 
-Example:
+예시:
 
 ```text
 https://xxxx.ngrok-free.app/v1/auth/login
 ```
 
-Notes:
+주의:
 
-- If ngrok is closed, the URL stops working
-- On the free plan, the URL may change
+- ngrok 창을 닫으면 주소가 만료됩니다
+- 무료 플랜은 주소가 바뀔 수 있습니다
 
-## 14. Render Deployment Guide
+## 14. Render 배포 가이드
 
-Local MySQL cannot be used from Render.
-You must use Render MySQL or another externally reachable MySQL server.
+Render에서는 로컬 MySQL을 사용할 수 없습니다. 반드시 Render MySQL 또는 외부에서 접근 가능한 MySQL을 사용해야 합니다.
 
-### Web Service Settings
+### Web Service 설정
 
-Recommended Render web service setup:
+권장 Render 설정:
 
-- Repository: this GitHub repo
-- Branch: `main` or the deployment branch
+- Repository: 이 GitHub 저장소
+- Branch: `main` 또는 배포 브랜치
 - Root Directory: `backend`
 - Runtime: `Docker`
 
-### Render Environment Variables
-
-Example:
+### Render 환경변수 예시
 
 ```env
 JWT_SECRET=some-secret
@@ -283,122 +279,122 @@ DB_URL=mysql+pymysql://arena_user:password@mysql-service-host:3306/math_arena?ch
 REDIS_URL=redis://...
 ```
 
-Important:
+중요:
 
-- Do not use `localhost` for Render database connections
-- Use the internal Render MySQL hostname or another reachable DB host
+- Render에서는 `localhost`를 DB 주소로 쓰면 안 됩니다
+- Render MySQL 내부 호스트명 또는 외부 접속 가능한 DB 주소를 써야 합니다
 
-## 15. Render MySQL Setup
+## 15. Render MySQL 설정
 
-Create a separate MySQL service in Render.
+Render에 MySQL 서비스를 별도로 생성합니다.
 
-Recommended values:
+권장 값:
 
-- database name: `math_arena`
-- user: `arena_user`
-- password: set explicitly
-- disk mount path: `/var/lib/mysql`
+- 데이터베이스 이름: `math_arena`
+- 사용자: `arena_user`
+- 비밀번호: 직접 지정
+- 디스크 마운트 경로: `/var/lib/mysql`
 
-After MySQL is created, import the SQL schema into that DB.
+MySQL 서비스 생성 후 SQL 스키마도 반드시 적용해야 합니다.
 
-## 16. Recommended Render DB URL Example
+## 16. Render용 DB_URL 예시
 
 ```text
 mysql+pymysql://arena_user:password@mysql-service-name:3306/math_arena?charset=utf8mb4
 ```
 
-Put this value into the Render backend environment variable `DB_URL`.
+이 값을 Render 백엔드 서비스의 `DB_URL` 환경변수에 넣습니다.
 
-## 17. Typical Problems and Fixes
+## 17. 자주 발생하는 문제와 해결법
 
-### Problem 1. `/healthz` returns `db_error`
+### 문제 1. `/healthz`가 `db_error`를 반환함
 
-Possible causes:
+가능한 원인:
 
-- MySQL is not running
-- `DB_URL` is wrong
-- DB name mismatch
-- Render is still pointing to `localhost`
+- MySQL이 꺼져 있음
+- `DB_URL`이 잘못됨
+- DB 이름이 맞지 않음
+- Render에서 아직 `localhost`를 바라보고 있음
 
-Fix:
+해결:
 
-- verify MySQL is running
-- verify `.env`
-- verify `math_arena` exists
-- verify Render uses the actual MySQL host
+- MySQL 실행 여부 확인
+- `.env` 확인
+- `math_arena` DB 존재 여부 확인
+- Render가 실제 MySQL 호스트를 보도록 수정
 
-### Problem 2. `user not found`
+### 문제 2. `user not found`
 
-Possible causes:
+가능한 원인:
 
-- test account does not exist
-- user/profile rows were not inserted
+- 테스트 계정이 없음
+- USER / PROFILE 데이터가 들어가지 않음
 
-Fix:
+해결:
 
-- inspect `USER` and `PROFILE` tables
-- create test accounts manually if needed
+- `USER`, `PROFILE` 테이블 확인
+- 필요하면 테스트 계정 수동 추가
 
-### Problem 3. table not found errors
+### 문제 3. 테이블이 없다고 나옴
 
-Cause:
+원인:
 
-- SQL file was not imported
+- SQL 파일이 적용되지 않음
 
-Fix:
+해결:
 
-- import `SQL/4. Math ARENA_MySQL.sql`
+- `SQL/4. Math ARENA_MySQL.sql` 전체 실행
 
-### Problem 4. another device cannot reach the server
+### 문제 4. 다른 기기에서 서버 접속이 안 됨
 
-Cause:
+원인:
 
-- local `localhost` is not externally reachable
+- 로컬 `localhost`는 외부 접근이 안 됨
 
-Fix:
+해결:
 
-- use ngrok
-- or use a deployed Render URL
+- ngrok 사용
+- 또는 Render 배포 주소 사용
 
-### Problem 5. README or repo structure becomes mixed up
+### 문제 5. README나 저장소 구조가 꼬임
 
-Cause:
+원인:
 
-- backend files edited at repo root instead of `backend/`
-- work done on the wrong branch
+- 백엔드 파일을 저장소 루트에서 수정함
+- 다른 브랜치에서 작업해야 할 내용을 잘못 반영함
 
-Fix:
+해결:
 
-- keep backend work inside `backend/`
-- check branch before pushing
-- review changed paths before merging
+- 백엔드 작업은 `backend/` 기준으로 유지
+- push 전 현재 브랜치 확인
+- PR 전에 변경된 파일 경로 확인
 
-## 18. Recommended First-Time Setup Order
+## 18. 처음 세팅할 때 권장 순서
 
-1. Clone the repository
-2. Enter `backend/`
-3. Create the virtual environment
-4. Run `pip install -r requirements.txt`
-5. Create `.env`
-6. Start MySQL
-7. Create `math_arena`
-8. Import the SQL file
-9. Run `python app.py`
-10. Check `/healthz`
-11. Test login/profile APIs
-12. Use ngrok if another device must connect
+1. 저장소 clone
+2. `backend/` 진입
+3. 가상환경 생성
+4. `pip install -r requirements.txt`
+5. `.env` 작성
+6. MySQL 실행
+7. `math_arena` DB 생성
+8. SQL 파일 적용
+9. `python app.py`
+10. `/healthz` 확인
+11. 로그인 / 프로필 API 테스트
+12. 다른 기기 테스트가 필요하면 ngrok 사용
 
-## 19. Final Checklist
+## 19. 최종 체크리스트
 
-Before asking for help, verify the following:
+도움 요청 전 아래를 먼저 확인합니다.
 
-- Are you inside the `backend/` folder?
-- Is the virtual environment activated?
-- Did `pip install -r requirements.txt` finish?
-- Does `.env` exist?
-- Is `DB_URL` correct?
-- Is MySQL running?
-- Does the `math_arena` DB exist?
-- Was the SQL file imported?
-- Does `/healthz` respond normally?
-- If testing from another device, are you using ngrok or Render?
+- `backend/` 폴더 안에서 실행 중인가
+- 가상환경이 활성화되었는가
+- `pip install -r requirements.txt`가 완료되었는가
+- `.env` 파일이 존재하는가
+- `DB_URL`이 올바른가
+- MySQL이 실행 중인가
+- `math_arena` DB가 존재하는가
+- SQL 파일이 적용되었는가
+- `/healthz`가 정상 응답하는가
+- 다른 기기 테스트라면 ngrok 또는 Render 주소를 쓰고 있는가

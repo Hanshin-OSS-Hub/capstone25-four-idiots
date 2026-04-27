@@ -1,6 +1,6 @@
 ﻿# capstone1_server
 
-Detailed setup and deployment instructions: [BACKEND_SETUP.md](./BACKEND_SETUP.md)
+상세 실행 및 배포 가이드: [BACKEND_SETUP.md](./BACKEND_SETUP.md)
 
 Math Arena backend server built with Flask and MySQL.
 
