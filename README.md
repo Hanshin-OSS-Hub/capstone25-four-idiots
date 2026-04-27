@@ -92,14 +92,139 @@ Math ARENA는 중등 수학을 기반으로
 
 ## 🚀 실행 방법
 
-이 프로젝트는 Android 환경에서 플레이할 수 있습니다. 
+### 1. 앱 실행 방법
+
+이 프로젝트는 Android 환경에서 플레이할 수 있습니다.
+
 아래 버튼을 눌러 최신 버전의 APK 파일을 다운로드하세요.
 
 [![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/Hanshin-OSS-Hub/capstone25-four-idiots/releases/download/v0.0.1/MathArena.apk)
 
-1. 위 버튼을 클릭하여 `.apk` 파일을 다운로드합니다.
-2. 안드로이드 기기에서 파일을 실행하여 설치합니다. (출처를 알 수 없는 앱 설치 허용 필요)
-3. 앱을 실행하고 로그인을 진행합니다.
+1. 최신 `.apk` 파일을 다운로드합니다.
+2. 안드로이드 기기에서 파일을 실행하여 설치합니다.
+   출처를 알 수 없는 앱 설치 허용이 필요할 수 있습니다.
+3. 앱을 실행하고 로그인합니다.
+
+### 2. 백엔드 서버 실행 방법
+
+백엔드 서버는 저장소의 `backend/` 폴더 기준으로 실행합니다.
+
+#### 준비물
+
+- Python 3.11 권장
+- MySQL 8.x 권장
+- Git
+
+#### 실행 순서
+
+1. 저장소를 clone 받은 뒤 `backend/` 폴더로 이동합니다.
+
+```bash
+git clone <repository-url>
+cd capstone25-four-idiots
+cd backend
+```
+
+2. 가상환경을 생성하고 활성화합니다.
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS / Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+3. 패키지를 설치합니다.
+
+```bash
+pip install -r requirements.txt
+```
+
+4. `backend/.env` 파일을 생성하고 DB 접속 정보를 설정합니다.
+
+예시:
+
+```env
+JWT_SECRET=change-this-secret
+AUTH_OFF=false
+DEV_TOKEN=dev
+
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=arena_user
+MYSQL_PASSWORD=arena_pw
+MYSQL_DATABASE=math_arena
+
+DB_URL=mysql+pymysql://arena_user:arena_pw@localhost:3306/math_arena?charset=utf8mb4
+
+REDIS_URL=redis://localhost:6379/0
+
+FLASK_ENV=development
+FLASK_DEBUG=true
+APP_PORT=8000
+```
+
+5. MySQL을 실행한 뒤 아래 SQL 파일을 적용합니다.
+
+```text
+SQL/4. Math ARENA_MySQL.sql
+```
+
+중요:
+
+- 데이터베이스 이름은 `math_arena`로 맞추는 것을 권장합니다.
+- `.env`의 `MYSQL_DATABASE`, `DB_URL`도 같은 이름으로 맞춰야 합니다.
+
+6. 서버를 실행합니다.
+
+Windows PowerShell:
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+python app.py
+```
+
+macOS / Linux:
+
+```bash
+cd backend
+source .venv/bin/activate
+python app.py
+```
+
+7. 서버가 실행되면 아래 주소로 상태를 확인합니다.
+
+```text
+http://127.0.0.1:8000/healthz
+```
+
+#### 다른 기기에서 테스트할 때
+
+프론트가 다른 기기 또는 다른 네트워크에서 접속해야 한다면 `ngrok`을 사용할 수 있습니다.
+
+```bash
+ngrok http 8000
+```
+
+생성된 주소를 프론트의 API Base URL로 사용하면 됩니다.
+
+#### Render 배포 시 주의사항
+
+- Render에서는 로컬 MySQL(`localhost`)을 사용할 수 없습니다.
+- Render MySQL 또는 외부에서 접근 가능한 MySQL 주소를 `DB_URL`에 넣어야 합니다.
+- Render 배포 시 `Root Directory`는 `backend`로 설정하는 것을 권장합니다.
+
+상세한 서버 실행 및 배포 가이드는 아래 문서를 참고하세요.
+
+- [backend/BACKEND_SETUP.md](./backend/BACKEND_SETUP.md)
 
 ---
 
