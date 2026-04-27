@@ -1,5 +1,7 @@
 ﻿# capstone1_server
 
+Detailed setup and deployment instructions: [BACKEND_SETUP.md](./BACKEND_SETUP.md)
+
 Math Arena backend server built with Flask and MySQL.
 
 ## Current Structure
@@ -201,3 +203,4 @@ D:\capstone1_server\.venv\Scripts\python.exe -m py_compile D:/capstone1_server/a
 - The active database is MySQL `math_arena`.
 - Old SQLite test flow is no longer the main runtime path.
 - Legacy files were moved into `legacy/` instead of being deleted.
+
