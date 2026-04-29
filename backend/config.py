@@ -22,6 +22,10 @@ def load_config(app):
         "DB_URL",
         f"mysql+pymysql://{db_user}:{db_pw}@{db_host}:{db_port}/{db_name}?charset=utf8mb4"
     )
+    app.config["DB_SSL_CA_PATH"] = os.getenv("DB_SSL_CA_PATH")
+    app.config["DB_SSL_CA_PEM"] = os.getenv("DB_SSL_CA_PEM")
+    app.config["DB_SSL_CERT_PATH"] = os.getenv("DB_SSL_CERT_PATH")
+    app.config["DB_SSL_KEY_PATH"] = os.getenv("DB_SSL_KEY_PATH")
 
     # 4️⃣ Redis
     app.config["REDIS_URL"] = os.getenv("REDIS_URL", "redis://localhost:6379/0")
