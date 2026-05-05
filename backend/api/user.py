@@ -62,7 +62,6 @@ def get_profile():
                 "user_id": user.user_id,
                 "email": user.email,
                 "nickname": user.nickname,
-                "phone": user.phone,
                 "tier": {
                     "name": api_tier_name,
                     "base": tier_parts["base"],
