@@ -12,25 +12,26 @@ from models.user import User
 from services.tier_service import tier_name_to_api
 
 
-def register_user(user_id, raw_password, nickname, email, phone):
+def register_user(user_id, raw_password, nickname, email, phone=None):
     db = get_db()
 
+    duplicate_conditions = [
+        User.user_id == user_id,
+        User.email == email,
+        User.nickname == nickname,
+    ]
+    if phone:
+        duplicate_conditions.append(User.phone == phone)
+
     existing = db.execute(
-        select(User).where(
-            or_(
-                User.user_id == user_id,
-                User.email == email,
-                User.nickname == nickname,
-                User.phone == phone,
-            )
-        )
+        select(User).where(or_(*duplicate_conditions))
     ).scalar_one_or_none()
     if existing:
         conflict_details = {
             "user_id": existing.user_id == user_id,
             "email": existing.email == email,
             "nickname": existing.nickname == nickname,
-            "phone": existing.phone == phone,
+            "phone": bool(phone) and existing.phone == phone,
         }
         raise AppError(
             message="duplicate user/email/nickname/phone",

@@ -1,4 +1,6 @@
 # models/user.py
+from typing import Optional
+
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func, quoted_name
@@ -13,7 +15,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     nickname: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    phone: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    phone: Mapped[Optional[str]] = mapped_column(String(20), unique=True, nullable=True)
     created_at: Mapped[str] = mapped_column(DateTime, server_default=func.now())
 
     profile = relationship(

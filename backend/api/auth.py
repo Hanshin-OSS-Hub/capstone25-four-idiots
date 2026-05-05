@@ -219,7 +219,7 @@ def delete_account():
 def register():
     data = request.get_json(silent=True) or {}
 
-    required_fields = ["id", "pw", "nickname", "email", "phone"]
+    required_fields = ["id", "pw", "nickname", "email"]
     missing = [field for field in required_fields if not data.get(field)]
     if missing:
         return fail("BAD_REQUEST", f"missing fields: {', '.join(missing)}", 400)
@@ -233,7 +233,7 @@ def register():
             raw_password=data["pw"],
             nickname=data["nickname"],
             email=data["email"],
-            phone=data["phone"],
+            phone=(data.get("phone") or "").strip() or None,
         )
         return ok(result)
     except AppError as e:
