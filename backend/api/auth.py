@@ -1,19 +1,13 @@
 ﻿# api/auth.py
-from datetime import datetime, timedelta
 from functools import wraps
-import random
-from uuid import uuid4
 
 import jwt
 from flask import Blueprint, current_app, g, jsonify, request
-from sqlalchemy import text
 
 from common.errors import AppError
 from common.responses import fail, ok
-from database import get_db
 from services.auth import (
     delete_user_account,
-    find_user_id_by_phone,
     login_user,
     register_user,
     reset_user_password,
@@ -59,119 +53,13 @@ def require_user(f):
     return wrapper
 
 
-@bp.post("/phone/request")
-def request_phone_auth():
-    data = request.get_json(silent=True) or {}
-    phone = (data.get("phone") or "").strip()
-
-    if not phone:
-        return fail("BAD_REQUEST", "phone is required", 400)
-
-    auth_id = str(uuid4())
-    auth_code = f"{random.randint(0, 999999):06d}"
-    expires_at = datetime.utcnow() + timedelta(minutes=5)
-
-    db = get_db()
-    db.execute(
-        text(
-            """
-            INSERT INTO PHONE_AUTH (auth_id, phone, auth_code, is_verified, expires_at)
-            VALUES (:auth_id, :phone, :auth_code, :is_verified, :expires_at)
-            """
-        ),
-        {
-            "auth_id": auth_id,
-            "phone": phone,
-            "auth_code": auth_code,
-            "is_verified": False,
-            "expires_at": expires_at,
-        },
-    )
-    db.commit()
-
-    return ok(
-        {
-            "auth_id": auth_id,
-            "phone": phone,
-            "expires_at": expires_at.isoformat(),
-            "auth_code": auth_code,
-        }
-    )
-
-
-@bp.post("/phone/verify")
-def verify_phone_auth():
-    data = request.get_json(silent=True) or {}
-    auth_id = (data.get("auth_id") or "").strip()
-    phone = (data.get("phone") or "").strip()
-    auth_code = (data.get("auth_code") or "").strip()
-
-    if not auth_id or not phone or not auth_code:
-        return fail("BAD_REQUEST", "auth_id, phone and auth_code are required", 400)
-
-    db = get_db()
-    row = db.execute(
-        text(
-            """
-            SELECT auth_id, phone, auth_code, is_verified, expires_at
-            FROM PHONE_AUTH
-            WHERE auth_id = :auth_id AND phone = :phone
-            """
-        ),
-        {"auth_id": auth_id, "phone": phone},
-    ).mappings().first()
-
-    if not row:
-        return fail("NOT_FOUND", "phone auth request not found", 404)
-    if row["is_verified"]:
-        return ok(
-            {
-                "auth_id": auth_id,
-                "phone": phone,
-                "verified": True,
-                "already_verified": True,
-            }
-        )
-    if datetime.utcnow() > row["expires_at"]:
-        return fail("AUTH_CODE_EXPIRED", "auth code expired", 400)
-    if row["auth_code"] != auth_code:
-        return fail("INVALID_AUTH_CODE", "invalid auth code", 400)
-
-    db.execute(
-        text(
-            """
-            UPDATE PHONE_AUTH
-            SET is_verified = :is_verified
-            WHERE auth_id = :auth_id
-            """
-        ),
-        {"is_verified": True, "auth_id": auth_id},
-    )
-    db.commit()
-
-    return ok(
-        {
-            "auth_id": auth_id,
-            "phone": phone,
-            "verified": True,
-        }
-    )
-
-
 @bp.post("/find-id")
 def find_id():
-    data = request.get_json(silent=True) or {}
-    phone = (data.get("phone") or "").strip()
-
-    if not phone:
-        return fail("BAD_REQUEST", "phone is required", 400)
-
-    try:
-        return ok(find_user_id_by_phone(phone=phone))
-    except AppError as e:
-        return fail(e.code, str(e), e.status, e.details)
-    except Exception as e:
-        return fail("FIND_ID_FAILED", str(e), 500)
+    return fail(
+        "NOT_SUPPORTED",
+        "find-id is no longer supported",
+        410,
+    )
 
 
 @bp.post("/reset-password")
@@ -233,7 +121,6 @@ def register():
             raw_password=data["pw"],
             nickname=data["nickname"],
             email=data["email"],
-            phone=(data.get("phone") or "").strip() or None,
         )
         return ok(result)
     except AppError as e:
@@ -259,3 +146,5 @@ def login():
         return fail(e.code, str(e), e.status, e.details)
     except Exception as e:
         return fail("LOGIN_FAILED", str(e), 401)
+
+

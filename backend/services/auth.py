@@ -12,7 +12,7 @@ from models.user import User
 from services.tier_service import tier_name_to_api
 
 
-def register_user(user_id, raw_password, nickname, email, phone=None):
+def register_user(user_id, raw_password, nickname, email):
     db = get_db()
 
     duplicate_conditions = [
@@ -20,8 +20,6 @@ def register_user(user_id, raw_password, nickname, email, phone=None):
         User.email == email,
         User.nickname == nickname,
     ]
-    if phone:
-        duplicate_conditions.append(User.phone == phone)
 
     existing = db.execute(
         select(User).where(or_(*duplicate_conditions))
@@ -31,10 +29,9 @@ def register_user(user_id, raw_password, nickname, email, phone=None):
             "user_id": existing.user_id == user_id,
             "email": existing.email == email,
             "nickname": existing.nickname == nickname,
-            "phone": bool(phone) and existing.phone == phone,
         }
         raise AppError(
-            message="duplicate user/email/nickname/phone",
+            message="duplicate user/email/nickname",
             status=409,
             code="REGISTER_FAILED",
             details=conflict_details,
@@ -47,7 +44,6 @@ def register_user(user_id, raw_password, nickname, email, phone=None):
         email=email,
         password=pw_hash,
         nickname=nickname,
-        phone=phone,
     )
     new_profile = Profile(
         user_id=user_id,
@@ -64,7 +60,6 @@ def register_user(user_id, raw_password, nickname, email, phone=None):
         "user_id": user_id,
         "email": email,
         "nickname": nickname,
-        "phone": phone,
     }
 
 
@@ -95,21 +90,6 @@ def login_user(user_id, raw_password):
         "nickname": user.nickname,
         "tier": tier_name_to_api(profile.tier_name),
         "arena_rating": profile.arena_rating,
-    }
-
-
-
-def find_user_id_by_phone(phone):
-    db = get_db()
-
-    user = db.execute(select(User).where(User.phone == phone)).scalar_one_or_none()
-    if not user:
-        raise AppError(message="user not found", status=404, code="FIND_ID_FAILED")
-
-    return {
-        "user_id": user.user_id,
-        "nickname": user.nickname,
-        "phone": user.phone,
     }
 
 
@@ -155,5 +135,7 @@ def delete_user_account(user_id, raw_password):
         "nickname": nickname,
         "deleted": True,
     }
+
+
 
 
