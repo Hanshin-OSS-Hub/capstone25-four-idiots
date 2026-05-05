@@ -1,0 +1,300 @@
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_001', '개념이해', 'VERY EASY', '1보다 큰 자연수 중에서 1과 자기 자신만을 약수로 가지는 수를 무엇이라고 하는가?', '소수', '합성수', '짝수', '홀수', '소수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_002', '개념이해', 'VERY EASY', '양의 정수와 $0$ 그리고 음의 정수를 통틀어 무엇이라고 하는가?', '자연수', '정수', '유리수', '실수', '정수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_003', '개념이해', 'VERY EASY', '수직선 위에서 어떤 수를 나타내는 점과 원점 사이의 거리를 그 수의 무엇이라고 하는가?', '절댓값', '역수', '교환법칙', '결합법칙', '절댓값');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_004', '개념이해', 'VERY EASY', '분모와 분자가 모두 정수이고 분모가 $0$이 아닌 분수 $\frac{b}{a}$ 꼴로 나타낼 수 있는 수를 무엇이라고 하는가?', '무리수', '자연수', '유리수', '순환소수', '유리수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_005', '개념이해', 'VERY EASY', '미지수의 최고차항의 차수가 $1$인 다항방정식을 무엇이라고 하는가?', '일차방정식', '이차방정식', '항등식', '부등식', '일차방정식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_006', '개념이해', 'VERY EASY', '한 개 이상의 항의 합으로 이루어진 식을 무엇이라고 하는가?', '단항식', '다항식', '방정식', '항등식', '다항식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_007', '개념이해', 'VERY EASY', '어떤 수 $x$를 제곱하여 $a$가 될 때 (즉 $x^2=a$일 때) $x$를 $a$의 무엇이라고 하는가?', '제곱근', '세제곱근', '절댓값', '역수', '제곱근');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_008', '개념이해', 'VERY EASY', '유리수가 아닌 수로서 순환하지 않는 무한소수로 나타내어지는 수를 무엇이라고 하는가?', '정수', '자연수', '무리수', '유한소수', '무리수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_009', '개념이해', 'VERY EASY', '좌표평면에서 두 수직선이 점 $O$에서 서로 수직으로 만날 때 가로의 수직선을 무엇이라고 하는가?', '$x$축', '$y$축', '원점', '좌표', '$x$축');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_010', '개념이해', 'VERY EASY', '어떤 실험이나 관찰을 여러 번 반복할 때 어떤 사건이 일어날 상대도수가 일정한 값에 가까워지면 이 일정한 값을 그 사건이 일어날 무엇이라고 하는가?', '경우의 수', '확률', '통계', '평균', '확률');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_011', '개념이해', 'VERY EASY', '$1$보다 큰 자연수 중에서 소수가 아닌 수 즉 약수가 $3$개 이상인 수를 무엇이라고 하는가?', '소수', '합성수', '자연수', '정수', '합성수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_012', '개념이해', 'VERY EASY', '다각형에서 서로 이웃하지 않는 두 꼭짓점을 이은 선분을 무엇이라고 하는가?', '대각선', '수직이등분선', '각의 이등분선', '평행선', '대각선');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_013', '개념이해', 'VERY EASY', '소수점 아래의 $0$이 아닌 숫자가 유한 번 나타나는 소수를 무엇이라고 하는가?', '무한소수', '순환소수', '유한소수', '무리수', '유한소수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_014', '개념이해', 'VERY EASY', '두 개 이상의 방정식을 한 쌍으로 묶어서 나타낸 것을 무엇이라고 하는가?', '일차방정식', '이차방정식', '연립방정식', '부정방정식', '연립방정식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_015', '개념이해', 'VERY EASY', '거듭제곱 $a^n$에서 곱해진 횟수를 나타내는 $n$을 무엇이라고 하는가?', '밑', '지수', '계수', '차수', '지수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_016', '개념이해', 'VERY EASY', '거듭제곱 $a^n$에서 여러 번 곱해지는 수나 문자 $a$를 무엇이라고 하는가?', '밑', '지수', '계수', '상수', '밑');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_017', '개념이해', 'VERY EASY', '함수 $y=f(x)$에서 입력된 $x$의 값에 따라 하나씩 정해지는 결과값 $f(x)$를 무엇이라고 하는가?', '함숫값', '극한값', '절댓값', '평균값', '함숫값');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_018', '개념이해', 'VERY EASY', '통계에서 점수나 키나 몸무게 등과 같이 자료를 수량으로 나타낸 것을 무엇이라고 하는가?', '계급', '도수', '변량', '편차', '변량');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_019', '개념이해', 'VERY EASY', '직선이 원과 오직 한 점에서 만날 때 이 직선을 원의 무엇이라고 하는가?', '할선', '접선', '현', '지름', '접선');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_020', '개념이해', 'VERY EASY', '자료의 변량들이 대푯값을 중심으로 흩어져 있는 정도를 하나의 수로 나타낸 값을 무엇이라고 하는가?', '대푯값', '산포도', '편차', '분산', '산포도');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_021', '개념이해', 'VERY EASY', '다항식에서 문자를 포함한 항의 그 문자 앞에 곱해진 수를 무엇이라고 하는가?', '차수', '상수', '계수', '지수', '계수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_022', '개념이해', 'VERY EASY', '두 변수 $x$와 $y$에 대하여 $x$의 값이 $2$배 $3$배 $4$배 등으로 변함에 따라 $y$의 값도 $2$배 $3$배 $4$배 등으로 변하는 관계를 무엇이라고 하는가?', '정비례', '반비례', '이차함수', '상수함수', '정비례');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_023', '개념이해', 'VERY EASY', '두 변수 $x$와 $y$에 대하여 $x$의 값이 $2$배 $3$배 $4$배 등으로 변함에 따라 $y$의 값은 $\frac{1}{2}$배 $\frac{1}{3}$배 $\frac{1}{4}$배 등으로 변하는 관계를 무엇이라고 하는가?', '정비례', '반비례', '일차함수', '이차함수', '반비례');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_024', '개념이해', 'VERY EASY', '두 도형의 모양과 크기가 완전히 같아서 서로 포개었을 때 완벽하게 겹쳐지는 관계를 무엇이라고 하는가?', '닮음', '합동', '대칭', '평행', '합동');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VE_025', '개념이해', 'VERY EASY', '분수의 분모에 근호가 있을 때 분모와 분자에 $0$이 아닌 같은 수를 곱하여 분모를 유리수로 고치는 것을 무엇이라고 하는가?', '통분', '약분', '분모의 유리화', '소인수분해', '분모의 유리화');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_001', '개념이해', 'EASY', '$1$보다 큰 자연수를 그 수의 소수인 인수들만의 곱으로 나타내는 것을 무엇이라고 하는가?', '소인수분해', '인수분해', '유리화', '통분', '소인수분해');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_002', '개념이해', 'EASY', '두 수의 덧셈 결과에 어떤 수를 곱한 것은 각각의 수에 그 수를 곱하여 더한 결과와 같다는 성질 즉 $a(b+c)=ab+ac$를 무엇이라고 하는가?', '교환법칙', '결합법칙', '분배법칙', '지수법칙', '분배법칙');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_003', '개념이해', 'EASY', '순환소수의 소수점 아래에서 일정한 숫자의 배열이 한없이 되풀이되는 한 부분을 무엇이라고 하는가?', '순환마디', '밑', '지수', '유효숫자', '순환마디');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_004', '개념이해', 'EASY', '부등식의 모든 항을 좌변으로 이항하여 정리한 식이 $ax+b>0$ ($a \neq 0$)과 같이 좌변이 미지수에 대한 일차식으로 나타나는 부등식을 무엇이라고 하는가?', '일차방정식', '이차방정식', '일차부등식', '연립부등식', '일차부등식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_005', '개념이해', 'EASY', '방정식이나 부등식을 참이 되게 하는 미지수의 값을 무엇이라고 하는가?', '계수', '차수', '해', '상수', '해');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_006', '개념이해', 'EASY', '함수의 그래프가 $x$축과 만나는 점의 $x$좌표 즉 $y=0$일 때의 $x$의 값을 무엇이라고 하는가?', '$x$절편', '$y$절편', '기울기', '꼭짓점', '$x$절편');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_007', '개념이해', 'EASY', '일차함수 $y=ax+b$에서 $x$의 값의 증가량에 대한 $y$의 값의 증가량의 비율인 $a$를 그 그래프의 무엇이라고 하는가?', '$x$절편', '$y$절편', '기울기', '상수항', '기울기');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_008', '개념이해', 'EASY', '한 도형을 일정한 방향으로 일정한 거리만큼 위치를 바꾸어 옮기는 것을 무엇이라고 하는가?', '평행이동', '대칭이동', '회전이동', '닮음이동', '평행이동');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_009', '개념이해', 'EASY', '자료 전체의 특징을 하나의 수로 나타낸 값을 통틀어 무엇이라고 하는가?', '산포도', '대푯값', '변량', '편차', '대푯값');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_010', '개념이해', 'EASY', '자료의 변량 중에서 가장 많이 나타나는 값을 무엇이라고 하는가?', '평균', '중앙값', '최빈값', '분산', '최빈값');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_011', '개념이해', 'EASY', '삼각형의 세 변의 수직이등분선이 만나는 점으로 세 꼭짓점에 이르는 거리가 모두 같은 이 점을 삼각형의 무엇이라고 하는가?', '내심', '외심', '무게중심', '수심', '외심');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_012', '개념이해', 'EASY', '삼각형의 세 내각의 이등분선이 만나는 점으로 세 변에 이르는 거리가 모두 같은 이 점을 삼각형의 무엇이라고 하는가?', '내심', '외심', '무게중심', '방심', '내심');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_013', '개념이해', 'EASY', '서로 닮은 두 평면도형에서 대응하는 변의 길이의 비 또는 두 입체도형에서 대응하는 모서리의 길이의 비를 무엇이라고 하는가?', '넓이의 비', '부피의 비', '닮음비', '삼각비', '닮음비');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_014', '개념이해', 'EASY', '하나의 다항식을 두 개 이상의 다항식의 곱으로 나타내는 것을 무엇이라고 하는가?', '전개', '소인수분해', '인수분해', '유리화', '인수분해');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_015', '개념이해', 'EASY', '다항식의 제곱으로 된 식 또는 이 식에 상수를 곱한 식을 무엇이라고 하는가?', '완전제곱식', '합차공식', '근의 공식', '항등식', '완전제곱식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_016', '개념이해', 'EASY', '이차방정식 $ax^2+bx+c=0$ ($a \neq 0$)의 해를 계수 $a$와 $b$와 $c$를 이용하여 직접 구할 수 있도록 만든 공식을 무엇이라고 하는가?', '곱셈 공식', '근의 공식', '피타고라스의 정리', '판별식', '근의 공식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_017', '개념이해', 'EASY', '이차함수의 그래프인 포물선에서 포물선과 그 대칭축이 만나는 점을 무엇이라고 하는가?', '교점', '원점', '절편', '꼭짓점', '꼭짓점');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_018', '개념이해', 'EASY', '도수분포표에서 전체 도수에 대한 각 계급의 도수의 비율을 무엇이라고 하는가?', '누적도수', '백분율', '상대도수', '계급값', '상대도수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_019', '개념이해', 'EASY', '어떤 자료의 각 변량에서 그 자료의 평균을 뺀 값을 무엇이라고 하는가?', '분산', '표준편차', '편차', '오차', '편차');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_020', '개념이해', 'EASY', '자료의 분산의 음이 아닌 제곱근을 무엇이라고 하는가?', '평균', '편차', '표준편차', '중앙값', '표준편차');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_021', '개념이해', 'EASY', '두 변량 $x$와 $y$의 값을 각각 $x$좌표와 $y$좌표로 하는 점을 좌표평면 위에 나타낸 그림을 무엇이라고 하는가?', '히스토그램', '도수분포다각형', '줄기와 잎 그림', '산점도', '산점도');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_022', '개념이해', 'EASY', '두 변량 $x$와 $y$에 대하여 $x$의 값이 변함에 따라 $y$의 값도 어떤 일정한 경향을 띠며 변할 때 이 두 변량 사이의 관계를 무엇이라고 하는가?', '인과관계', '상관관계', '비례관계', '역비례관계', '상관관계');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_023', '개념이해', 'EASY', '확률에서 동일한 조건 아래에서 반복할 수 있는 실험이나 관찰에 의하여 일어나는 결과를 무엇이라고 하는가?', '확률', '경우의 수', '사건', '통계', '사건');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_024', '개념이해', 'EASY', '삼각형의 세 중선이 만나는 점으로 세 중선의 길이를 각 꼭짓점으로부터 $2:1$로 나누는 이 점을 삼각형의 무엇이라고 하는가?', '외심', '내심', '수심', '무게중심', '무게중심');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_E_025', '개념이해', 'EASY', '자료의 최솟값 제$1$사분위수 중앙값 제$3$사분위수 최댓값을 이용하여 자료의 분포 상태를 직사각형 모양의 상자와 선으로 나타낸 그림을 무엇이라고 하는가?', '히스토그램', '산점도', '상자그림', '막대그래프', '상자그림');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_001', '개념이해', 'HARD', '기약분수로 나타내었을 때 분모의 소인수가 $2$ 또는 $5$뿐인 유리수는 어떤 소수로 나타낼 수 있는가?', '유한소수', '무한소수', '순환소수', '무리수', '유한소수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_002', '개념이해', 'HARD', '미지수 $x$에 어떤 값을 대입해도 항상 참이 되는 등식을 무엇이라고 하는가?', '방정식', '항등식', '부등식', '다항식', '항등식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_003', '개념이해', 'HARD', '두 삼각형에서 세 쌍의 대응하는 변의 길이가 각각 같을 때의 합동 조건을 무엇이라고 하는가?', '$SSS$ 합동', '$SAS$ 합동', '$ASA$ 합동', '$RHS$ 합동', '$SSS$ 합동');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_004', '개념이해', 'HARD', '두 삼각형에서 두 쌍의 대응하는 변의 길이가 각각 같고 그 끼인각의 크기가 같을 때의 합동 조건을 무엇이라고 하는가?', '$SSS$ 합동', '$SAS$ 합동', '$ASA$ 합동', '$RHA$ 합동', '$SAS$ 합동');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_005', '개념이해', 'HARD', '두 삼각형에서 한 쌍의 대응하는 변의 길이가 같고 그 양 끝각의 크기가 각각 같을 때의 합동 조건을 무엇이라고 하는가?', '$SSS$ 합동', '$SAS$ 합동', '$ASA$ 합동', '$RHA$ 합동', '$ASA$ 합동');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_006', '개념이해', 'HARD', '미지수가 $2$개인 두 일차방정식의 그래프가 서로 평행하면 이 연립일차방정식의 해의 개수는 어떠한가?', '해가 무수히 많다', '해가 $1$개이다', '해가 $2$개이다', '해가 없다', '해가 없다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_007', '개념이해', 'HARD', '이차함수 $y=a(x-p)^2+q$의 그래프에서 좌우 대칭이 되도록 하는 대칭축의 방정식은 무엇인가?', '$x=a$', '$x=p$', '$y=q$', '$y=a$', '$x=p$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_008', '개념이해', 'HARD', '이차함수 $y=a(x-p)^2+q$에서 $a>0$일 때 그래프의 모양은 어떠한가?', '아래로 볼록', '위로 볼록', '직선', '원', '아래로 볼록');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_009', '개념이해', 'HARD', '두 쌍의 대변이 각각 평행한 사각형을 무엇이라고 하는가?', '사다리꼴', '평행사변형', '마름모', '직사각형', '평행사변형');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_010', '개념이해', 'HARD', '네 변의 길이가 모두 같은 사각형을 무엇이라고 하는가?', '평행사변형', '직사각형', '마름모', '사다리꼴', '마름모');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_011', '개념이해', 'HARD', '네 내각의 크기가 모두 같은 사각형을 무엇이라고 하는가?', '평행사변형', '직사각형', '마름모', '정사각형', '직사각형');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_012', '개념이해', 'HARD', '네 변의 길이가 모두 같고 네 내각의 크기가 모두 같은 사각형을 무엇이라고 하는가?', '평행사변형', '마름모', '직사각형', '정사각형', '정사각형');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_013', '개념이해', 'HARD', '한 쌍의 대변이 평행한 사각형을 무엇이라고 하는가?', '사다리꼴', '평행사변형', '마름모', '직사각형', '사다리꼴');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_014', '개념이해', 'HARD', '빗변의 길이와 한 예각의 크기가 각각 같은 두 직각삼각형은 서로 합동이라는 조건을 무엇이라고 하는가?', '$ASA$ 합동', '$SAS$ 합동', '$RHA$ 합동', '$RHS$ 합동', '$RHA$ 합동');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_015', '개념이해', 'HARD', '빗변의 길이와 다른 한 변의 길이가 각각 같은 두 직각삼각형은 서로 합동이라는 조건을 무엇이라고 하는가?', '$SSS$ 합동', '$SAS$ 합동', '$RHA$ 합동', '$RHS$ 합동', '$RHS$ 합동');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_016', '개념이해', 'HARD', '원에서 원주 위의 두 점을 양 끝점으로 하는 원의 일부분을 무엇이라고 하는가?', '현', '호', '할선', '접선', '호');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_017', '개념이해', 'HARD', '원 위의 두 점을 곧게 이은 선분을 무엇이라고 하는가?', '현', '호', '할선', '접선', '현');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_018', '개념이해', 'HARD', '원에서 호의 양 끝점과 원주 위의 한 점을 이어서 만든 각을 그 호에 대한 무엇이라고 하는가?', '중심각', '원주각', '엇각', '동위각', '원주각');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_019', '개념이해', 'HARD', '직각삼각형에서 빗변의 길이에 대한 높이의 길이의 비를 무엇이라고 하는가?', '$\sin$', '$\cos$', '$\tan$', '$\log$', '$\sin$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_020', '개념이해', 'HARD', '직각삼각형에서 빗변의 길이에 대한 밑변의 길이의 비를 무엇이라고 하는가?', '$\sin$', '$\cos$', '$\tan$', '$\log$', '$\cos$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_021', '개념이해', 'HARD', '직각삼각형에서 밑변의 길이에 대한 높이의 길이의 비를 무엇이라고 하는가?', '$\sin$', '$\cos$', '$\tan$', '$\log$', '$\tan$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_022', '개념이해', 'HARD', '두 사건 $A$와 $B$가 동시에 일어나지 않을 때 사건 $A$ 또는 사건 $B$가 일어날 확률을 구하기 위해 각각의 확률을 더하는 것을 무엇이라고 하는가?', '확률의 덧셈', '확률의 곱셈', '경우의 수', '상대도수', '확률의 덧셈');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_023', '개념이해', 'HARD', '두 사건 $A$와 $B$가 서로 영향을 주지 않을 때 두 사건이 동시에 일어날 확률을 구하기 위해 각각의 확률을 곱하는 것을 무엇이라고 하는가?', '확률의 덧셈', '확률의 곱셈', '경우의 수', '상대도수', '확률의 곱셈');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_024', '개념이해', 'HARD', '상관관계가 있는 두 변량 $x$와 $y$에 대하여 $x$의 값이 커짐에 따라 $y$의 값도 대체로 커지는 관계를 무엇이라고 하는가?', '양의 상관관계', '음의 상관관계', '인과관계', '반비례', '양의 상관관계');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_H_025', '개념이해', 'HARD', '두 직선이 한 직선과 만날 때 같은 위치에 있는 각을 무엇이라고 하는가?', '엇각', '동위각', '맞꼭지각', '평각', '동위각');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_001', '개념이해', 'VERY HARD', '$a<0$일 때 근호 안의 제곱수 $\sqrt{a^2}$을 근호 밖으로 꺼내어 간단히 하면 어떤 식이 되는가?', '$a$', '$-a$', '$\frac{1}{a}$', '$0$', '$-a$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_002', '개념이해', 'VERY HARD', '이차방정식 $ax^2+bx+c=0$이 단 하나의 해 즉 중근을 갖기 위해 좌변을 인수분해했을 때 나타나야 하는 식의 형태는 무엇인가?', '완전제곱식', '합차공식', '일차식', '항등식', '완전제곱식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_003', '개념이해', 'VERY HARD', '직각삼각형의 외심은 항상 삼각형의 어느 위치에 존재하는가?', '삼각형의 내부', '삼각형의 외부', '빗변의 중점', '무게중심', '빗변의 중점');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_004', '개념이해', 'VERY HARD', '삼각형의 세 중선이 만나는 무게중심은 각 중선을 꼭짓점으로부터 몇 대 몇의 비율로 나누는가?', '$1:1$', '$2:1$', '$3:1$', '$1:2$', '$2:1$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_005', '개념이해', 'VERY HARD', '서로 닮은 두 평면도형의 닮음비가 $m:n$일 때 이 두 도형의 넓이의 비는 어떻게 되는가?', '$m:n$', '$m^2:n^2$', '$m^3:n^3$', '$\sqrt{m}:\sqrt{n}$', '$m^2:n^2$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_006', '개념이해', 'VERY HARD', '서로 닮은 두 입체도형의 닮음비가 $m:n$일 때 이 두 도형의 부피의 비는 어떻게 되는가?', '$m:n$', '$m^2:n^2$', '$m^3:n^3$', '$\sqrt{m}:\sqrt{n}$', '$m^3:n^3$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_007', '개념이해', 'VERY HARD', '원에 내접하는 사각형에서 마주 보는 두 내각의 크기의 합은 항상 몇 도인가?', '$90^\circ$', '$180^\circ$', '$270^\circ$', '$360^\circ$', '$180^\circ$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_008', '개념이해', 'VERY HARD', '원의 접선과 그 접점을 지나는 현이 이루는 각의 크기는 그 각의 내부에 있는 호에 대한 어떤 각의 크기와 같은가?', '중심각', '원주각', '엇각', '동위각', '원주각');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_009', '개념이해', 'VERY HARD', '반원에 대한 원주각의 크기 즉 지름을 한 변으로 하는 내접 삼각형의 한 각의 크기는 항상 몇 도인가?', '$45^\circ$', '$60^\circ$', '$90^\circ$', '$180^\circ$', '$90^\circ$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_010', '개념이해', 'VERY HARD', '원 외부의 한 점에서 그 원에 그을 수 있는 두 접선의 길이는 서로 어떠한 관계인가?', '한쪽이 더 길다', '서로 평행하다', '서로 직교한다', '서로 같다', '서로 같다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_011', '개념이해', 'VERY HARD', '연립일차방정식을 이루는 두 일차방정식의 그래프가 완전히 포개어질 때 즉 두 직선이 일치할 때 이 연립방정식의 해의 개수는 어떠한가?', '해가 무수히 많다', '해가 $1$개이다', '해가 $2$개이다', '해가 없다', '해가 무수히 많다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_012', '개념이해', 'VERY HARD', '이차함수 $y=ax^2+bx+c$의 그래프가 $y$축과 만나는 점의 $y$좌표를 구하기 위해 $x$에 대입해야 하는 값은 무엇인가?', '$-1$', '$0$', '$1$', '$2$', '$0$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_013', '개념이해', 'VERY HARD', '자료의 대푯값 중에서 극단적인 값이 있을 때 평균보다 자료의 중심 경향을 더 잘 나타내는 대푯값은 무엇인가?', '평균', '중앙값', '최빈값', '표준편차', '중앙값');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_014', '개념이해', 'VERY HARD', '자료를 크기순으로 나열했을 때 제$3$사분위수에서 제$1$사분위수를 뺀 값을 무엇이라고 하는가?', '분산', '편차', '사분위범위', '중앙값', '사분위범위');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_015', '개념이해', 'VERY HARD', '직각삼각형에서 기준이 되는 예각의 크기가 커질수록 $\sin$의 값은 어떻게 변하는가?', '증가한다', '감소한다', '일정하다', '알 수 없다', '증가한다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_016', '개념이해', 'VERY HARD', '직각삼각형에서 기준이 되는 예각의 크기가 커질수록 $\cos$의 값은 어떻게 변하는가?', '증가한다', '감소한다', '일정하다', '알 수 없다', '감소한다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_017', '개념이해', 'VERY HARD', '$\tan 45^\circ$의 값은 얼마인가?', '$0$', '$\frac{1}{2}$', '$1$', '$\sqrt{3}$', '$1$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_018', '개념이해', 'VERY HARD', '$\sin 30^\circ$와 값이 같은 삼각비는 무엇인가?', '$\sin 60^\circ$', '$\cos 30^\circ$', '$\cos 60^\circ$', '$\tan 45^\circ$', '$\cos 60^\circ$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_019', '개념이해', 'VERY HARD', '$n$각형의 내각의 크기의 합을 구하는 올바른 공식은 무엇인가?', '$180^\circ \times n$', '$180^\circ \times (n-1)$', '$180^\circ \times (n-2)$', '$360^\circ \times n$', '$180^\circ \times (n-2)$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_020', '개념이해', 'VERY HARD', '다각형의 모양에 관계없이 모든 볼록 다각형의 외각의 크기의 합은 항상 몇 도인가?', '$90^\circ$', '$180^\circ$', '$270^\circ$', '$360^\circ$', '$360^\circ$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_021', '개념이해', 'VERY HARD', '평행선 사이의 거리를 구할 때 두 평행선 중 한 직선 위의 임의의 점에서 다른 직선에 내린 무엇의 길이를 구하는가?', '대각선', '수선', '평행선', '할선', '수선');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_022', '개념이해', 'VERY HARD', '이차함수 $y=ax^2$의 그래프를 $x$축의 방향으로 $p$만큼 $y$축의 방향으로 $q$만큼 평행이동한 이차함수의 식은 무엇인가?', '$y=a(x-p)^2+q$', '$y=a(x+p)^2+q$', '$y=a(x-p)^2-q$', '$y=a(x+p)^2-q$', '$y=a(x-p)^2+q$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_023', '개념이해', 'VERY HARD', '분모가 두 무리수의 합이나 차로 이루어진 분수를 유리화할 때 사용하는 곱셈 공식은 무엇인가?', '완전제곱식', '합차공식', '삼차방정식', '근의 공식', '합차공식');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_024', '개념이해', 'VERY HARD', '경우의 수를 구할 때 두 사건 $A$와 $B$가 동시에 또는 연이어 일어나는 경우 두 사건의 경우의 수를 어떻게 계산해야 하는가?', '더한다', '뺀다', '곱한다', '나눈다', '곱한다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VH_025', '개념이해', 'VERY HARD', '어떤 사건 $A$가 일어날 확률을 $p$라고 할 때 사건 $A$가 일어나지 않을 확률은 어떻게 구하는가?', '$1+p$', '$1-p$', '$p-1$', '$\frac{1}{p}$', '$1-p$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_001', '개념이해', 'TOUGH', '$n$각형의 한 꼭짓점에서 그을 수 있는 대각선의 개수를 구하는 식은 무엇인가?', '$n-1$', '$n-2$', '$n-3$', '$\frac{n(n-3)}{2}$', '$n-3$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_002', '개념이해', 'TOUGH', '$n$각형의 대각선의 총 개수를 구하는 식은 무엇인가?', '$n-3$', '$180^\circ \times (n-2)$', '$\frac{n(n-3)}{2}$', '$\frac{n(n-1)}{2}$', '$\frac{n(n-3)}{2}$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_003', '개념이해', 'TOUGH', '어떤 자료의 평균을 기준으로 각 변량들이 흩어진 정도를 알기 위해 구하는 편차들의 총합은 항상 얼마가 되어야 하는가?', '$-1$', '$0$', '$1$', '$100$', '$0$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_004', '개념이해', 'TOUGH', '편차의 제곱의 평균을 구하여 자료의 산포도를 나타내는 값을 무엇이라고 하는가?', '대푯값', '분산', '표준편차', '사분위수', '분산');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_005', '개념이해', 'TOUGH', '양수의 제곱근은 양의 제곱근과 음의 제곱근 두 개가 존재하며 이 두 수의 절댓값은 서로 어떠한가?', '다르다', '역수이다', '알 수 없다', '같다', '같다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_006', '개념이해', 'TOUGH', '제곱하여 음수가 되는 실수는 존재하지 않으므로 음수의 제곱근은 실수 범위에서 몇 개인가?', '$0$개', '$1$개', '$2$개', '무수히 많다', '$0$개');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_007', '개념이해', 'TOUGH', '일차식의 곱 $(x+a)(x+b)$를 전개하였을 때 $x$의 계수는 무엇인가?', '$a$', '$b$', '$a+b$', '$ab$', '$a+b$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_008', '개념이해', 'TOUGH', '이차방정식 $ax^2+bx+c=0$에서 $b^2-4ac>0$일 때 이 방정식이 갖는 서로 다른 근의 개수는 몇 개인가?', '$0$개', '$1$개', '$2$개', '무수히 많다', '$2$개');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_009', '개념이해', 'TOUGH', '이차방정식 $ax^2+bx+c=0$에서 $b^2-4ac=0$일 때 이 방정식이 갖는 근의 개수 즉 중근으로 겹쳐지는 근의 개수는 몇 개인가?', '$0$개', '$1$개', '$2$개', '무수히 많다', '$1$개');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_010', '개념이해', 'TOUGH', '부등식의 양변에 같은 음수를 곱하거나 나눌 때 부등호의 방향은 어떻게 되는가?', '변하지 않는다', '바뀐다', '등호가 추가된다', '알 수 없다', '바뀐다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_011', '개념이해', 'TOUGH', '두 일차방정식 $ax+by=c$와 $a''x+b''y=c''$에서 $\frac{a}{a''} = \frac{b}{b''} \neq \frac{c}{c''}$를 만족할 때 이 연립일차방정식의 해는 어떠한가?', '해가 무수히 많다', '해가 $1$개이다', '해가 $2$개이다', '해가 없다', '해가 없다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_012', '개념이해', 'TOUGH', '일차함수 $y=ax+b$에서 기울기가 $a>0$이고 $y$절편이 $b<0$일 때 이 직선의 그래프가 지나지 않는 사분면은 어디인가?', '제$1$사분면', '제$2$사분면', '제$3$사분면', '제$4$사분면', '제$2$사분면');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_013', '개념이해', 'TOUGH', '이차함수 $y=ax^2$의 그래프는 $a$의 절댓값이 커질수록 그래프의 폭이 어떻게 되는가?', '넓어진다', '좁아진다', '일정하다', '뒤집힌다', '좁아진다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_014', '개념이해', 'TOUGH', '평행사변형의 두 대각선이 서로 수직으로 만나면 이 사각형은 어떤 사각형이 되는가?', '직사각형', '마름모', '정사각형', '등변사다리꼴', '마름모');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_015', '개념이해', 'TOUGH', '평행사변형의 두 대각선의 길이가 서로 같으면 이 사각형은 어떤 사각형이 되는가?', '직사각형', '마름모', '정사각형', '등변사다리꼴', '직사각형');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_016', '개념이해', 'TOUGH', '삼각형의 한 꼭짓점과 마주보는 변의 중점을 이은 선분인 중선은 이 삼각형의 무엇을 정확히 이등분하는가?', '둘레', '넓이', '내각', '외각', '넓이');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_017', '개념이해', 'TOUGH', '둔각삼각형의 세 변의 수직이등분선의 교점인 외심은 항상 삼각형의 어느 위치에 존재하는가?', '삼각형의 내부', '삼각형의 외부', '빗변의 중점', '무게중심', '삼각형의 외부');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_018', '개념이해', 'TOUGH', '삼각형의 세 변의 길이 $a$ $b$ $c$ 중 가장 긴 변이 $c$일 때 $a^2+b^2<c^2$이 성립하면 이 삼각형은 어떤 삼각형인가?', '예각삼각형', '직각삼각형', '둔각삼각형', '정삼각형', '둔각삼각형');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_019', '개념이해', 'TOUGH', '한 원에서 중심각의 크기에 정비례하여 늘어나지 않는 것은 무엇인가?', '호의 길이', '부채꼴의 넓이', '현의 길이', '원주각의 크기', '현의 길이');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_020', '개념이해', 'TOUGH', '원의 접선은 그 접점을 지나는 원의 반지름과 서로 어떤 위치 관계에 있는가?', '평행하다', '수직이다', '일치한다', '만나지 않는다', '수직이다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_021', '개념이해', 'TOUGH', '두 사건 $A$ $B$에 대하여 두 사건 중 적어도 하나는 일어날 확률을 구할 때 전체 확률 $1$에서 어떤 확률을 빼야 하는가?', '모두 일어날 확률', '모두 일어나지 않을 확률', '사건 $A$만 일어날 확률', '사건 $B$만 일어날 확률', '모두 일어나지 않을 확률');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_022', '개념이해', 'TOUGH', '서로 닮은 두 입체도형의 닮음비가 $a:b$일 때 이 두 도형의 겉넓이의 비는 어떻게 되는가?', '$a:b$', '$a^2:b^2$', '$a^3:b^3$', '$\sqrt{a}:\sqrt{b}$', '$a^2:b^2$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_023', '개념이해', 'TOUGH', '서로 다른 두 직선이 한 점에서 만날 때 생기는 교각 중에서 마주 보는 두 각을 무엇이라고 하는가?', '동위각', '엇각', '맞꼭지각', '평각', '맞꼭지각');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_024', '개념이해', 'TOUGH', '$a \neq 0$이고 $m>n$일 때 지수법칙에 의해 거듭제곱의 나눗셈 $a^m \div a^n$을 간단히 한 식은 무엇인가?', '$a^{m+n}$', '$a^{m-n}$', '$a^{mn}$', '$a^{\frac{m}{n}}$', '$a^{m-n}$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_T_025', '개념이해', 'TOUGH', '자연수 $N$이 서로 다른 소수 $a$ $b$에 대하여 $a^m \times b^n$으로 소인수분해될 때 $N$의 양의 약수의 개수를 구하는 식은 무엇인가?', '$m+n$', '$mn$', '$(m+1)(n+1)$', '$(m-1)(n-1)$', '$(m+1)(n+1)$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_001', '개념이해', 'VERY TOUGH', '$a<0$일 때 $\sqrt{(-a)^2}$을 근호 밖으로 꺼내어 간단히 한 식은 무엇인가?', '$a$', '$-a$', '$0$', '$a^2$', '$-a$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_002', '개념이해', 'VERY TOUGH', '순환소수를 분수로 고칠 때 순환마디의 숫자의 개수만큼 분모에 $9$를 쓰고 그 뒤에 소수점 아래 순환하지 않는 숫자의 개수만큼 무엇을 쓰는가?', '$0$', '$1$', '$9$', '$x$', '$0$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_003', '개념이해', 'VERY TOUGH', '가로 세로 높이의 길이가 각각 $a$ $b$ $c$인 직육면체의 대각선의 길이를 구하는 식은 무엇인가?', '$\sqrt{a+b+c}$', '$\sqrt{ab+bc+ca}$', '$\sqrt{a^2+b^2+c^2}$', '$a^2+b^2+c^2$', '$\sqrt{a^2+b^2+c^2}$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_004', '개념이해', 'VERY TOUGH', '이차함수 $y=ax^2+bx+c$의 그래프에서 대칭축이 되는 $x$좌표를 구하는 공식은 무엇인가?', '$x=\frac{b}{a}$', '$x=-\frac{b}{a}$', '$x=\frac{b}{2a}$', '$x=-\frac{b}{2a}$', '$x=-\frac{b}{2a}$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_005', '개념이해', 'VERY TOUGH', '빗변의 길이가 $c$이고 다른 두 변의 길이가 $a$와 $b$인 직각삼각형에서 직각인 꼭짓점에서 빗변에 내린 수선의 길이를 $h$라고 할 때 삼각형의 넓이를 이용하여 도출되는 관계식은 무엇인가?', '$ab=ch$', '$a+b=c+h$', '$a^2+b^2=ch$', '$ah=bc$', '$ab=ch$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_006', '개념이해', 'VERY TOUGH', '삼각형 $ABC$의 내각 $A$의 이등분선이 변 $BC$와 만나는 점을 $D$라고 할 때 성립하는 비례식은 $AB:AC$와 무엇의 비가 같다는 것인가?', '$BD:CD$', '$CD:BD$', '$AD:BD$', '$AD:CD$', '$BD:CD$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_007', '개념이해', 'VERY TOUGH', '원에 외접하는 사각형에서 마주 보는 두 쌍의 대변의 길이의 합은 서로 어떠한 관계인가?', '한쪽이 두 배이다', '서로 다르다', '서로 같다', '알 수 없다', '서로 같다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_008', '개념이해', 'VERY TOUGH', '이차방정식 $x^2+ax+b=0$이 중근을 가지기 위해 상수 $b$를 $a$에 관한 식으로 나타내면 무엇이 되어야 하는가?', '$b=a^2$', '$b=\frac{a}{2}$', '$b=(\frac{a}{2})^2$', '$b=2a$', '$b=(\frac{a}{2})^2$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_009', '개념이해', 'VERY TOUGH', '서로 다른 두 무리수 $\sqrt{2}$와 $\sqrt{3}$ 사이에는 몇 개의 무리수가 존재하는가?', '$0$개', '$1$개', '$2$개', '무수히 많다', '무수히 많다');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_010', '개념이해', 'VERY TOUGH', '어떤 사건 $A$가 일어날 확률을 $p$라고 하고 사건 $A$가 일어나지 않을 확률을 $q$라고 할 때 $p+q$의 값은 항상 얼마인가?', '$0$', '$0.5$', '$1$', '$100$', '$1$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_011', '개념이해', 'VERY TOUGH', '각 면이 모두 합동인 정다각형이고 각 꼭짓점에 모인 면의 개수가 같은 다면체인 정다면체의 종류는 모두 몇 가지인가?', '$3$가지', '$4$가지', '$5$가지', '$6$가지', '$5$가지');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_012', '개념이해', 'VERY TOUGH', '일차함수 $y=ax+b$의 그래프와 $y=cx+d$의 그래프가 서로 평행하기 위해서는 $a=c$이고 무엇이 달라야 하는가?', '$b \neq d$', '$b=d$', '$a \neq b$', '$c \neq d$', '$b \neq d$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_013', '개념이해', 'VERY TOUGH', '크기순으로 나열된 변량의 개수가 짝수 개일 때 자료의 중앙값은 어떻게 구하는가?', '가장 작은 두 값의 평균', '가장 큰 두 값의 평균', '한가운데 있는 두 값의 평균', '가장 많이 나타난 값', '한가운데 있는 두 값의 평균');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_014', '개념이해', 'VERY TOUGH', '모든 내각의 크기가 같고 모든 변의 길이가 같은 다각형 중 한 내각의 크기가 $144^\circ$인 다각형은 무엇인가?', '정팔각형', '정구각형', '정십각형', '정십이각형', '정십각형');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_015', '개념이해', 'VERY TOUGH', '직각삼각형에서 직각을 낀 두 변의 길이가 각각 $1$과 $\sqrt{3}$일 때 피타고라스의 정리를 이용하여 구한 빗변의 길이는 얼마인가?', '$2$', '$\sqrt{2}$', '$\sqrt{5}$', '$4$', '$2$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_016', '개념이해', 'VERY TOUGH', '이차함수 $y=ax^2+bx+c$의 그래프가 위로 볼록하면서 모든 사분면을 지나기 위해 $y$절편인 $c$의 값의 범위는 어떠해야 하는가?', '$c<0$', '$c=0$', '$c>0$', '$c \le 0$', '$c>0$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_017', '개념이해', 'VERY TOUGH', '반지름의 길이가 $r$이고 중심각의 크기가 $x^\circ$인 부채꼴의 호의 길이를 구하는 공식은 무엇인가?', '$\pi r^2 \times \frac{x}{360}$', '$2\pi r \times \frac{x}{360}$', '$2\pi r \times \frac{x}{180}$', '$\pi r^2 \times \frac{x}{180}$', '$2\pi r \times \frac{x}{360}$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_018', '개념이해', 'VERY TOUGH', '반지름의 길이가 $r$인 구의 겉넓이를 구하는 공식은 무엇인가?', '$\frac{4}{3}\pi r^3$', '$4\pi r^2$', '$2\pi r^2$', '$\pi r^2 h$', '$4\pi r^2$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_019', '개념이해', 'VERY TOUGH', '반지름의 길이가 $r$인 구의 부피를 구하는 공식은 무엇인가?', '$\frac{4}{3}\pi r^3$', '$4\pi r^2$', '$2\pi r^2$', '$\pi r^2 h$', '$\frac{4}{3}\pi r^3$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_020', '개념이해', 'VERY TOUGH', '다항식 $x^2-y^2$을 두 일차식의 곱으로 인수분해하면 어떤 식이 되는가?', '$(x-y)^2$', '$(x+y)^2$', '$(x+y)(x-y)$', '$x(x-y)$', '$(x+y)(x-y)$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_021', '개념이해', 'VERY TOUGH', '$x$에 대한 일차부등식 $ax+b<0$에서 $a<0$일 때 해를 구하면 부등호의 방향이 바뀌어 어떻게 되는가?', '$x<-\frac{b}{a}$', '$x>-\frac{b}{a}$', '$x<\frac{b}{a}$', '$x>\frac{b}{a}$', '$x>-\frac{b}{a}$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_022', '개념이해', 'VERY TOUGH', '$\sqrt{x}$가 자연수가 되기 위해서는 근호 안의 수 $x$가 어떤 형태의 수여야 하는가?', '소수', '합성수', '자연수의 제곱수', '음의 정수', '자연수의 제곱수');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_023', '개념이해', 'VERY TOUGH', '좌표평면 위의 두 점 사이의 $x$좌표의 차이가 $a$이고 $y$좌표의 차이가 $b$일 때 이 두 점 사이의 거리를 피타고라스의 정리를 이용하여 나타낸 식은 무엇인가?', '$\sqrt{a+b}$', '$\sqrt{a^2+b^2}$', '$a^2+b^2$', '$a+b$', '$\sqrt{a^2+b^2}$');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_024', '개념이해', 'VERY TOUGH', '원의 외부에 있는 한 점에서 그 원에 그을 수 있는 접선의 개수는 최대 몇 개인가?', '$1$개', '$2$개', '$3$개', '무수히 많다', '$2$개');
+INSERT INTO Q_CONCEPT (q_id, category_name, diff_name, content, opt1, opt2, opt3, opt4, answer)
+VALUES ('CONCEPT_VT_025', '개념이해', 'VERY TOUGH', '자료의 분포를 나타내는 상자그림에서 상자의 길이는 제$3$사분위수와 제$1$사분위수의 차이를 의미하는데 이를 무엇이라고 하는가?', '분산', '표준편차', '사분위범위', '중앙값', '사분위범위');
