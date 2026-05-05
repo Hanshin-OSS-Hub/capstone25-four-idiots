@@ -48,19 +48,8 @@ CREATE TABLE PROFILE (
     FOREIGN KEY (tier_name) REFERENCES TIER(tier_name) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 프로필 정보';
 
--- 5. PHONE_AUTH (휴대전화 인증 내역)
-CREATE TABLE PHONE_AUTH (
-    auth_id VARCHAR(50) NOT NULL COMMENT '인증 식별자 (UUID 등)',
-    phone VARCHAR(20) NOT NULL COMMENT '전화번호',
-    auth_code VARCHAR(10) NOT NULL COMMENT '인증번호',
-    is_verified BOOLEAN NOT NULL DEFAULT FALSE COMMENT '인증완료여부(T/F)',
-    expires_at DATETIME NOT NULL COMMENT '인증만료시간 (요청 후 5분)',
-    PRIMARY KEY (auth_id),
-    INDEX idx_phone (phone)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='휴대전화 인증 정보';
-
--- 6. 문제 테이블들 (종목별 분리)
--- 6-1. Q_CONCEPT (개념이해 문제)
+-- 5. 문제 테이블들 (종목별 분리)
+-- 5-1. Q_CONCEPT (개념이해 문제)
 CREATE TABLE Q_CONCEPT (
     q_id VARCHAR(50) NOT NULL COMMENT '개념이해 문제 식별자',
     category_name VARCHAR(50) NOT NULL DEFAULT '개념이해' COMMENT '종목명',
@@ -75,7 +64,7 @@ CREATE TABLE Q_CONCEPT (
     FOREIGN KEY (diff_name) REFERENCES DIFFICULTY(diff_name) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='개념이해 종목 문제';
 
--- 6-2. Q_CALC (연산 문제)
+-- 5-2. Q_CALC (연산 문제)
 CREATE TABLE Q_CALC (
     q_id VARCHAR(50) NOT NULL COMMENT '연산 문제 식별자',
     category_name VARCHAR(50) NOT NULL DEFAULT '연산' COMMENT '종목명',
@@ -86,7 +75,7 @@ CREATE TABLE Q_CALC (
     FOREIGN KEY (diff_name) REFERENCES DIFFICULTY(diff_name) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='연산 종목 문제';
 
--- 6-3. Q_IDEA (발상 문제)
+-- 5-3. Q_IDEA (발상 문제)
 CREATE TABLE Q_IDEA (
     q_id VARCHAR(50) NOT NULL COMMENT '발상 문제 식별자',
     category_name VARCHAR(50) NOT NULL DEFAULT '발상' COMMENT '종목명',
@@ -101,7 +90,7 @@ CREATE TABLE Q_IDEA (
     FOREIGN KEY (diff_name) REFERENCES DIFFICULTY(diff_name) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='발상 종목 문제';
 
--- 6-4. Q_DESIGN (설계 문제)
+-- 5-4. Q_DESIGN (설계 문제)
 CREATE TABLE Q_DESIGN (
     q_id VARCHAR(50) NOT NULL COMMENT '설계 문제 식별자',
     category_name VARCHAR(50) NOT NULL DEFAULT '설계' COMMENT '종목명',
@@ -116,7 +105,7 @@ CREATE TABLE Q_DESIGN (
     FOREIGN KEY (diff_name) REFERENCES DIFFICULTY(diff_name) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='설계 종목 문제';
 
--- 6-5. Q_PRACTICAL (실전 문제)
+-- 5-5. Q_PRACTICAL (실전 문제)
 CREATE TABLE Q_PRACTICAL (
     q_id VARCHAR(50) NOT NULL COMMENT '실전 문제 식별자',
     category_name VARCHAR(50) NOT NULL DEFAULT '실전' COMMENT '종목명',
@@ -127,7 +116,7 @@ CREATE TABLE Q_PRACTICAL (
     FOREIGN KEY (diff_name) REFERENCES DIFFICULTY(diff_name) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='실전 종목 문제';
 
--- 7. RECORD_BATTLE_MATCH (훈련 세트 생성 및 아레나 상대방 기록세트 참조)
+-- 6. RECORD_BATTLE_MATCH (훈련 세트 생성 및 아레나 상대방 기록세트 참조)
 CREATE TABLE RECORD_BATTLE_MATCH (
     set_id VARCHAR(50) NOT NULL COMMENT '기록세트 식별자',
     user_id VARCHAR(50) NOT NULL COMMENT '기록된 사용자 아이디',
@@ -140,7 +129,7 @@ CREATE TABLE RECORD_BATTLE_MATCH (
     INDEX idx_user_category_cp (user_id, category_name, updated_cp) -- 매칭 시 빠른 조회를 위한 인덱스
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='훈련장 전투력 갱신 시 생성되는 기록 세트';
 
--- 8. TRAINING_Q_SET_RECORD (훈련장에서 출제된 문제들 기록 - 전투력 갱신 시 저장)
+-- 7. TRAINING_Q_SET_RECORD (훈련장에서 출제된 문제들 기록 - 전투력 갱신 시 저장)
 CREATE TABLE TRAINING_Q_SET_RECORD (
     set_id VARCHAR(50) NOT NULL COMMENT '기록세트 식별자',
     question_order_number INT NOT NULL COMMENT '문제 출제 순서 번호(1,2,3,...)',
@@ -154,7 +143,7 @@ CREATE TABLE TRAINING_Q_SET_RECORD (
     INDEX idx_q_id (q_id) -- 문제 식별자 논리적 참조용 인덱스
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='기록 세트 내 출제된 문제 상세 기록';
 
--- 9. ARENA_PROGRESS (아레나 진행 상태 기록)
+-- 8. ARENA_PROGRESS (아레나 진행 상태 기록)
 CREATE TABLE ARENA_PROGRESS (
     user_id VARCHAR(50) NOT NULL COMMENT '도전자 아이디',
     opponent_id VARCHAR(50) NOT NULL COMMENT '배틀상대 아이디',
@@ -169,7 +158,7 @@ CREATE TABLE ARENA_PROGRESS (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 간 아레나 대결 진행 상태 기록';
 
 -- =====================================================================================
--- 10. 아레나 매칭(Battle Matching) 성능 최적화를 위한 인덱스
+-- 9. 아레나 매칭(Battle Matching) 성능 최적화를 위한 인덱스
 -- (오차범위 및 전투력 차이 최소화 검색용)
 -- =====================================================================================
 CREATE INDEX idx_profile_cp_concept ON PROFILE(cp_concept);
