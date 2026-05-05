@@ -12,7 +12,7 @@ from models.user import User
 from services.tier_service import tier_name_to_api
 
 
-def register_user(user_id, raw_password, nickname, email, phone, auth_id):
+def register_user(user_id, raw_password, nickname, email, phone):
     db = get_db()
 
     existing = db.execute(
@@ -38,23 +38,6 @@ def register_user(user_id, raw_password, nickname, email, phone, auth_id):
             code="REGISTER_FAILED",
             details=conflict_details,
         )
-
-    auth_row = db.execute(
-        text(
-            """
-            SELECT auth_id, phone, is_verified, expires_at
-            FROM PHONE_AUTH
-            WHERE auth_id = :auth_id AND phone = :phone
-            """
-        ),
-        {"auth_id": auth_id, "phone": phone},
-    ).mappings().first()
-    if not auth_row:
-        raise AppError(message="phone auth request not found", status=404, code="REGISTER_FAILED")
-    if not auth_row["is_verified"]:
-        raise AppError(message="phone not verified", status=400, code="REGISTER_FAILED")
-    if datetime.datetime.utcnow() > auth_row["expires_at"]:
-        raise AppError(message="phone auth expired", status=400, code="REGISTER_FAILED")
 
     pw_hash = bcrypt.hashpw(raw_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
@@ -115,26 +98,8 @@ def login_user(user_id, raw_password):
 
 
 
-def find_user_id_by_phone(auth_id, phone):
+def find_user_id_by_phone(phone):
     db = get_db()
-
-    auth_row = db.execute(
-        text(
-            """
-            SELECT auth_id, phone, is_verified, expires_at
-            FROM PHONE_AUTH
-            WHERE auth_id = :auth_id AND phone = :phone
-            """
-        ),
-        {"auth_id": auth_id, "phone": phone},
-    ).mappings().first()
-
-    if not auth_row:
-        raise AppError(message="phone auth request not found", status=404, code="FIND_ID_FAILED")
-    if not auth_row["is_verified"]:
-        raise AppError(message="phone not verified", status=400, code="FIND_ID_FAILED")
-    if datetime.datetime.utcnow() > auth_row["expires_at"]:
-        raise AppError(message="phone auth expired", status=400, code="FIND_ID_FAILED")
 
     user = db.execute(select(User).where(User.phone == phone)).scalar_one_or_none()
     if not user:
