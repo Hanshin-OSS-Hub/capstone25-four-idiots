@@ -191,15 +191,27 @@ def get_answer_column(category):
     return "answer"
 
 
+def _question_select_columns(category, answer_column):
+    common = [
+        "q.q_id",
+        "q.diff_name",
+        "q.content",
+        f"q.{answer_column} AS correct_answer",
+        "d.score",
+        "d.icon_url AS difficulty_icon_url",
+    ]
+    if CATEGORY_TABLES[category]["answer_type"] in {"choice", "order"}:
+        common[3:3] = ["q.opt1", "q.opt2", "q.opt3", "q.opt4"]
+    return ",\n               ".join(common)
+
+
 def load_question(db, category, question_id):
     table_name = CATEGORY_TABLES[category]["table"]
     answer_column = get_answer_column(category)
+    select_columns = _question_select_columns(category, answer_column)
     query = text(
         f"""
-        SELECT q.q_id, q.diff_name, q.content,
-               q.opt1, q.opt2, q.opt3, q.opt4,
-               q.{answer_column} AS correct_answer,
-               d.score, d.icon_url AS difficulty_icon_url
+        SELECT {select_columns}
         FROM {table_name} q
         JOIN DIFFICULTY d ON d.diff_name = q.diff_name
         WHERE q.q_id = :question_id
@@ -211,13 +223,11 @@ def load_question(db, category, question_id):
 def load_random_question(db, category, difficulty=None, excluded_ids=None):
     table_name = CATEGORY_TABLES[category]["table"]
     answer_column = get_answer_column(category)
+    select_columns = _question_select_columns(category, answer_column)
     excluded_ids = excluded_ids or []
 
     base_query = f"""
-    SELECT q.q_id, q.diff_name, q.content,
-           q.opt1, q.opt2, q.opt3, q.opt4,
-           q.{answer_column} AS correct_answer,
-           d.score, d.icon_url AS difficulty_icon_url
+    SELECT {select_columns}
     FROM {table_name} q
     JOIN DIFFICULTY d ON d.diff_name = q.diff_name
     WHERE 1=1
@@ -243,12 +253,10 @@ def load_random_question(db, category, difficulty=None, excluded_ids=None):
 def load_question_detail(db, category, question_id):
     table_name = CATEGORY_TABLES[category]["table"]
     answer_column = get_answer_column(category)
+    select_columns = _question_select_columns(category, answer_column)
     query = text(
         f"""
-        SELECT q.q_id, q.diff_name, q.content,
-               q.opt1, q.opt2, q.opt3, q.opt4,
-               q.{answer_column} AS correct_answer,
-               d.score, d.icon_url AS difficulty_icon_url
+        SELECT {select_columns}
         FROM {table_name} q
         JOIN DIFFICULTY d ON d.diff_name = q.diff_name
         WHERE q.q_id = :question_id
