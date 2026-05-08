@@ -15,11 +15,13 @@ logger = logging.getLogger(__name__)
 MAX_LIVES = 4
 MAX_TIME_SEC = 60
 from services.question_service import (
+    CATEGORY_TABLES,
     CATEGORY_DISPLAY_NAMES,
     get_user_history as _get_user_history,
     load_question as _load_question,
     load_random_question as _load_random_question,
     normalize_category as _normalize_category,
+    normalize_answer_value as _normalize_answer_value,
     prepare_question_for_delivery as _prepare_question_for_delivery,
     remember_question as _remember_question,
     reset_user_history as _reset_user_history,
@@ -186,13 +188,12 @@ def submit_result():
             return fail("NOT_FOUND", "question not found", 404)
 
         timed_out = time_sec >= MAX_TIME_SEC
-        correct_answer = str(row["correct_answer"]).strip()
+        answer_type = CATEGORY_TABLES[category]["answer_type"]
+        correct_answer = row["correct_answer"]
         if session:
             correct_answer = session["served_answers"].get(question_id, correct_answer)
-        if isinstance(submitted_answer, list):
-            user_answer = "-".join(str(item).strip() for item in submitted_answer)
-        else:
-            user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
+        correct_answer = _normalize_answer_value(correct_answer, answer_type)
+        user_answer = _normalize_answer_value(submitted_answer, answer_type)
         is_correct = (not timed_out) and user_answer == correct_answer
         earned_score = row["score"] if is_correct else 0
 

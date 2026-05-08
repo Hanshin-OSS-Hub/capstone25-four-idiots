@@ -1,4 +1,5 @@
 import random
+import re
 
 from sqlalchemy import text
 
@@ -23,6 +24,31 @@ CATEGORY_TABLES = {
     "design": {"table": "Q_DESIGN", "answer_type": "order"},
     "practice": {"table": "Q_PRACTICAL", "answer_type": "ocr"},
 }
+
+
+def normalize_answer_value(value, answer_type):
+    if isinstance(value, list):
+        value = "-".join(str(item).strip() for item in value)
+
+    normalized = "" if value is None else str(value).strip()
+    normalized = normalized.replace("\u00a0", " ")
+    normalized = normalized.replace("\u2212", "-").replace("\u2013", "-").replace("\u2014", "-")
+
+    if answer_type == "order":
+        normalized = normalized.replace(" ", "")
+        normalized = normalized.replace(",", "-")
+        normalized = re.sub(r"-+", "-", normalized)
+        return normalized
+
+    if answer_type == "ocr":
+        normalized = normalized.replace(" ", "")
+        normalized = normalized.replace("$", "")
+        normalized = normalized.replace("\\", "")
+        normalized = normalized.replace("₩", "")
+        normalized = normalized.replace(",", "")
+        return normalized.lower()
+
+    return " ".join(normalized.split())
 
 
 def normalize_category(raw_category):

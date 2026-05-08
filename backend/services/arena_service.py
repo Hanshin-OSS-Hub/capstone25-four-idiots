@@ -1,6 +1,6 @@
 ﻿from sqlalchemy import text
 
-from services.question_service import CATEGORY_DISPLAY_NAMES, CATEGORY_TABLES, get_answer_column
+from services.question_service import CATEGORY_DISPLAY_NAMES, CATEGORY_TABLES, get_answer_column, normalize_answer_value
 from services.tier_service import normalize_tier_name, tier_name_to_api
 
 MAX_ARENA_TIME_MS = 60000
@@ -32,11 +32,9 @@ def load_opponent_set(db, set_id, category):
 
 def score_answer(question, submitted_answer, time_ms):
     timed_out = time_ms >= MAX_ARENA_TIME_MS
-    correct_answer = str(question["correct_answer"]).strip()
-    if isinstance(submitted_answer, list):
-        user_answer = "-".join(str(item).strip() for item in submitted_answer)
-    else:
-        user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
+    answer_type = CATEGORY_TABLES[question["category"]]["answer_type"]
+    correct_answer = normalize_answer_value(question["correct_answer"], answer_type)
+    user_answer = normalize_answer_value(submitted_answer, answer_type)
     is_correct = (not timed_out) and user_answer == correct_answer
     earned_score = int(question["score"] or 0) if is_correct else 0
     return is_correct, timed_out, earned_score

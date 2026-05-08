@@ -8,11 +8,13 @@ from database import get_db
 from .auth import require_user
 from services.runtime_state import create_experience_session, get_experience_session, pop_experience_session, save_experience_session
 from services.question_service import (
+    CATEGORY_TABLES,
     CATEGORY_DISPLAY_NAMES,
     get_user_history as _get_user_history,
     load_question as _load_question,
     load_random_question as _load_random_question,
     normalize_category as _normalize_category,
+    normalize_answer_value as _normalize_answer_value,
     prepare_question_for_delivery as _prepare_question_for_delivery,
     remember_question as _remember_question,
     reset_user_history as _reset_user_history,
@@ -190,12 +192,10 @@ def submit_experience_answer():
         if not row:
             return fail("NOT_FOUND", "question not found", 404)
 
-        correct_answer = str(row["correct_answer"]).strip()
-        correct_answer = session["served_answers"].get(question_id, correct_answer)
-        if isinstance(submitted_answer, list):
-            user_answer = "-".join(str(item).strip() for item in submitted_answer)
-        else:
-            user_answer = "" if submitted_answer is None else str(submitted_answer).strip()
+        answer_type = CATEGORY_TABLES[category]["answer_type"]
+        correct_answer = session["served_answers"].get(question_id, row["correct_answer"])
+        correct_answer = _normalize_answer_value(correct_answer, answer_type)
+        user_answer = _normalize_answer_value(submitted_answer, answer_type)
         is_correct = user_answer == correct_answer
         earned_score = int(row["score"] or 0) if is_correct else 0
 
