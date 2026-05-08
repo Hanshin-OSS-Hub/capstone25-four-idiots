@@ -10,6 +10,7 @@ from services.runtime_state import create_experience_session, get_experience_ses
 from services.question_service import (
     CATEGORY_TABLES,
     CATEGORY_DISPLAY_NAMES,
+    _question_ids_for_difficulty as _question_ids_for_difficulty,
     get_user_history as _get_user_history,
     load_question as _load_question,
     load_random_question as _load_random_question,
@@ -129,14 +130,20 @@ def get_experience_question():
 
         category = session["category"]
         difficulty = _experience_difficulty(session["question_count"], session["current_power"])
-        excluded_ids = set(session["asked_ids"])
-        excluded_ids.update(_get_user_history(db, session["user_id"], category))
+        excluded_ids = _question_ids_for_difficulty(db, category, session["asked_ids"], difficulty)
+        excluded_ids.update(_question_ids_for_difficulty(db, category, session["served_answers"].keys(), difficulty))
+        excluded_ids.update(_get_user_history(db, session["user_id"], category, difficulty=difficulty))
         row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=list(excluded_ids))
 
         recycled = False
         if not row and excluded_ids:
-            _reset_user_history(db, session["user_id"], category)
-            session["asked_ids"] = []
+            _reset_user_history(db, session["user_id"], category, difficulty=difficulty)
+            session["asked_ids"] = [qid for qid in session["asked_ids"] if qid not in excluded_ids]
+            session["served_answers"] = {
+                qid: answer
+                for qid, answer in session["served_answers"].items()
+                if qid not in excluded_ids
+            }
             save_experience_session(session_id, session)
             row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=[])
             recycled = True
@@ -201,6 +208,7 @@ def submit_experience_answer():
 
         if question_id not in session["asked_ids"]:
             session["asked_ids"].append(question_id)
+        session["served_answers"].pop(question_id, None)
         _remember_question(db, session["user_id"], category, question_id)
         session["question_count"] += 1
         if is_correct:

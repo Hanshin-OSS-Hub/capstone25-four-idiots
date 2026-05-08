@@ -101,18 +101,52 @@ def ensure_user_solved_question_table(db):
     db.commit()
 
 
-def get_user_history(db, user_id, category):
+def _question_ids_for_difficulty(db, category, question_ids, difficulty):
+    if not question_ids or not difficulty:
+        return set()
+
+    table_name = CATEGORY_TABLES[category]["table"]
+    params = {"difficulty": difficulty}
+    placeholders = []
+    for index, question_id in enumerate(question_ids):
+        key = f"question_id_{index}"
+        placeholders.append(f":{key}")
+        params[key] = question_id
+
+    query = text(
+        f"""
+        SELECT q_id
+        FROM {table_name}
+        WHERE diff_name = :difficulty
+          AND q_id IN ({', '.join(placeholders)})
+        """
+    )
+    rows = db.execute(query, params).mappings().all()
+    return {row["q_id"] for row in rows}
+
+
+def get_user_history(db, user_id, category, difficulty=None):
     ensure_user_solved_question_table(db)
     category_name = CATEGORY_DISPLAY_NAMES[category]
+    table_name = CATEGORY_TABLES[category]["table"]
+    params = {"user_id": user_id, "category_name": category_name}
+    difficulty_filter = ""
+    if difficulty:
+        params["difficulty"] = difficulty
+        difficulty_filter = " AND q.diff_name = :difficulty"
+
     rows = db.execute(
         text(
-            """
-            SELECT q_id
-            FROM USER_SOLVED_QUESTION
-            WHERE user_id = :user_id AND category_name = :category_name
+            f"""
+            SELECT usq.q_id
+            FROM USER_SOLVED_QUESTION usq
+            JOIN {table_name} q ON q.q_id = usq.q_id
+            WHERE usq.user_id = :user_id
+              AND usq.category_name = :category_name
+              {difficulty_filter}
             """
         ),
-        {"user_id": user_id, "category_name": category_name},
+        params,
     ).mappings().all()
     return {row["q_id"] for row in rows}
 
@@ -137,18 +171,36 @@ def remember_question(db, user_id, category, question_id):
     db.commit()
 
 
-def reset_user_history(db, user_id, category):
+def reset_user_history(db, user_id, category, difficulty=None):
     ensure_user_solved_question_table(db)
     category_name = CATEGORY_DISPLAY_NAMES[category]
-    db.execute(
-        text(
-            """
-            DELETE FROM USER_SOLVED_QUESTION
-            WHERE user_id = :user_id AND category_name = :category_name
-            """
-        ),
-        {"user_id": user_id, "category_name": category_name},
-    )
+    table_name = CATEGORY_TABLES[category]["table"]
+    params = {"user_id": user_id, "category_name": category_name}
+    if difficulty:
+        params["difficulty"] = difficulty
+        db.execute(
+            text(
+                f"""
+                DELETE usq
+                FROM USER_SOLVED_QUESTION usq
+                JOIN {table_name} q ON q.q_id = usq.q_id
+                WHERE usq.user_id = :user_id
+                  AND usq.category_name = :category_name
+                  AND q.diff_name = :difficulty
+                """
+            ),
+            params,
+        )
+    else:
+        db.execute(
+            text(
+                """
+                DELETE FROM USER_SOLVED_QUESTION
+                WHERE user_id = :user_id AND category_name = :category_name
+                """
+            ),
+            params,
+        )
     db.commit()
 
 

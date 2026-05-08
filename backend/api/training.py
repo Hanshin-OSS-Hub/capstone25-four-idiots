@@ -17,6 +17,7 @@ MAX_TIME_SEC = 60
 from services.question_service import (
     CATEGORY_TABLES,
     CATEGORY_DISPLAY_NAMES,
+    _question_ids_for_difficulty as _question_ids_for_difficulty,
     get_user_history as _get_user_history,
     load_question as _load_question,
     load_random_question as _load_random_question,
@@ -114,21 +115,27 @@ def get_random_question():
                 session["question_count"],
                 int(session.get("starting_power", 0) or 0),
             )
-            excluded_ids = set(session["asked_ids"])
+            excluded_ids = _question_ids_for_difficulty(db, category, session["asked_ids"], difficulty)
+            excluded_ids.update(_question_ids_for_difficulty(db, category, session["served_answers"].keys(), difficulty))
         else:
             excluded_ids = set()
 
         if not category:
             return fail("BAD_REQUEST", "category is required", 400)
 
-        excluded_ids.update(_get_user_history(db, user_id, category))
+        excluded_ids.update(_get_user_history(db, user_id, category, difficulty=difficulty))
         row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=list(excluded_ids))
 
         recycled = False
         if not row and excluded_ids:
-            _reset_user_history(db, user_id, category)
+            _reset_user_history(db, user_id, category, difficulty=difficulty)
             if session_id:
-                session["asked_ids"] = []
+                session["asked_ids"] = [qid for qid in session["asked_ids"] if qid not in excluded_ids]
+                session["served_answers"] = {
+                    qid: answer
+                    for qid, answer in session["served_answers"].items()
+                    if qid not in excluded_ids
+                }
                 save_training_session(session_id, session)
             row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=[])
             recycled = True
@@ -211,6 +218,7 @@ def submit_result():
         if session:
             if question_id not in session["asked_ids"]:
                 session["asked_ids"].append(question_id)
+            session["served_answers"].pop(question_id, None)
             session["question_count"] += 1
             if is_correct:
                 session["total_power"] += earned_score
