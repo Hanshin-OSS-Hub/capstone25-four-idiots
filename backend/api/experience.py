@@ -200,8 +200,8 @@ def submit_experience_answer():
             return fail("NOT_FOUND", "question not found", 404)
 
         answer_type = CATEGORY_TABLES[category]["answer_type"]
-        correct_answer = session["served_answers"].get(question_id, row["correct_answer"])
-        correct_answer = _normalize_answer_value(correct_answer, answer_type)
+        response_correct_answer = session["served_answers"].get(question_id, row["correct_answer"])
+        correct_answer = _normalize_answer_value(response_correct_answer, answer_type)
         user_answer = _normalize_answer_value(submitted_answer, answer_type)
         is_correct = user_answer == correct_answer
         earned_score = int(row["score"] or 0) if is_correct else 0
@@ -224,6 +224,7 @@ def submit_experience_answer():
                 "category_name": CATEGORY_DISPLAY_NAMES[category],
                 "question_id": question_id,
                 "correct": is_correct,
+                "correct_answer": response_correct_answer,
                 "earned_score": earned_score,
                 "question_count": session["question_count"],
                 "correct_count": session["correct_count"],

@@ -196,10 +196,10 @@ def submit_result():
 
         timed_out = time_sec >= MAX_TIME_SEC
         answer_type = CATEGORY_TABLES[category]["answer_type"]
-        correct_answer = row["correct_answer"]
+        response_correct_answer = row["correct_answer"]
         if session:
-            correct_answer = session["served_answers"].get(question_id, correct_answer)
-        correct_answer = _normalize_answer_value(correct_answer, answer_type)
+            response_correct_answer = session["served_answers"].get(question_id, response_correct_answer)
+        correct_answer = _normalize_answer_value(response_correct_answer, answer_type)
         user_answer = _normalize_answer_value(submitted_answer, answer_type)
         is_correct = (not timed_out) and user_answer == correct_answer
         earned_score = row["score"] if is_correct else 0
@@ -210,6 +210,7 @@ def submit_result():
             "question_id": question_id,
             "category": category,
             "correct": is_correct,
+            "correct_answer": response_correct_answer,
             "earned_score": earned_score,
             "time_sec": time_sec,
             "timed_out": timed_out,

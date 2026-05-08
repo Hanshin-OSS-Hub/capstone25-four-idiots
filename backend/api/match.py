@@ -293,6 +293,7 @@ def submit_battle_answer():
                 "match_id": match_id,
                 "question_id": question_id,
                 "correct": player_correct,
+                "correct_answer": question["correct_answer"],
                 "timed_out": timed_out,
                 "earned_score": earned_score,
                 "total_score": match["my_score"],
