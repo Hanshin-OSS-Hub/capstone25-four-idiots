@@ -52,6 +52,11 @@ def resolve_round(player_correct, player_time_ms, opponent_correct, opponent_tim
             return "player_attack"
         if player_time_ms > opponent_time_ms:
             return "opponent_attack"
+    if not player_correct and not opponent_correct:
+        if player_time_ms < opponent_time_ms:
+            return "opponent_attack"
+        if player_time_ms > opponent_time_ms:
+            return "player_attack"
     return "draw"
 
 
