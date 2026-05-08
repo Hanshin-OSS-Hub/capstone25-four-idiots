@@ -173,8 +173,6 @@ def submit_result():
             submitted_answer = data.get("answer_order", data.get("answerOrder"))
         time_sec = int(data.get("time_sec", 0))
         session_id = data.get("session_id")
-        user_id = g.get("user_id")
-
         if not session_id or not question_id:
             return fail("BAD_REQUEST", "session_id and question_id are required", 400)
 
@@ -201,8 +199,6 @@ def submit_result():
         user_answer = _normalize_answer_value(submitted_answer, answer_type)
         is_correct = (not timed_out) and user_answer == correct_answer
         earned_score = row["score"] if is_correct else 0
-
-        _remember_question(db, user_id, category, question_id)
 
         response = {
             "question_id": question_id,
@@ -277,6 +273,13 @@ def finish_training():
 
         set_id = None
         if profile_result["updated"]:
+            for record in session["records"]:
+                _remember_question(
+                    db,
+                    session["user_id"],
+                    session["category"],
+                    record["question_id"],
+                )
             set_id = _save_training_records(db, session, profile_result["nickname"])
 
         result = {
