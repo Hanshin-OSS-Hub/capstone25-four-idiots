@@ -46,11 +46,11 @@ def normalize_answer_value(value, answer_type):
         normalized = normalized.replace(" ", "")
         normalized = normalized.replace("$", "")
         normalized = normalized.replace("\\", "")
-        normalized = normalized.replace("₩", "")
-        normalized = normalized.replace("￦", "")
+        normalized = normalized.replace("\u20a9", "")
+        normalized = normalized.replace("\uffe6", "")
         normalized = normalized.replace(",", "")
-        normalized = normalized.replace("×", "x").replace("✕", "x").replace("✖", "x")
-        normalized = normalized.replace("÷", "/")
+        normalized = normalized.replace("\u00d7", "x").replace("\u2715", "x").replace("\u2716", "x")
+        normalized = normalized.replace("\u00f7", "/")
         normalized = normalized.replace("=", "")
         normalized = normalized.translate(
             str.maketrans(
@@ -271,6 +271,8 @@ def prepare_question_for_delivery(category, row):
     if answer_type not in {"choice", "order"}:
         payload["correct_answer"] = correct_answer
         payload["answer"] = correct_answer
+        if answer_type == "ocr":
+            payload["ocr_answer"] = correct_answer
         return payload, correct_answer
 
     original_choices = [row["opt1"], row["opt2"], row["opt3"], row["opt4"]]
