@@ -251,12 +251,16 @@ def build_question_payload(category, row):
 
 
 def parse_order_answer(order_answer):
-    tokens = str(order_answer or "").replace(" ", "").split("-")
-    parsed = []
-    for token in tokens:
-        if token.isdigit():
-            parsed.append(int(token) - 1)
-    return parsed
+    raw = str(order_answer or "").strip()
+    if not raw:
+        return []
+
+    compact = re.sub(r"\s+", "", raw)
+    if compact.isdigit() and len(compact) > 1:
+        return [int(token) - 1 for token in compact]
+
+    tokens = re.findall(r"\d+", compact.replace(",", "-").replace(">", "-"))
+    return [int(token) - 1 for token in tokens]
 
 
 def prepare_question_for_delivery(category, row):
@@ -276,15 +280,18 @@ def prepare_question_for_delivery(category, row):
 
     if answer_type == "order":
         target_order = parse_order_answer(correct_answer)
-        displayed_position_by_original = {
-            original_index: displayed_index + 1
-            for displayed_index, original_index in enumerate(shuffle_order)
-        }
-        correct_answer = "-".join(
-            str(displayed_position_by_original[index])
-            for index in target_order
-            if index in displayed_position_by_original
-        )
+        if target_order:
+            displayed_position_by_original = {
+                original_index: displayed_index + 1
+                for displayed_index, original_index in enumerate(shuffle_order)
+            }
+            remapped = [
+                str(displayed_position_by_original[index])
+                for index in target_order
+                if index in displayed_position_by_original
+            ]
+            if remapped:
+                correct_answer = "-".join(remapped)
 
     payload["correct_answer"] = correct_answer
     if answer_type == "order":
