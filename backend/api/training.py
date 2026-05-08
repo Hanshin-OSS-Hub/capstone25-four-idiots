@@ -87,6 +87,7 @@ def start_training():
             "category_name": CATEGORY_DISPLAY_NAMES[category],
             "starting_power": session.get("starting_power", 0),
             "lives": session["lives"],
+            "remaining_lives": session["lives"],
             "total_power": session["total_power"],
             "question_count": session["question_count"],
             "max_time_sec": MAX_TIME_SEC,
@@ -174,21 +175,19 @@ def submit_result():
         session_id = data.get("session_id")
         user_id = g.get("user_id")
 
-        if not category or not question_id:
-            return fail("BAD_REQUEST", "category and question_id are required", 400)
+        if not session_id or not question_id:
+            return fail("BAD_REQUEST", "session_id and question_id are required", 400)
 
-        session = None
-        if session_id:
-            session = _get_training_session(session_id)
-            if not session:
-                return fail("NOT_FOUND", "training session not found", 404)
-            if session["lives"] <= 0:
-                return fail("FINISHED", "training session already finished", 409)
-            category = session["category"]
-            if question_id in session["asked_ids"]:
-                return fail("BAD_REQUEST", "question already submitted", 400)
-            if question_id not in session["served_answers"]:
-                return fail("BAD_REQUEST", "question was not served for this session", 400)
+        session = _get_training_session(session_id)
+        if not session:
+            return fail("NOT_FOUND", "training session not found", 404)
+        if session["lives"] <= 0:
+            return fail("FINISHED", "training session already finished", 409)
+        category = session["category"]
+        if question_id in session["asked_ids"]:
+            return fail("BAD_REQUEST", "question already submitted", 400)
+        if question_id not in session["served_answers"]:
+            return fail("BAD_REQUEST", "question was not served for this session", 400)
 
         row = _load_question(db, category, question_id)
         if not row:
@@ -197,8 +196,7 @@ def submit_result():
         timed_out = time_sec >= MAX_TIME_SEC
         answer_type = CATEGORY_TABLES[category]["answer_type"]
         response_correct_answer = row["correct_answer"]
-        if session:
-            response_correct_answer = session["served_answers"].get(question_id, response_correct_answer)
+        response_correct_answer = session["served_answers"].get(question_id, response_correct_answer)
         correct_answer = _normalize_answer_value(response_correct_answer, answer_type)
         user_answer = _normalize_answer_value(submitted_answer, answer_type)
         is_correct = (not timed_out) and user_answer == correct_answer
@@ -216,35 +214,35 @@ def submit_result():
             "timed_out": timed_out,
         }
 
-        if session:
-            if question_id not in session["asked_ids"]:
-                session["asked_ids"].append(question_id)
-            session["served_answers"].pop(question_id, None)
-            session["question_count"] += 1
-            if is_correct:
-                session["total_power"] += earned_score
-            else:
-                session["lives"] = max(0, session["lives"] - 1)
+        if question_id not in session["asked_ids"]:
+            session["asked_ids"].append(question_id)
+        session["served_answers"].pop(question_id, None)
+        session["question_count"] += 1
+        if is_correct:
+            session["total_power"] += earned_score
+        else:
+            session["lives"] = max(0, session["lives"] - 1)
 
-            session["records"].append(
-                {
-                    "question_id": question_id,
-                    "time_sec": min(time_sec, MAX_TIME_SEC),
-                    "is_correct": is_correct,
-                }
-            )
+        session["records"].append(
+            {
+                "question_id": question_id,
+                "time_sec": min(time_sec, MAX_TIME_SEC),
+                "is_correct": is_correct,
+            }
+        )
 
-            save_training_session(session_id, session)
+        save_training_session(session_id, session)
 
-            response.update(
-                {
-                    "session_id": session_id,
-                    "remaining_lives": session["lives"],
-                    "total_power": session["total_power"],
-                    "question_count": session["question_count"],
-                    "finished": session["lives"] == 0,
-                }
-            )
+        response.update(
+            {
+                "session_id": session_id,
+                "lives": session["lives"],
+                "remaining_lives": session["lives"],
+                "total_power": session["total_power"],
+                "question_count": session["question_count"],
+                "finished": session["lives"] == 0,
+            }
+        )
 
         return ok(response)
     except ValueError:
@@ -285,6 +283,7 @@ def finish_training():
             "session_id": session_id,
             "category": session["category"],
             "total_power": session["total_power"],
+            "lives": session["lives"],
             "remaining_lives": session["lives"],
             "question_count": session["question_count"],
             "set_id": set_id,
