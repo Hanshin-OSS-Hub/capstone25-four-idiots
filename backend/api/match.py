@@ -33,7 +33,6 @@ def _load_match_for_user(match_id, user_id):
 from services.arena_service import (
     CATEGORY_CP_COLUMNS,
     CATEGORY_DISPLAY_NAMES,
-    delete_arena_progress as _delete_arena_progress,
     load_arena_progress as _load_arena_progress,
     load_my_profile as _load_my_profile,
     load_opponent_set as _load_opponent_set,
@@ -143,7 +142,7 @@ def find_match():
                     "cp_gap": int(row["cp_gap"] or 0),
                 }
             )
-            if len(candidates) >= 10:
+            if len(candidates) >= 3:
                 break
 
         return ok(
@@ -342,8 +341,6 @@ def finish_battle():
         rating_result = _update_arena_profile(db, match["user_id"], result, match["cp_gap"])
         if not rating_result:
             return fail("NOT_FOUND", "profile not found", 404)
-
-        _delete_arena_progress(db, match["user_id"], match["opponent_id"], match["category"])
 
         response = {
             "match_id": match_id,

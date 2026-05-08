@@ -107,12 +107,12 @@ def delete_account():
 def register():
     data = request.get_json(silent=True) or {}
 
-    required_fields = ["id", "pw", "nickname", "email"]
+    required_fields = ["id", "pw", "pw_confirm", "nickname", "email"]
     missing = [field for field in required_fields if not data.get(field)]
     if missing:
         return fail("BAD_REQUEST", f"missing fields: {', '.join(missing)}", 400)
 
-    if data.get("pw_confirm") is not None and data["pw"] != data["pw_confirm"]:
+    if data["pw"] != data["pw_confirm"]:
         return fail("BAD_REQUEST", "pw and pw_confirm do not match", 400)
 
     try:
