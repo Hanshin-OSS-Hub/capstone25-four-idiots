@@ -1,5 +1,6 @@
 import random
 import re
+import unicodedata
 
 from sqlalchemy import text
 
@@ -41,11 +42,36 @@ def normalize_answer_value(value, answer_type):
         return normalized
 
     if answer_type == "ocr":
+        normalized = unicodedata.normalize("NFKC", normalized)
         normalized = normalized.replace(" ", "")
         normalized = normalized.replace("$", "")
         normalized = normalized.replace("\\", "")
         normalized = normalized.replace("₩", "")
+        normalized = normalized.replace("￦", "")
         normalized = normalized.replace(",", "")
+        normalized = normalized.replace("×", "x").replace("✕", "x").replace("✖", "x")
+        normalized = normalized.replace("÷", "/")
+        normalized = normalized.replace("=", "")
+        normalized = normalized.translate(
+            str.maketrans(
+                {
+                    "O": "0",
+                    "o": "0",
+                    "I": "1",
+                    "l": "1",
+                    "|": "1",
+                    "S": "5",
+                    "s": "5",
+                    "Z": "2",
+                    "z": "2",
+                    "B": "8",
+                }
+            )
+        )
+
+        numeric_match = re.search(r"-?\d+(?:\.\d+)?(?:/\d+(?:\.\d+)?)?", normalized)
+        if numeric_match:
+            return numeric_match.group(0).lower()
         return normalized.lower()
 
     return " ".join(normalized.split())
