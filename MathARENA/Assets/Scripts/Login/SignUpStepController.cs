@@ -1,4 +1,5 @@
-using MathArena.Network; // 에서 정의한 네임스페이스
+using System.Collections.Generic;
+using MathArena.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -58,7 +59,7 @@ public sealed class SignUpStepController : MonoBehaviour
     private Button buttonFormPrev;
 
     [SerializeField]
-    private Button buttonFormSubmit; // [신규] 최종 가입 버튼
+    private Button buttonFormSubmit; // 최종 가입 버튼
 
     [Header("Common References")]
     [SerializeField]
@@ -75,25 +76,36 @@ public sealed class SignUpStepController : MonoBehaviour
 
     private void OnEnable()
     {
-        ShowStep(Step.Privacy); // 팝업 켜질 때 항상 약관부터 시작
+        ShowStep(Step.Privacy);
 
-        // 리스너 등록
+        // 약관 동의 리스너
         togglePrivacyAgree.onValueChanged.AddListener(OnPrivacyAgreeChanged);
         toggleServiceAgree.onValueChanged.AddListener(OnServiceAgreeChanged);
 
+        // 단계 이동 리스너
         buttonPrivacyPrev.onClick.AddListener(OnPrivacyPrev);
         buttonPrivacyNext.onClick.AddListener(() => ShowStep(Step.Service));
-
         buttonServicePrev.onClick.AddListener(() => ShowStep(Step.Privacy));
         buttonServiceNext.onClick.AddListener(() => ShowStep(Step.Form));
-
         buttonFormPrev.onClick.AddListener(() => ShowStep(Step.Service));
-        buttonFormSubmit.onClick.AddListener(OnClickCompleteRegister); // 서버 전송 버튼 연결
+
+        // --- [추가] 모든 입력 필드가 바뀔 때마다 버튼 상태를 체크하도록 리스너 등록 ---
+        idInput.onValueChanged.AddListener(_ => UpdateSubmitButtonState());
+        pwInput.onValueChanged.AddListener(_ => UpdateSubmitButtonState());
+        pwConfirmInput.onValueChanged.AddListener(_ => UpdateSubmitButtonState());
+        nicknameInput.onValueChanged.AddListener(_ => UpdateSubmitButtonState());
+        // 이메일과 전화번호는 선택사항이라면 아래 두 줄은 빼도 됩니다.
+        emailInput.onValueChanged.AddListener(_ => UpdateSubmitButtonState());
+        phoneInput.onValueChanged.AddListener(_ => UpdateSubmitButtonState());
+
+        buttonFormSubmit.onClick.AddListener(OnClickCompleteRegister);
+
+        // 초기 버튼 상태 설정
+        UpdateSubmitButtonState();
     }
 
     private void OnDisable()
     {
-        // 중복 방지를 위해 리스너 제거
         togglePrivacyAgree.onValueChanged.RemoveAllListeners();
         toggleServiceAgree.onValueChanged.RemoveAllListeners();
         buttonPrivacyPrev.onClick.RemoveAllListeners();
@@ -102,6 +114,14 @@ public sealed class SignUpStepController : MonoBehaviour
         buttonServiceNext.onClick.RemoveAllListeners();
         buttonFormPrev.onClick.RemoveAllListeners();
         buttonFormSubmit.onClick.RemoveAllListeners();
+
+        // 입력 필드 리스너 제거
+        idInput.onValueChanged.RemoveAllListeners();
+        pwInput.onValueChanged.RemoveAllListeners();
+        pwConfirmInput.onValueChanged.RemoveAllListeners();
+        nicknameInput.onValueChanged.RemoveAllListeners();
+        emailInput.onValueChanged.RemoveAllListeners();
+        phoneInput.onValueChanged.RemoveAllListeners();
     }
 
     private void ShowStep(Step step)
@@ -115,11 +135,30 @@ public sealed class SignUpStepController : MonoBehaviour
             OnPrivacyAgreeChanged(togglePrivacyAgree.isOn);
         if (step == Step.Service)
             OnServiceAgreeChanged(toggleServiceAgree.isOn);
+        if (step == Step.Form)
+            UpdateSubmitButtonState(); // 양식 단계로 올 때도 체크
     }
 
     private void OnPrivacyAgreeChanged(bool on) => buttonPrivacyNext.interactable = on;
 
     private void OnServiceAgreeChanged(bool on) => buttonServiceNext.interactable = on;
+
+    // --- [핵심 추가] 최종 가입 버튼의 활성화 여부를 실시간으로 판단하는 함수 ---
+    private void UpdateSubmitButtonState()
+    {
+        // 1. 필수 입력 확인 (아이디, 비번, 비번확인, 닉네임)
+        bool hasID = !string.IsNullOrEmpty(idInput.text);
+        bool hasPW = !string.IsNullOrEmpty(pwInput.text);
+        bool hasPWConfirm = !string.IsNullOrEmpty(pwConfirmInput.text);
+        bool hasNickname = !string.IsNullOrEmpty(nicknameInput.text);
+
+        // 2. 비밀번호 일치 확인
+        bool isPasswordSame = (pwInput.text == pwConfirmInput.text);
+
+        // 3. 버튼 활성화 (모든 필수 항목이 있고 비밀번호가 일치할 때)
+        buttonFormSubmit.interactable =
+            hasID && hasPW && hasPWConfirm && hasNickname && isPasswordSame;
+    }
 
     private void OnPrivacyPrev()
     {
@@ -127,17 +166,19 @@ public sealed class SignUpStepController : MonoBehaviour
             popupRoot.SetActive(false);
     }
 
-    // ***** [핵심] 실제 서버에 회원가입 요청을 보내는 함수 *****
+    // SignUpStepController.cs 의 OnClickCompleteRegister 함수 수정
+
     public void OnClickCompleteRegister()
     {
-        // 1. 유효성 검사 (비밀번호 확인 등)
+        // 1. 비밀번호 확인
         if (pwInput.text != pwConfirmInput.text)
         {
             Debug.LogError("비밀번호가 일치하지 않습니다.");
             return;
         }
 
-        // 2. 서버 규격에 맞게 데이터 구성
+        // 2. 서버로 보낼 데이터 구성 (phone, auth_id 삭제)
+        // RegisterRequest 클래스 정의 자체에서도 이 필드들을 지우거나 비워두어야 합니다.
         RegisterRequest regData = new RegisterRequest
         {
             id = idInput.text,
@@ -145,11 +186,10 @@ public sealed class SignUpStepController : MonoBehaviour
             pw_confirm = pwConfirmInput.text,
             nickname = nicknameInput.text,
             email = emailInput.text,
-            phone = phoneInput.text,
-            auth_id = "VERIFIED_ID_123", // 임시: 나중에 휴대전화 인증 성공 시 받은 ID를 넣으세요
+            // phone과 auth_id는 아예 작성하지 않습니다.
         };
 
-        // 3. NetworkManager를 통해 POST 요청 전송
+        // 3. 서버 전송
         NetworkManager.Instance.PostRequest<AuthResponse<object>>(
             "/v1/auth/register",
             regData,
@@ -157,9 +197,9 @@ public sealed class SignUpStepController : MonoBehaviour
             {
                 if (res.success)
                 {
-                    Debug.Log("회원가입 성공! 이제 로그인해 보세요.");
+                    Debug.Log("회원가입 성공!");
                     if (popupRoot != null)
-                        popupRoot.SetActive(false); // 가입 성공 시 팝업 닫기
+                        popupRoot.SetActive(false);
                 }
                 else
                 {

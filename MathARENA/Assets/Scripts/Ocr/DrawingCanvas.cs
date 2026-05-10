@@ -81,5 +81,8 @@ public class DrawingCanvas : MonoBehaviour, IPointerDownHandler, IDragHandler
         }
     }
 
-    public Texture2D GetCapturedTexture() => drawingTexture;
+    public Texture2D GetCapturedTexture()
+    {
+        return drawingTexture;
+    }
 }

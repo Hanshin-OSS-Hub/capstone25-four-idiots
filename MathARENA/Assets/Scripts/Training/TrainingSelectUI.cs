@@ -4,35 +4,36 @@ using UnityEngine.SceneManagement;
 public class TrainingSelectUI : MonoBehaviour
 {
     [SerializeField]
-    private string trainingBattleSceneName = "08_TrainingBattle"; // 네 실제 씬 이름으로 변경
+    private string trainingBattleSceneName = "08_TrainingBattle";
 
     public void OnClickConcept()
     {
-        TrainingSession.CurrentCategory = TrainingCategory.Concept;
+        // TrainingSession 대신 ExperienceSession을 사용합니다.
+        ExperienceSession.CurrentCategory = ExperienceCategory.Concept;
         SceneManager.LoadScene(trainingBattleSceneName);
     }
 
     public void OnClickCalc()
     {
-        TrainingSession.CurrentCategory = TrainingCategory.Calc;
+        ExperienceSession.CurrentCategory = ExperienceCategory.Calc;
         SceneManager.LoadScene(trainingBattleSceneName);
     }
 
     public void OnClickIdea()
     {
-        TrainingSession.CurrentCategory = TrainingCategory.Idea;
+        ExperienceSession.CurrentCategory = ExperienceCategory.Idea;
         SceneManager.LoadScene(trainingBattleSceneName);
     }
 
     public void OnClickDesign()
     {
-        TrainingSession.CurrentCategory = TrainingCategory.Design;
+        ExperienceSession.CurrentCategory = ExperienceCategory.Design;
         SceneManager.LoadScene(trainingBattleSceneName);
     }
 
     public void OnClickPractice()
     {
-        TrainingSession.CurrentCategory = TrainingCategory.Practice;
+        ExperienceSession.CurrentCategory = ExperienceCategory.Practice;
         SceneManager.LoadScene(trainingBattleSceneName);
     }
 }

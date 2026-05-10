@@ -3362,6 +3362,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6303628980689727804, guid: 2290dcf7f9a9cca42b51c47a08334f6d, type: 3}
+      propertyPath: baseUrl
+      value: https://capstone25-four-idiots-1.onrender.com/
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

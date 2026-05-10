@@ -31,7 +31,7 @@ public class LobbyProfileController : MonoBehaviour
 
     private void UpdateUI(UserProfileData data)
     {
-        textNickname.text = data.nickname;
+        //textNickname.text = data.nickname;
 
         // 평균 전투력 계산 (전 종목 합산 평균)
         float avg =
@@ -40,8 +40,8 @@ public class LobbyProfileController : MonoBehaviour
         textAverageCP.text = $"평균전투력 {Mathf.RoundToInt(avg)}";
 
         // 껍데기 정보
-        textGold.text = data.gold.ToString();
-        textTicket.text = data.arenaTickets.ToString();
+        textGold.text = $"X {data.gold}";
+        textTicket.text = $"X {data.arenaTickets}";
 
         // 티어 및 이미지 로드 (Resources/Tiers/Tier_X_Y)
         var info = TierManager.GetTierInfo(data.arena_rating);

@@ -99,13 +99,36 @@ public class ArenaMatchingUI : MonoBehaviour
         RefreshUI();
     }
 
-    public void OnClickStartBattle() // [배틀 시작] 버튼
+    public void OnClickStartBattle()
     {
-        // 선택된 상대의 정보를 세션에 기록 (배틀 씬에서 적의 실력으로 사용됨)
         var op = dummyOpponents[currentOpponentIndex];
+
+        // 1. 아레나 세션에 상대 정보 기록
         ArenaSession.OpponentId = op.nickname;
         ArenaSession.OpponentRating = op.score;
 
-        SceneManager.LoadScene(battleSceneName);
+        // 2. [핵심] 배틀 컨트롤러(ExperienceBattleController)를 위해 데이터 복사
+        // 훈련장 때와 마찬가지로 ExperienceSession에 정보를 심어줍니다.
+        ExperienceSession.CurrentCategory = ConvertArenaToExperience(ArenaSession.CurrentCategory);
+
+        // 3. 현재 모드가 '아레나'임을 명시 (배틀 컨트롤러의 mode 변수와 연동될 수 있게 함)
+        // 만약 세션에 BattleMode를 저장하는 변수가 있다면 여기서 설정하세요.
+        // ExperienceSession.CurrentBattleMode = BattleMode.Arena;
+
+        SceneManager.LoadScene(battleSceneName); // 11_ArenaBattle로 이동
+    }
+
+    // 타입 변환 도우미
+    private ExperienceCategory ConvertArenaToExperience(ArenaCategory arenaCat)
+    {
+        return arenaCat switch
+        {
+            ArenaCategory.Concept => ExperienceCategory.Concept,
+            ArenaCategory.Calc => ExperienceCategory.Calc,
+            ArenaCategory.Idea => ExperienceCategory.Idea,
+            ArenaCategory.Design => ExperienceCategory.Design,
+            ArenaCategory.Practice => ExperienceCategory.Practice,
+            _ => ExperienceCategory.Concept,
+        };
     }
 }

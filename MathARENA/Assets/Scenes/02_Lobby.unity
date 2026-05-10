@@ -801,6 +801,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1550473949 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5413409034604391315, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+  m_PrefabInstance: {fileID: 1958373742666941156}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1550473950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550473949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d0fe8c145ff2bd4292d30fc054b017a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LogoutController
 --- !u!114 &1597901985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1644,7 +1661,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4273587341572391254, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       propertyPath: m_text
-      value: Nomal Bronze
+      value: Normal Bronze
       objectReference: {fileID: 0}
     - target: {fileID: 4273587341572391254, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       propertyPath: m_fontColor.b
@@ -1809,6 +1826,10 @@ PrefabInstance:
     - target: {fileID: 5590946134749873488, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       propertyPath: m_Color.a
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5604745839805407117, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5615264668377553708, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1981,6 +2002,34 @@ PrefabInstance:
     - target: {fileID: 6714807167820123085, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -222.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837055161375961284, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837055161375961284, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837055161375961284, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1550473950}
+    - target: {fileID: 6837055161375961284, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837055161375961284, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickLogout
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837055161375961284, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: LogoutController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837055161375961284, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 6839572583435014628, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2286,6 +2335,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7007669397593176349, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1958373742666941165}
+    - targetCorrespondingSourceObject: {fileID: 5413409034604391315, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1550473950}
   m_SourcePrefab: {fileID: 100100000, guid: 5892607b3467b0841b3e83ab77722628, type: 3}
 --- !u!1 &1958373742666941157 stripped
 GameObject:
