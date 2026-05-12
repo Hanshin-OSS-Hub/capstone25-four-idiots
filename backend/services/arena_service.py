@@ -219,3 +219,15 @@ def rotate_records(records, last_question_order):
         return records
     start_index = last_question_order % len(records)
     return records[start_index:] + records[:start_index]
+
+
+def unique_records_by_question(records):
+    seen_question_ids = set()
+    unique_records = []
+    for record in records:
+        question_id = record["q_id"]
+        if question_id in seen_question_ids:
+            continue
+        seen_question_ids.add(question_id)
+        unique_records.append(record)
+    return unique_records

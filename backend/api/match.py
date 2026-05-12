@@ -40,6 +40,7 @@ from services.arena_service import (
     reward_for_result as _reward_for_result,
     rotate_records as _rotate_records,
     score_answer as _score_answer,
+    unique_records_by_question as _unique_records_by_question,
     update_arena_profile as _update_arena_profile,
     upsert_arena_progress as _upsert_arena_progress,
 )
@@ -187,7 +188,7 @@ def start_battle():
             return fail("NOT_FOUND", "opponent record set not found", 404)
 
         resume_order = int(progress["last_question_order"] or 0) if progress else 0
-        rotated_records = _rotate_records(records, resume_order)
+        rotated_records = _unique_records_by_question(_rotate_records(records, resume_order))
 
         safe_questions = []
         question_map = {}
