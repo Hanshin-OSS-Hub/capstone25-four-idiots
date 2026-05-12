@@ -69,6 +69,18 @@ def _internal_error_response(action):
     return fail("INTERNAL_ERROR", "Unexpected server error", 500)
 
 
+def _parse_excluded_ids(raw_value):
+    if not raw_value:
+        return set()
+    if isinstance(raw_value, (list, tuple, set)):
+        return {str(item).strip() for item in raw_value if str(item).strip()}
+    return {
+        item.strip()
+        for item in str(raw_value).replace("|", ",").split(",")
+        if item.strip()
+    }
+
+
 @bp.post("/start")
 @require_user
 def start_training():
@@ -102,8 +114,11 @@ def get_random_question():
         db = get_db()
         category = _normalize_category(request.args.get("category") or request.args.get("categoryName"))
         difficulty = request.args.get("difficulty")
-        session_id = request.args.get("session_id")
+        session_id = request.args.get("session_id") or request.args.get("sessionId")
         user_id = g.get("user_id")
+        client_excluded_ids = _parse_excluded_ids(
+            request.args.get("exclude_ids") or request.args.get("excludeIds")
+        )
 
         if session_id:
             session = _get_training_session(session_id)
@@ -124,6 +139,7 @@ def get_random_question():
         if not category:
             return fail("BAD_REQUEST", "category is required", 400)
 
+        excluded_ids.update(_question_ids_for_difficulty(db, category, client_excluded_ids, difficulty))
         excluded_ids.update(_get_user_history(db, user_id, category, difficulty=difficulty))
         row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=list(excluded_ids))
 
@@ -131,14 +147,13 @@ def get_random_question():
         if not row and excluded_ids:
             _reset_user_history(db, user_id, category, difficulty=difficulty)
             if session_id:
-                session["asked_ids"] = [qid for qid in session["asked_ids"] if qid not in excluded_ids]
-                session["served_answers"] = {
-                    qid: answer
-                    for qid, answer in session["served_answers"].items()
-                    if qid not in excluded_ids
-                }
                 save_training_session(session_id, session)
-            row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=[])
+                active_excluded_ids = _question_ids_for_difficulty(db, category, session["asked_ids"], difficulty)
+                active_excluded_ids.update(_question_ids_for_difficulty(db, category, session["served_answers"].keys(), difficulty))
+            else:
+                active_excluded_ids = set()
+            active_excluded_ids.update(_question_ids_for_difficulty(db, category, client_excluded_ids, difficulty))
+            row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=list(active_excluded_ids))
             recycled = True
         if not row:
             return fail("NO_QUESTIONS", "no question found", 404)

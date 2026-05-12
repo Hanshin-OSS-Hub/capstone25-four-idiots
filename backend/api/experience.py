@@ -32,6 +32,18 @@ def _internal_error_response(action):
     return fail("INTERNAL_ERROR", "Unexpected server error", 500)
 
 
+def _parse_excluded_ids(raw_value):
+    if not raw_value:
+        return set()
+    if isinstance(raw_value, (list, tuple, set)):
+        return {str(item).strip() for item in raw_value if str(item).strip()}
+    return {
+        item.strip()
+        for item in str(raw_value).replace("|", ",").split(",")
+        if item.strip()
+    }
+
+
 def _get_experience_session(session_id):
     return get_experience_session(session_id)
 
@@ -117,7 +129,7 @@ def start_experience():
 def get_experience_question():
     try:
         db = get_db()
-        session_id = request.args.get("session_id")
+        session_id = request.args.get("session_id") or request.args.get("sessionId")
         if not session_id:
             return fail("BAD_REQUEST", "session_id is required", 400)
 
@@ -130,22 +142,23 @@ def get_experience_question():
 
         category = session["category"]
         difficulty = _experience_difficulty(session["question_count"], session["current_power"])
+        client_excluded_ids = _parse_excluded_ids(
+            request.args.get("exclude_ids") or request.args.get("excludeIds")
+        )
         excluded_ids = _question_ids_for_difficulty(db, category, session["asked_ids"], difficulty)
         excluded_ids.update(_question_ids_for_difficulty(db, category, session["served_answers"].keys(), difficulty))
+        excluded_ids.update(_question_ids_for_difficulty(db, category, client_excluded_ids, difficulty))
         excluded_ids.update(_get_user_history(db, session["user_id"], category, difficulty=difficulty))
         row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=list(excluded_ids))
 
         recycled = False
         if not row and excluded_ids:
             _reset_user_history(db, session["user_id"], category, difficulty=difficulty)
-            session["asked_ids"] = [qid for qid in session["asked_ids"] if qid not in excluded_ids]
-            session["served_answers"] = {
-                qid: answer
-                for qid, answer in session["served_answers"].items()
-                if qid not in excluded_ids
-            }
             save_experience_session(session_id, session)
-            row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=[])
+            active_excluded_ids = _question_ids_for_difficulty(db, category, session["asked_ids"], difficulty)
+            active_excluded_ids.update(_question_ids_for_difficulty(db, category, session["served_answers"].keys(), difficulty))
+            active_excluded_ids.update(_question_ids_for_difficulty(db, category, client_excluded_ids, difficulty))
+            row = _load_random_question(db, category, difficulty=difficulty, excluded_ids=list(active_excluded_ids))
             recycled = True
 
         if not row:
