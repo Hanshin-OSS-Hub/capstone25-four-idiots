@@ -249,8 +249,8 @@ def submit_battle_answer():
     try:
         db = get_db()
         data = request.get_json(silent=True) or {}
-        match_id = data.get("match_id")
-        question_id = data.get("question_id")
+        match_id = data.get("match_id") or data.get("matchId")
+        question_id = data.get("question_id") or data.get("questionId") or data.get("q_id") or data.get("qId")
         submitted_answer = data.get("answer", data.get("choice"))
         if submitted_answer is None:
             submitted_answer = data.get("answer_order", data.get("answerOrder"))
@@ -297,6 +297,7 @@ def submit_battle_answer():
                 "timed_out": timed_out,
                 "earned_score": earned_score,
                 "total_score": match["my_score"],
+                "total_power": match["my_score"],
                 "round_result": round_result,
                 "opponent_correct": question["opponent_correct"],
                 "opponent_time_sec": question["opponent_time_sec"],
@@ -318,7 +319,7 @@ def finish_battle():
     try:
         db = get_db()
         data = request.get_json(silent=True) or {}
-        match_id = data.get("match_id")
+        match_id = data.get("match_id") or data.get("matchId")
 
         if not match_id:
             return fail("BAD_REQUEST", "match_id is required", 400)
@@ -351,6 +352,7 @@ def finish_battle():
             "opponent_nickname": match["opponent_nickname"],
             "result": result,
             "my_score": match["my_score"],
+            "total_power": match["my_score"],
             "opponent_score": match["opponent_score"],
             "my_lives": match["my_lives"],
             "opponent_lives": match["opponent_lives"],

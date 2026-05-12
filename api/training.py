@@ -155,14 +155,14 @@ def submit_result():
         data = request.get_json(silent=True) or {}
 
         category = _normalize_category(data.get("category") or data.get("categoryName"))
-        question_id = data.get("question_id")
+        question_id = data.get("question_id") or data.get("questionId") or data.get("q_id") or data.get("qId")
         submitted_answer = data.get("answer")
         if submitted_answer is None:
             submitted_answer = data.get("choice")
         if submitted_answer is None:
             submitted_answer = data.get("answer_order", data.get("answerOrder"))
         time_sec = int(data.get("time_sec", 0))
-        session_id = data.get("session_id")
+        session_id = data.get("session_id") or data.get("sessionId")
         user_id = g.get("user_id")
 
         if not category or not question_id:
@@ -249,7 +249,7 @@ def finish_training():
     try:
         db = get_db()
         data = request.get_json(silent=True) or {}
-        session_id = data.get("session_id")
+        session_id = data.get("session_id") or data.get("sessionId")
 
         if not session_id:
             return fail("BAD_REQUEST", "session_id is required", 400)
