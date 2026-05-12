@@ -1,3 +1,4 @@
+using MathArena.Network; // [추가] 네트워크 데이터 타입을 사용하기 위해 필요합니다.
 using UnityEngine;
 
 public class ProfileOverlayController : MonoBehaviour
@@ -14,6 +15,9 @@ public class ProfileOverlayController : MonoBehaviour
 
     [Header("UI 시스템 참조")]
     [SerializeField]
+    private ProfileUIController profileUI; // [핵심 추가] 프로필 UI를 갱신할 컨트롤러 연결
+
+    [SerializeField]
     private InventoryUI inventoryUI;
 
     [SerializeField]
@@ -24,10 +28,10 @@ public class ProfileOverlayController : MonoBehaviour
         ShowProfile();
     }
 
-    // [핵심] 모든 상태를 초기화하고 메인 프로필만 남기는 베이스 로직
+    // [수정] 화면을 보여줄 때마다 서버 정보를 새로고침합니다.
     public void ShowProfile()
     {
-        Debug.Log("[Profile] 모든 오버레이를 닫고 메인 프로필로 돌아갑니다.");
+        Debug.Log("[Profile] 메인 프로필로 돌아오며 데이터를 새로고침합니다.");
 
         if (profileInfoRoot != null)
             profileInfoRoot.SetActive(true);
@@ -35,6 +39,27 @@ public class ProfileOverlayController : MonoBehaviour
             inventoryOverlayRoot.SetActive(false);
         if (rankingOverlayRoot != null)
             rankingOverlayRoot.SetActive(false);
+
+        // [핵심 로직 추가] 서버에서 최신 프로필 정보를 가져와 UI에 적용
+        RefreshProfileFromServer();
+    }
+
+    private void RefreshProfileFromServer()
+    {
+        if (NetworkManager.Instance == null || profileUI == null)
+            return;
+
+        NetworkManager.Instance.GetProfile(
+            (data) =>
+            {
+                // [핵심 추가] 불러온 데이터를 세션에 저장해야 배틀 컨트롤러가 내 현재 BP를 압니다!
+                ExperienceSession.UserProfile = data;
+
+                profileUI.UpdateProfileUI(data);
+                Debug.Log($"[Profile] {data.nickname}님의 데이터를 세션에 저장했습니다.");
+            },
+            (err) => Debug.LogError($"[Profile] 로드 실패: {err}")
+        );
     }
 
     public void OpenInventory()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MathArena.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,69 +9,124 @@ public class ArenaMatchingUI : MonoBehaviour
 {
     [Header("Opponent UI References")]
     [SerializeField]
-    private TMP_Text opponentNicknameText; // 상대방 닉네임
+    private TMP_Text opponentNicknameText;
 
     [SerializeField]
-    private TMP_Text opponentBPDisplayText; // "설계 전투력 : 2,840 BP" 형태로 출력될 텍스트
+    private TMP_Text opponentTierText; // 명세서 기반 티어 이름 (예: 매직 브론즈)
 
     [SerializeField]
-    private Image opponentIconImage; // 상대방 프로필 이미지
+    private TMP_Text opponentBPDisplayText; // [수정] AR이 아닌 'BP'로 표시
+
+    [Header("Loading UI")]
+    [SerializeField]
+    private GameObject loadingOverlay;
 
     [Header("Scene Navigation")]
     [SerializeField]
-    private string battleSceneName = "11_ArenaBattle"; // 결투 씬 이름
+    private string battleSceneName = "11_ArenaBattle";
 
-    // 매칭 풀: 명세서에 따라 "나와 전투력 차이가 적은 순서"로 정렬된 리스트라고 가정합니다.
-    private List<RankingEntryData> dummyOpponents = new List<RankingEntryData>();
+    private List<RankingEntryData> opponentList = new List<RankingEntryData>();
     private int currentOpponentIndex = 0;
 
     void Start()
     {
-        // 1. 상대방 리스트 초기화 (나중에 서버에서 내 BP와 비슷한 사람들을 받아오는 로직이 들어갈 곳)
-        InitializeOpponents();
-
-        // 2. 현재 선택된 종목 정보를 바탕으로 UI 첫 렌더링
-        RefreshUI();
+        FetchRecommendations();
     }
 
-    // [명세서 반영] 테스트를 위해 다양한 전투력을 가진 상대방 데이터를 생성합니다.
-    private void InitializeOpponents()
+    private void FetchRecommendations()
     {
-        // 실제로는 서버에서 쿼리해온 리스트가 들어옵니다.
-        dummyOpponents.Add(new RankingEntryData { nickname = "엄준식", score = 2840 });
-        dummyOpponents.Add(new RankingEntryData { nickname = "수학귀신", score = 3150 });
-        dummyOpponents.Add(new RankingEntryData { nickname = "알고리즘맨", score = 1920 });
+        if (loadingOverlay != null)
+            loadingOverlay.SetActive(true);
+
+        string currentCat = ArenaSession.CurrentCategory.ToString().ToLower();
+
+        NetworkManager.Instance.FindMatch(
+            currentCat,
+            (res) =>
+            {
+                if (res.success && res.data != null)
+                {
+                    GenerateDummyOpponents();
+                }
+                else
+                {
+                    GenerateDummyOpponents();
+                }
+                if (loadingOverlay != null)
+                    loadingOverlay.SetActive(false);
+                RefreshUI();
+            },
+            (err) =>
+            {
+                GenerateDummyOpponents();
+                if (loadingOverlay != null)
+                    loadingOverlay.SetActive(false);
+                RefreshUI();
+            }
+        );
     }
 
-    // UI 전체 새로고침
+    private void GenerateDummyOpponents()
+    {
+        opponentList = new List<RankingEntryData>();
+        // 테스트 데이터: arena_rating은 승급용(내부), score는 전투력(BP)용
+        opponentList.Add(
+            new RankingEntryData
+            {
+                nickname = "User1 (Bot)",
+                arena_rating = 254,
+                score = 254,
+            }
+        );
+        opponentList.Add(
+            new RankingEntryData
+            {
+                nickname = "",
+                arena_rating = 120,
+                score = 120,
+            }
+        );
+        opponentList.Add(
+            new RankingEntryData
+            {
+                nickname = null,
+                arena_rating = 450,
+                score = 450,
+            }
+        );
+
+        currentOpponentIndex = 0;
+    }
+
     public void RefreshUI()
     {
-        if (dummyOpponents.Count == 0)
+        if (opponentList.Count == 0)
             return;
 
-        // 1. 세션에서 현재 선택된 종목 정보를 가져옴
-        ArenaCategory currentCat = ArenaSession.CurrentCategory;
-        string catName = GetKoreanCategoryName(currentCat);
+        var op = opponentList[currentOpponentIndex];
+        string catName = GetKoreanCategoryName(ArenaSession.CurrentCategory);
 
-        // 2. 현재 인덱스의 상대방 데이터 호출
-        var op = dummyOpponents[currentOpponentIndex];
-
-        // 3. 상대 닉네임 설정
+        // 1. 닉네임: 없으면 "User"로 통일
         if (opponentNicknameText != null)
-            opponentNicknameText.text = op.nickname;
-
-        // 4. [요구사항 반영] 종목 이름 + 상대 전투력 결합 (예: 설계 전투력 : 2,840 BP)
-        if (opponentBPDisplayText != null)
         {
-            opponentBPDisplayText.text = $"{catName} 전투력 : {op.score:N0} BP";
+            opponentNicknameText.text = string.IsNullOrEmpty(op.nickname) ? "User" : op.nickname;
         }
 
-        // 5. 상대 아이콘 이미지 설정
-        if (opponentIconImage != null && op.profileIcon != null)
-            opponentIconImage.sprite = op.profileIcon;
+        // 2. 티어 텍스트: arena_rating 기반
+        var info = TierManager.GetTierInfo(op.arena_rating);
+        if (opponentTierText != null)
+        {
+            opponentTierText.text = info.fullName;
+        }
+
+        // 3. 전투력 표시: AR이 아닌 'BP' 단위 사용
+        if (opponentBPDisplayText != null)
+        {
+            // BP는 100점 단위 리셋 없이 전체 수치를 보여줍니다.
+            opponentBPDisplayText.text = $"{catName} 전투력 : {op.score} BP";
+        }
     }
 
-    // 종목 코드를 한글 명칭으로 변환
     private string GetKoreanCategoryName(ArenaCategory cat)
     {
         return cat switch
@@ -84,51 +140,25 @@ public class ArenaMatchingUI : MonoBehaviour
         };
     }
 
-    // --- 버튼 이벤트 함수 ---
-
-    public void OnClickNextOpponent() // [다음 상대] 버튼
+    public void OnClickNextOpponent()
     {
-        currentOpponentIndex = (currentOpponentIndex + 1) % dummyOpponents.Count;
+        currentOpponentIndex = (currentOpponentIndex + 1) % opponentList.Count;
         RefreshUI();
     }
 
-    public void OnClickPrevOpponent() // [이전 상대] 버튼
+    public void OnClickPrevOpponent()
     {
-        currentOpponentIndex =
-            (currentOpponentIndex - 1 + dummyOpponents.Count) % dummyOpponents.Count;
+        currentOpponentIndex = (currentOpponentIndex - 1 + opponentList.Count) % opponentList.Count;
         RefreshUI();
     }
 
     public void OnClickStartBattle()
     {
-        var op = dummyOpponents[currentOpponentIndex];
-
-        // 1. 아레나 세션에 상대 정보 기록
-        ArenaSession.OpponentId = op.nickname;
-        ArenaSession.OpponentRating = op.score;
-
-        // 2. [핵심] 배틀 컨트롤러(ExperienceBattleController)를 위해 데이터 복사
-        // 훈련장 때와 마찬가지로 ExperienceSession에 정보를 심어줍니다.
-        ExperienceSession.CurrentCategory = ConvertArenaToExperience(ArenaSession.CurrentCategory);
-
-        // 3. 현재 모드가 '아레나'임을 명시 (배틀 컨트롤러의 mode 변수와 연동될 수 있게 함)
-        // 만약 세션에 BattleMode를 저장하는 변수가 있다면 여기서 설정하세요.
-        // ExperienceSession.CurrentBattleMode = BattleMode.Arena;
-
-        SceneManager.LoadScene(battleSceneName); // 11_ArenaBattle로 이동
-    }
-
-    // 타입 변환 도우미
-    private ExperienceCategory ConvertArenaToExperience(ArenaCategory arenaCat)
-    {
-        return arenaCat switch
-        {
-            ArenaCategory.Concept => ExperienceCategory.Concept,
-            ArenaCategory.Calc => ExperienceCategory.Calc,
-            ArenaCategory.Idea => ExperienceCategory.Idea,
-            ArenaCategory.Design => ExperienceCategory.Design,
-            ArenaCategory.Practice => ExperienceCategory.Practice,
-            _ => ExperienceCategory.Concept,
-        };
+        var selected = opponentList[currentOpponentIndex];
+        ArenaSession.OpponentId = string.IsNullOrEmpty(selected.nickname)
+            ? "User"
+            : selected.nickname;
+        ArenaSession.OpponentRating = selected.arena_rating;
+        SceneManager.LoadScene(battleSceneName);
     }
 }

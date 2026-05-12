@@ -2711,7 +2711,9 @@ MonoBehaviour:
   panelInput: {fileID: 741261728}
   sequenceManager: {fileID: 1283387789}
   difficultyBar: {fileID: 2638937218314847091}
+  battleTimer: {fileID: 4208604892287002486}
   questionCounterText: {fileID: 0}
+  playerCurrentScoreText: {fileID: 0}
   questionText: {fileID: 2070358031732762603}
   choiceButtons:
   - {fileID: 1968437010676301462}
@@ -2871,6 +2873,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4208604892287002485}
+  - component: {fileID: 4208604892287002486}
   m_Layer: 5
   m_Name: Panel_Count
   m_TagString: Untagged
@@ -3276,7 +3279,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -28.448395, y: -9.774414}
+  m_AnchoredPosition: {x: -28.448364, y: -9.774414}
   m_SizeDelta: {x: 167.0717, y: 106.2856}
   m_Pivot: {x: 1, y: 1}
 --- !u!224 &4208604892287002485
@@ -3300,6 +3303,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 95}
   m_SizeDelta: {x: 116.858215, y: 111.7593}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &4208604892287002486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2856071847356784576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317aa971471476544930c046b4b93fbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExperienceTimer
+  timerText: {fileID: 5108816221051105110}
 --- !u!224 &4244210573859208370
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4536,7 +4552,15 @@ PrefabInstance:
     - target: {fileID: 4851884133163697922, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 2705444635235068549}
+      objectReference: {fileID: 491682548}
+    - target: {fileID: 4851884133163697922, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ClearCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 4851884133163697922, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: DrawingCanvas, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5597043828259172542, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
       propertyPath: m_Color.a
       value: 1
@@ -4545,6 +4569,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 2705444635235068549}
+    - target: {fileID: 7730475678672151412, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnClickVerify
+      objectReference: {fileID: 0}
     - target: {fileID: 8238900545083942696, guid: f4aca4758ea2a1649b63100e843a1718, type: 3}
       propertyPath: m_Name
       value: Panel_Input
@@ -4939,9 +4967,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 2
   titleText: {fileID: 4419842331561873563}
-  timerText: {fileID: 5108816221051105110}
-  exitSceneName: 10_Arena
-  startMinutes: 1
+  exitSceneName: 02_Lobby
 --- !u!114 &6987985129154055713
 MonoBehaviour:
   m_ObjectHideFlags: 0

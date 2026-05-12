@@ -35,9 +35,25 @@ public class NetworkManager : MonoBehaviour
     }
 
     // [1] 프로필 (GET)
+    // NetworkManager.cs 내의 GetProfile 함수를 아래와 같이 교체하세요.
     public void GetProfile(Action<UserProfileData> onSuccess, Action<string> onFail)
     {
-        GetRequest<UserProfileData>("/v1/user/profile", onSuccess, onFail);
+        // [수정] <UserProfileData>가 아니라 <AuthResponse<UserProfileData>>로 받아야 합니다.
+        GetRequest<AuthResponse<UserProfileData>>(
+            "/v1/user/profile",
+            (res) =>
+            {
+                if (res.success && res.data != null)
+                {
+                    onSuccess?.Invoke(res.data); // 주머니 안의 진짜 데이터를 넘겨줌
+                }
+                else
+                {
+                    onFail?.Invoke("데이터가 비어있습니다.");
+                }
+            },
+            onFail
+        );
     }
 
     // [2] 체험장 (POST / GET)
@@ -121,11 +137,17 @@ public class NetworkManager : MonoBehaviour
     public void StartMatch(
         string cat,
         string diff,
-        Action<AuthResponse<ServerQuestionData>> onSuccess,
+        string matchId,
+        Action<AuthResponse<ArenaStartData>> onSuccess, // [수정] ArenaStartData로 변경
         Action<string> onFail
     )
     {
-        MatchRequest data = new MatchRequest { category = cat, difficulty = diff };
+        MatchRequest data = new MatchRequest
+        {
+            category = cat,
+            difficulty = diff,
+            match_id = matchId,
+        };
         PostRequest("/v1/match/start", data, onSuccess, onFail);
     }
 
@@ -229,5 +251,54 @@ public class NetworkManager : MonoBehaviour
                 onFail?.Invoke(request.downloadHandler.text);
             }
         }
+    }
+
+    // 아레나 상대 찾기 (POST /v1/match/find)
+    public void FindMatch(
+        string category,
+        Action<AuthResponse<ArenaMatchData>> onSuccess,
+        Action<string> onFail
+    )
+    {
+        MatchRequest data = new MatchRequest { category = category };
+        PostRequest("/v1/match/find", data, onSuccess, onFail);
+    }
+
+    // 아레나 결과 최종 종료 (POST /v1/match/finish)
+    public void FinishMatch(
+        string matchId,
+        Action<AuthResponse<string>> onSuccess,
+        Action<string> onError
+    )
+    {
+        // [수정] URL 뒤에 붙이던 ?match_id= 부분을 제거하고 깔끔한 주소만 씁니다.
+        string url = "/v1/match/finish";
+
+        // [핵심] JSON 바디에 담을 요청 객체를 생성합니다.
+        MatchRequest request = new MatchRequest { match_id = matchId };
+
+        // PostRequest에 request 객체를 전달합니다.
+        PostRequest(url, request, onSuccess, onError);
+    }
+
+    public void GetTrainingQuestion(
+        string sessionId,
+        Action<AuthResponse<ServerQuestionData>> onSuccess,
+        Action<string> onFail
+    )
+    {
+        // 이미지 규격에 따른 훈련장 문제 조회 엔드포인트
+        string endpoint = $"/v1/training/question?session_id={sessionId}";
+        GetRequest<AuthResponse<ServerQuestionData>>(endpoint, onSuccess, onFail);
+    }
+
+    public void FinishTraining(
+        BattleResultRequest data,
+        Action<AuthResponse<string>> onSuccess,
+        Action<string> onFail
+    )
+    {
+        // [핵심] 제출(submit)이 아닌 종료(finish) 주소로 요청을 보냅니다.
+        PostRequest("/v1/training/finish", data, onSuccess, onFail);
     }
 }

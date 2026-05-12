@@ -1,3 +1,4 @@
+using MathArena.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,16 +6,42 @@ using UnityEngine.UI;
 public class LobbyProfileController : MonoBehaviour
 {
     [Header("UI References")]
-    public TMP_Text textNickname;
-    public TMP_Text textAverageCP;
-    public TMP_Text textTierName;
-    public Image imgTierIcon;
-    public TMP_Text textGold;
-    public TMP_Text textTicket;
+    [SerializeField]
+    private TMP_Text textNickname;
+
+    [SerializeField]
+    private TMP_Text textAverageCP; // "전투력 2840" 형태 [cite: 18]
+
+    [SerializeField]
+    private TMP_Text textTierName; // "Normal Bronze" 형태 [cite: 19]
+
+    [SerializeField]
+    private Image imgTierIcon; // 49단계 티어 아이콘 [cite: 19, 46, 47]
+
+    [SerializeField]
+    private TMP_Text textGold;
+
+    [SerializeField]
+    private TMP_Text textTicket;
+
+    [Header("Category CP Texts")]
+    [SerializeField]
+    private TMP_Text textConceptCP;
+
+    [SerializeField]
+    private TMP_Text textCalcCP;
+
+    [SerializeField]
+    private TMP_Text textIdeaCP;
+
+    [SerializeField]
+    private TMP_Text textDesignCP;
+
+    [SerializeField]
+    private TMP_Text textPracticalCP;
 
     private void Start()
     {
-        // 씬이 시작될 때 서버에서 내 정보를 가져옴
         RefreshUserData();
     }
 
@@ -25,29 +52,45 @@ public class LobbyProfileController : MonoBehaviour
 
         NetworkManager.Instance.GetProfile(
             onSuccess: (data) => UpdateUI(data),
-            onFail: (error) => Debug.LogError($"프로필 로드 실패: {error}")
+            onFail: (error) => Debug.LogError($"[Profile] 로드 실패: {error}")
         );
     }
 
     private void UpdateUI(UserProfileData data)
     {
-        //textNickname.text = data.nickname;
+        if (textNickname != null)
+            textNickname.text = data.nickname;
 
-        // 평균 전투력 계산 (전 종목 합산 평균)
         float avg =
             (data.cp_concept + data.cp_calc + data.cp_idea + data.cp_design + data.cp_practical)
             / 5f;
-        textAverageCP.text = $"평균전투력 {Mathf.RoundToInt(avg)}";
+        if (textAverageCP != null)
+            textAverageCP.text = $"평균전투력 {Mathf.RoundToInt(avg)}";
 
-        // 껍데기 정보
-        textGold.text = $"X {data.gold}";
-        textTicket.text = $"X {data.arenaTickets}";
-
-        // 티어 및 이미지 로드 (Resources/Tiers/Tier_X_Y)
         var info = TierManager.GetTierInfo(data.arena_rating);
-        textTierName.text = info.fullName;
+        if (textTierName != null)
+            textTierName.text = info.fullName;
+
+        // 3. 종목별 개별 전투력 표시
+        if (textConceptCP != null)
+            textConceptCP.text = $"{data.cp_concept} BP";
+        if (textCalcCP != null)
+            textCalcCP.text = $"{data.cp_calc} BP";
+        if (textIdeaCP != null)
+            textIdeaCP.text = $"{data.cp_idea} BP";
+        if (textDesignCP != null)
+            textDesignCP.text = $"{data.cp_design} BP";
+        if (textPracticalCP != null)
+            textPracticalCP.text = $"{data.cp_practical} BP";
+
+        // 4. 재화 정보
+        if (textGold != null)
+            textGold.text = $"X {data.gold}";
+        if (textTicket != null)
+            textTicket.text = $"X {data.arenaTickets}";
 
         string path = $"Tiers/Tier_{info.tierIdx}_{info.gradeIdx}";
-        imgTierIcon.sprite = Resources.Load<Sprite>(path);
+        if (imgTierIcon != null)
+            imgTierIcon.sprite = Resources.Load<Sprite>(path);
     }
 }

@@ -1,3 +1,4 @@
+using MathArena.Network; // [추가] 네임스페이스 연결
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,10 +14,11 @@ public class RankingRowView : MonoBehaviour
     {
         rankText.text = data.rank.ToString();
         nicknameText.text = data.nickname;
-        arText.text = $"{data.ar} AR";
 
-        // 49단계 티어 이미지 자동 로드
-        var info = TierManager.GetTierInfo(data.ar);
+        // [수정] ar 대신 arena_rating 사용
+        arText.text = $"{data.arena_rating} AR";
+
+        var info = TierManager.GetTierInfo(data.arena_rating);
         string path = $"Tiers/Tier_{info.tierIdx}_{info.gradeIdx}";
         tierIconImage.sprite = Resources.Load<Sprite>(path);
     }

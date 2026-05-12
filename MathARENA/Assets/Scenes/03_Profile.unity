@@ -2730,7 +2730,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB2C9\uB124\uC784"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
   m_sharedMaterial: {fileID: -4869816015449211322, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
@@ -4198,6 +4198,7 @@ MonoBehaviour:
   profileInfoRoot: {fileID: 1422588410}
   inventoryOverlayRoot: {fileID: 911168173}
   rankingOverlayRoot: {fileID: 19019757}
+  profileUI: {fileID: 1712223309}
   inventoryUI: {fileID: 911168175}
   rankingUI: {fileID: 19019759}
 --- !u!1 &961726152
@@ -8078,7 +8079,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB808\uC804\uB4DC \uBE0C\uB860\uC988"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
   m_sharedMaterial: {fileID: -4869816015449211322, guid: 25199307e5f162643b3e80269f94adfc, type: 2}

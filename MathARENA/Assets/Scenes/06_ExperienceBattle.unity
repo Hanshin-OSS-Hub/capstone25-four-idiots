@@ -1698,9 +1698,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 0
   titleText: {fileID: 5201409500625386894}
-  timerText: {fileID: 2484779033506383059}
-  exitSceneName: 05_ExperienceSelect
-  startMinutes: 5
+  exitSceneName: 02_Lobby
 --- !u!114 &2464833728658675174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5126,7 +5124,9 @@ MonoBehaviour:
   panelInput: {fileID: 8238900544958221356}
   sequenceManager: {fileID: 1385561912}
   difficultyBar: {fileID: 1210452678771255212}
+  battleTimer: {fileID: 0}
   questionCounterText: {fileID: 2177065567524833380}
+  playerCurrentScoreText: {fileID: 0}
   questionText: {fileID: 7310066011692752038}
   choiceButtons:
   - {fileID: 4813556659328914576}

@@ -41,11 +41,17 @@ public class ExperienceBattleController : MonoBehaviour
     private BattleSequenceManager sequenceManager;
 
     [SerializeField]
-    private ExperienceDifficultyBar difficultyBar;
+    private ExperienceDifficultyBar difficultyBar; // 난이도 아이콘용
+
+    [SerializeField]
+    private ExperienceTimer battleTimer; // [추가] 타이머 전용 칸
 
     [Header("Question UI")]
     [SerializeField]
     private TMP_Text questionCounterText;
+
+    [SerializeField]
+    private TMP_Text playerCurrentScoreText; // 플레이어 아래 점수 텍스트
 
     [SerializeField]
     private TMP_Text questionText;
@@ -140,7 +146,7 @@ public class ExperienceBattleController : MonoBehaviour
     private string currentQuestionId; // 145번 줄 (중복 제거됨)
     private string currentSessionId; // 세션 관리용 (통합) [cite: 2026-05-08]
 
-    //private string currentDiffName = "VERY EASY";
+    private string currentDiffName = "VERY EASY";
     private int opponentLife = 4;
     private int currentOpponentRecordIndex = 0;
 
@@ -153,6 +159,14 @@ public class ExperienceBattleController : MonoBehaviour
     private List<int> designUserSequence = new List<int>();
     private int[] designCorrectSequence;
     private string[] designOriginalTexts;
+
+    private int currentOpponentPower; // 상대방의 실제 전투력 저장용
+
+    // ExperienceBattleController.cs [160번 줄 근처]
+    private List<ServerQuestionData> arenaQuestionList = new List<ServerQuestionData>(); // 아레나용 문제 저장소
+
+    private string currentMatchId; // 아레나 매치 ID
+    private List<OpponentRecord> currentOpponentRecords = new List<OpponentRecord>(); // 상대방의 문제별 기록
 
     private void Awake()
     {
@@ -168,7 +182,7 @@ public class ExperienceBattleController : MonoBehaviour
 
         ExperienceSession.CurrentLife = ExperienceSession.MaxLife;
         opponentLife = 4;
-        isProcessingAnswer = false; // 초기화
+        isProcessingAnswer = false;
 
         if (userLifePanel != null)
             userLifePanel.SetActive(mode != BattleMode.Experience);
@@ -177,24 +191,39 @@ public class ExperienceBattleController : MonoBehaviour
 
         UpdateLifeUI();
 
-        ExperienceSession.TotalExpScore = 0;
+        // [수정] 0점이 아닌, 현재 카테고리의 BP를 시작 점수로 설정합니다.
+        ExperienceSession.TotalExpScore = GetCurrentCategoryCP();
+
         ExperienceSession.CurrentQuestionCount = 0;
         currentOpponentRecordIndex = 0;
 
         battleRecords.Clear();
         solvedQuestionIds.Clear();
 
+        // 점수판 UI를 현재 BP로 즉시 갱신
+        UpdatePlayerScoreUI();
+
         SetupModeByCategory();
 
         if (mode == BattleMode.Arena)
         {
             opponentLife = 4;
-
-            // 만약 상대 닉네임을 표시할 TMP_Text가 있다면 여기서 연결
-            // if (opponentNameText != null) opponentNameText.text = ArenaSession.OpponentId;
-
             UpdateLifeUI();
             LoadArenaOpponentData();
+        }
+        else
+        {
+            SetupQuestionByCategory();
+        }
+    }
+
+    // 점수 UI를 갱신하는 공용 함수
+    private void UpdatePlayerScoreUI()
+    {
+        if (playerCurrentScoreText != null)
+        {
+            // 현재 내 BP에 획득한 점수가 실시간으로 합쳐져 보입니다.
+            playerCurrentScoreText.text = $"{ExperienceSession.TotalExpScore} BP";
         }
     }
 
@@ -240,77 +269,180 @@ public class ExperienceBattleController : MonoBehaviour
 
     private void LoadArenaOpponentData()
     {
-        // [수정] 서버 통신 로직을 모두 지우고 즉시 문제 세팅으로 넘어갑니다.
-        Debug.Log($"[아레나] 로컬 샘플 데이터로 매칭 완료: {ArenaSession.OpponentId}");
+        if (loadingOverlay != null)
+            loadingOverlay.SetActive(true);
 
-        // 상대방 전적(샘플)이 필요하다면 여기서 리스트에 더미 데이터를 넣을 수도 있습니다.
-        opponentRecords.Clear();
+        // 아레나 매칭 시작 (서버에서 상대방의 기록 데이터를 가져옴)
+        string cat = currentCategory.ToString().ToLower();
 
-        // 다음 단계(문제 불러오기)로 즉시 이동
-        SetupQuestionByCategory();
+        NetworkManager.Instance.FindMatch(
+            cat,
+            (res) =>
+            {
+                if (res.success && res.data?.candidates?.Count > 0)
+                {
+                    var candidate = res.data.candidates[0];
+                    currentMatchId = candidate.match_id;
+                    currentOpponentPower = candidate.opponent.power;
+                    currentOpponentRecords = candidate.opponent_records;
+
+                    // [핵심] 명세서 38번: 마지막으로 푼 문제 번호 다음부터 시작
+                    // 만약 5번까지 풀었다면(0~4), 5번 인덱스부터 시작합니다.
+                    ExperienceSession.CurrentQuestionCount = candidate.last_question_order + 1;
+
+                    // 상대 기록 인덱스도 동일하게 맞춰줍니다.
+                    currentOpponentRecordIndex = candidate.last_question_order + 1;
+
+                    Debug.Log(
+                        $"<color=orange>[아레나]</color> {ExperienceSession.CurrentQuestionCount}번 문제부터 재개합니다."
+                    );
+
+                    if (loadingOverlay != null)
+                        loadingOverlay.SetActive(false);
+                    SetupQuestionByCategory();
+                }
+            },
+            (err) => HandleNetworkError(err)
+        );
     }
 
     // ExperienceBattleController.cs의 SetupQuestionByCategory 메서드 수정
     private void SetupQuestionByCategory()
     {
         if (loadingOverlay != null)
-            loadingOverlay.SetActive(true); // 로딩 켜기
+            loadingOverlay.SetActive(true);
 
-        // [핵심 수정] 현재 카테고리를 string으로 변환 후 소문자(ToLower)로 만들어 서버 규격에 맞춥니다.
+        // [CCTV 1] 함수가 실행되는지 확인하는 로그
+        Debug.Log("<color=white><b>[1단계] SetupQuestionByCategory 실행됨</b></color>");
+
+        isProcessingAnswer = true;
         string cat = currentCategory.ToString().ToLower();
-        string diff = DetermineDifficulty(); // 기존 currentDiffName 대신 동적 난이도 결정 함수 사용 권장
+        currentDiffName = DetermineDifficulty();
 
-        Debug.Log($"[서버 요청 시작] 카테고리: {cat}, 난이도: {diff}");
-
-        // 1단계: 세션 생성 (Start)
-        NetworkManager.Instance.StartExperience(
-            cat,
-            diff,
-            "",
-            (startRes) =>
-            {
-                if (startRes.success && startRes.data != null)
+        if (mode == BattleMode.Training)
+        {
+            // --- [훈련장] 세션 생성 및 문제 상세 요청 ---
+            NetworkManager.Instance.StartTraining(
+                cat,
+                currentDiffName,
+                "",
+                (res) =>
                 {
-                    string sessionId = startRes.data.session_id;
-                    Debug.Log($"[세션 생성 성공] Session ID: {sessionId}");
+                    if (res.success && res.data != null)
+                    {
+                        currentSessionId = res.data.session_id;
+                        Debug.Log(
+                            $"<color=cyan>[훈련장] 세션 생성 성공: {currentSessionId}</color>"
+                        );
 
-                    // 2단계: 받은 session_id로 실제 문제 요청 (Question)
-                    NetworkManager.Instance.GetExperienceQuestion(
-                        sessionId,
-                        (questionRes) =>
-                        {
-                            if (questionRes.success && questionRes.data != null)
+                        NetworkManager.Instance.GetTrainingQuestion(
+                            currentSessionId,
+                            (questionRes) =>
                             {
-                                // 실제 문제 데이터(content, choices 등)를 UI에 적용
-                                ApplyServerDataToUI(questionRes.data);
-
-                                if (loadingOverlay != null)
-                                    loadingOverlay.SetActive(false); // 로딩 끄기
-                            }
-                        },
-                        (err) =>
-                        {
-                            Debug.LogError($"문제 로드 실패: {err}");
-                            isProcessingAnswer = false; // 실패 시 다시 시도할 수 있게 잠금 해제
-                            if (loadingOverlay != null)
-                                loadingOverlay.SetActive(false);
-                        }
-                    );
-                }
-                else
-                {
-                    Debug.LogWarning("[세션 생성 실패] 응답이 성공이 아니거나 데이터가 없습니다.");
-                    if (loadingOverlay != null)
-                        loadingOverlay.SetActive(false);
-                }
-            },
-            (err) =>
+                                if (questionRes.success && questionRes.data != null)
+                                {
+                                    Debug.Log(
+                                        "<color=lime>[훈련장] 문제 수신 완료 -> UI 적용</color>"
+                                    );
+                                    ApplyServerDataToUI(questionRes.data);
+                                }
+                                else
+                                    HandleNetworkError("문제 데이터가 비어있습니다.");
+                            },
+                            (err) => HandleNetworkError(err)
+                        );
+                    }
+                    else
+                        HandleNetworkError("훈련장 세션 생성 실패");
+                },
+                (err) => HandleNetworkError(err)
+            );
+        }
+        else if (mode == BattleMode.Arena)
+        {
+            // 이미 리스트를 받아놓은 상태라면 서버에 또 묻지 않고 리스트에서 가져옵니다.
+            if (
+                arenaQuestionList != null
+                && arenaQuestionList.Count > ExperienceSession.CurrentQuestionCount
+            )
             {
-                Debug.LogError($"세션 생성 통신 에러: {err}");
-                if (loadingOverlay != null)
-                    loadingOverlay.SetActive(false);
+                ApplyServerDataToUI(arenaQuestionList[ExperienceSession.CurrentQuestionCount]);
+                return;
             }
-        );
+
+            // 처음 시작할 때만 서버에서 리스트를 가져옵니다.
+            NetworkManager.Instance.StartMatch(
+                cat,
+                currentDiffName,
+                currentMatchId,
+                (res) =>
+                {
+                    if (res.success && res.data != null && res.data.questions != null)
+                    {
+                        arenaQuestionList = res.data.questions; // 리스트 전체 저장
+                        Debug.Log(
+                            $"<color=orange>[아레나] {arenaQuestionList.Count}개의 문제를 수신했습니다.</color>"
+                        );
+
+                        // 첫 번째 문제를 화면에 띄웁니다.
+                        ApplyServerDataToUI(
+                            arenaQuestionList[ExperienceSession.CurrentQuestionCount]
+                        );
+                    }
+                    else
+                        HandleNetworkError("아레나 데이터를 가져오지 못했습니다.");
+                },
+                (err) => HandleNetworkError(err)
+            );
+        }
+        else
+        {
+            // --- [체험장] 세션 생성 및 문제 상세 요청 ---
+            NetworkManager.Instance.StartExperience(
+                cat,
+                currentDiffName,
+                "",
+                (res) =>
+                {
+                    if (res.success && res.data != null)
+                    {
+                        currentSessionId = res.data.session_id;
+                        Debug.Log(
+                            $"<color=cyan>[체험장] 세션 생성 성공: {currentSessionId}</color>"
+                        );
+
+                        NetworkManager.Instance.GetExperienceQuestion(
+                            currentSessionId,
+                            (questionRes) =>
+                            {
+                                if (questionRes.success && questionRes.data != null)
+                                {
+                                    Debug.Log(
+                                        "<color=lime>[체험장] 문제 수신 완료 -> UI 적용</color>"
+                                    );
+                                    ApplyServerDataToUI(questionRes.data);
+                                }
+                                else
+                                    HandleNetworkError("문제 데이터가 비어있습니다.");
+                            },
+                            (err) => HandleNetworkError(err)
+                        );
+                    }
+                    else
+                        HandleNetworkError("체험장 세션 생성 실패");
+                },
+                (err) => HandleNetworkError(err)
+            );
+        }
+    }
+
+    // 공통 에러 처리 함수
+    private void HandleNetworkError(string err)
+    {
+        Debug.LogError($"네트워크 에러: {err}");
+        isProcessingAnswer = false;
+        if (loadingOverlay != null)
+            loadingOverlay.SetActive(false);
     }
 
     private string DetermineDifficulty()
@@ -350,93 +482,101 @@ public class ExperienceBattleController : MonoBehaviour
     // ExperienceBattleController.cs의 ApplyServerDataToUI 함수 전문 (334번 줄 근처)
     private void ApplyServerDataToUI(ServerQuestionData data)
     {
+        Debug.Log("<color=yellow><b>[2단계] ApplyServerDataToUI 진입 성공!</b></color>");
+
         if (this == null || !gameObject.activeInHierarchy || data == null)
+        {
+            Debug.LogWarning("[경고] 스크립트가 꺼져있거나 데이터가 null입니다.");
             return;
+        }
 
-        // 1. 상태 초기화
-        isProcessingAnswer = false;
+        // 1. 시간 및 세션 정보 초기화
         questionStartTime = Time.time;
-        currentSessionId = data.session_id;
+        if (!string.IsNullOrEmpty(data.session_id))
+            currentSessionId = data.session_id;
         currentQuestionId = !string.IsNullOrEmpty(data.question_id) ? data.question_id : data.q_id;
-
-        // [핵심 수정] 훈련장 진입 시 선택한 카테고리를 강제로 다시 가져옵니다.
         currentCategory = ExperienceSession.CurrentCategory;
 
-        // 2. 현재 카테고리에 따른 패널 스위칭
-        bool isDesignMode = (currentCategory == ExperienceCategory.Design);
-        bool isOCRMode = (
-            currentCategory == ExperienceCategory.Calc
-            || currentCategory == ExperienceCategory.Practice
-        );
-
-        if (panelChoices != null)
-            panelChoices.SetActive(!isDesignMode && !isOCRMode);
-        if (panelDesign != null)
-            panelDesign.SetActive(isDesignMode);
-        if (panelInput != null)
-            panelInput.SetActive(isOCRMode);
-
-        Debug.Log($"[UI 적용] 현재 모드: {currentCategory}, 패널 설정 완료");
-
-        // 3. 정답 데이터 파싱
-        if (isDesignMode)
+        // [핵심] 타이머(Panel_Count) 리셋 명령
+        if (battleTimer != null)
         {
-            if (!string.IsNullOrEmpty(data.correct_answer))
+            Debug.Log("<color=magenta>[타이머] battleTimer.ResetTimer(60f) 호출합니다.</color>");
+            battleTimer.ResetTimer(60f);
+        }
+
+        // 난이도 아이콘 적용 (Panel_Difficulty)
+        if (difficultyBar != null)
+        {
+            difficultyBar.ApplyDifficulty(ParseDifficulty(currentDiffName));
+        }
+
+        // 2. 정답 추출 로직
+        if (currentCategory == ExperienceCategory.Design)
+        {
+            correctAnswerText = data.correct_answer ?? "";
+            if (!string.IsNullOrEmpty(correctAnswerText))
             {
-                correctAnswerText = data.correct_answer;
                 string[] parts = correctAnswerText.Split('-');
-                List<int> parsedSequence = new List<int>();
+                List<int> pSeq = new List<int>();
                 foreach (string p in parts)
-                {
-                    if (int.TryParse(p, out int val))
-                        parsedSequence.Add(val - 1); // 인덱스 보정
-                }
-                designCorrectSequence = parsedSequence.ToArray();
+                    if (int.TryParse(p, out int v))
+                        pSeq.Add(v - 1);
+                designCorrectSequence = pSeq.ToArray();
             }
         }
         else
         {
-            if (!string.IsNullOrEmpty(data.correct_answer))
-                correctAnswerText = data.correct_answer;
-            else if (data.answer_val != 0)
-                correctAnswerText = data.answer_val.ToString();
+            correctAnswerText = data.correct_answer?.Replace("$", "") ?? data.answer_val.ToString();
         }
 
-        // 4. 지문 설정
-        string contentToShow = !string.IsNullOrEmpty(data.content) ? data.content : data.text;
-        if (questionText != null && !string.IsNullOrEmpty(contentToShow))
+        // [추가] 정답 디버그 로그 - 이제 콘솔에서 정답을 미리 확인할 수 있습니다.
+        Debug.Log($"<color=lime><b>[정답 확인] {correctAnswerText}</b></color>");
+
+        // 3. 지문 텍스트 적용
+        if (questionText != null)
         {
-            questionText.text = contentToShow.Replace("$", "");
+            string content = !string.IsNullOrEmpty(data.content) ? data.content : data.text;
+            questionText.text = content.Replace("$", "");
         }
 
-        // 5. 모드별 상세 UI 초기화
-        if (isOCRMode)
+        // 4. 패널 스위칭 및 데이터 세팅 (기존 로직 유지)
+        bool isDesign = (currentCategory == ExperienceCategory.Design);
+        bool isOCR = (
+            currentCategory == ExperienceCategory.Calc
+            || currentCategory == ExperienceCategory.Practice
+        );
+        if (panelChoices != null)
+            panelChoices.SetActive(!isDesign && !isOCR);
+        if (panelDesign != null)
+            panelDesign.SetActive(isDesign);
+        if (panelInput != null)
+            panelInput.SetActive(isOCR);
+
+        if (isOCR)
         {
             if (inputField != null)
                 inputField.text = "입력된 숫자 : ";
             drawingCanvas?.ClearCanvas();
         }
-        else if (isDesignMode)
+        else if (isDesign)
         {
             designUserSequence.Clear();
-            designOriginalTexts = new string[data.choices.Count];
-            for (int i = 0; i < designChoiceTexts.Length; i++)
+            if (data.choices != null)
             {
-                if (i < data.choices.Count)
+                designOriginalTexts = data.choices.Select(c => c.Replace("$", "")).ToArray();
+                for (int i = 0; i < designChoiceButtons.Length; i++)
                 {
-                    designOriginalTexts[i] = data.choices[i].Replace("$", "");
-                    designChoiceTexts[i].text = designOriginalTexts[i];
-                    designChoiceButtons[i].gameObject.SetActive(true);
-                    // 투명도 초기화
-                    Color c = designChoiceButtons[i].image.color;
-                    c.a = 1.0f;
-                    designChoiceButtons[i].image.color = c;
+                    if (i < data.choices.Count)
+                    {
+                        designChoiceTexts[i].text = designOriginalTexts[i];
+                        designChoiceButtons[i].gameObject.SetActive(true);
+                    }
+                    else
+                        designChoiceButtons[i].gameObject.SetActive(false);
                 }
-                else
-                    designChoiceButtons[i].gameObject.SetActive(false);
             }
         }
-        else // 객관식
+        else
         {
             for (int i = 0; i < choiceTexts.Length; i++)
             {
@@ -450,9 +590,13 @@ public class ExperienceBattleController : MonoBehaviour
             }
         }
 
-        // 6. 버튼 연결 및 카운터 갱신
-        HookAllButtons();
         UpdateQuestionCounterUI();
+        HookAllButtons();
+        if (loadingOverlay != null)
+            loadingOverlay.SetActive(false);
+
+        isProcessingAnswer = false;
+        Debug.Log("<color=white>[완료] 모든 데이터 적용 완료.</color>");
     }
 
     // --- [추가] 라텍스 이미지를 불러오는 코루틴 함수 --- [cite: 2026-05-05]
@@ -489,14 +633,8 @@ public class ExperienceBattleController : MonoBehaviour
         if (mode == BattleMode.Arena)
         {
             // 변수를 실제로 사용하는 로직을 추가하여 경고 해결
-            if (opponentRecords != null && currentOpponentRecordIndex < opponentRecords.Count)
-            {
-                bool isOpponentCorrect = opponentRecords[currentOpponentRecordIndex].is_correct;
-                Debug.Log($"상대방 {currentOpponentRecordIndex}번 문제 결과: {isOpponentCorrect}");
-
-                // 사용했으므로 인덱스 증가
-                currentOpponentRecordIndex++;
-            }
+            // 사용했으므로 인덱스 증가
+            currentOpponentRecordIndex++;
         }
 
         // 게임 종료 조건 체크
@@ -536,34 +674,160 @@ public class ExperienceBattleController : MonoBehaviour
     {
         if (NetworkManager.Instance == null)
             return;
-        BattleResultRequest request = new BattleResultRequest
+
+        // 훈련장/체험장은 기존처럼 제출(submit/finish) 로직 유지
+        if (mode == BattleMode.Arena)
         {
-            category_name = currentCategory.ToString(),
-            total_score = score,
-            results = battleRecords,
-        };
-        // 기존 SaveBattleResult를 SubmitExperience로 변경합니다.
-        NetworkManager.Instance.SubmitExperience(
-            request,
-            (res) => ShowFinalResult(score, true),
-            (err) => ShowFinalResult(score, false)
-        );
+            // [수정] 아레나는 이미 답을 다 냈으므로, '종료' API만 호출하면 됩니다.
+            Debug.Log(
+                $"<color=orange>[아레나 종료]</color> Match ID: {currentMatchId} 종료 요청을 보냅니다."
+            );
+
+            NetworkManager.Instance.FinishMatch(
+                currentMatchId,
+                (res) =>
+                {
+                    Debug.Log("<color=green>[아레나] 최종 종료 및 결과 수신 성공</color>");
+                    // 서버 응답에 따라 승패 연출 및 결과창 표시
+                    ShowFinalResult(score, true);
+                },
+                (err) =>
+                {
+                    Debug.LogError($"[아레나] 종료 실패: {err}");
+                    ShowFinalResult(score, false);
+                }
+            );
+        }
+        else
+        {
+            // 훈련장 및 체험장 기존 로직 (updated_cp 또는 total_power 사용)
+            BattleResultRequest request = new BattleResultRequest
+            {
+                session_id = currentSessionId,
+                category_name = currentCategory.ToString().ToLower(),
+                total_power = score,
+                results = battleRecords,
+            };
+
+            if (mode == BattleMode.Training)
+            {
+                NetworkManager.Instance.FinishTraining(
+                    request,
+                    (res) => ShowFinalResult(score, true),
+                    (err) => ShowFinalResult(score, false)
+                );
+            }
+            else
+            {
+                NetworkManager.Instance.SubmitExperience(
+                    request,
+                    (res) => ShowFinalResult(score, true),
+                    (err) => ShowFinalResult(score, false)
+                );
+            }
+        }
     }
 
     private void ShowFinalResult(int totalScore, bool isUpdated)
     {
+        if (this == null)
+            return;
+
+        // [1] 체험장 모드: 맞힌 개수와 최종 점수 표시 (BP 단위)
         if (mode == BattleMode.Experience)
         {
             int correct = battleRecords.Count(r => r.is_correct);
-            resultUI?.Show(correct, ExperienceSession.CurrentQuestionCount, totalScore);
+            if (resultUI != null)
+            {
+                resultUI.Show(correct, ExperienceSession.CurrentQuestionCount, totalScore);
+            }
         }
+        // [2] 아레나 모드: 명세서 기반 레이팅 가감 및 100AR 승급 로직
         else if (mode == BattleMode.Arena)
         {
-            arenaResultUI?.Show(opponentLife <= 0, 1000, 1000, 10, "티어", null);
-            arenaResultUI?.gameObject.SetActive(true);
+            // 1. 전투력(BP) 차이(오차범위) 계산
+            int myCP = GetCurrentCategoryCP();
+            int opponentCP = currentOpponentPower;
+            int diff = Mathf.Abs(myCP - opponentCP);
+
+            bool isWin = opponentLife <= 0;
+            int arChange = 0;
+
+            // 2. 명세서 51~56번: 오차범위별 AR 가감 수치 결정
+            if (isWin)
+            {
+                if (diff > 100)
+                    arChange = 15; // 100 초과 상대 승리
+                else if (diff >= 50)
+                    arChange = 10; // 50~100 상대 승리
+                else
+                    arChange = 5; // 50 미만 상대 승리
+            }
+            else
+            {
+                if (diff > 100)
+                    arChange = -5; // 100 초과 상대 패배
+                else if (diff >= 50)
+                    arChange = -10; // 50~100 상대 패배
+                else
+                    arChange = -15; // 50 미만 상대 패배
+            }
+
+            // 3. 누적 레이팅 계산 및 100AR 단위 승급 로직
+            int cumulativeCurrentAR =
+                (ExperienceSession.UserProfile != null)
+                    ? ExperienceSession.UserProfile.arena_rating
+                    : 0;
+            int cumulativeNextAR = Mathf.Max(0, cumulativeCurrentAR + arChange);
+
+            // UI 표시용 레이팅: 100점을 넘으면 0부터 다시 시작되는 느낌 구현 (0~99점)
+            int displayCurrentAR = cumulativeCurrentAR % 100;
+            int displayNextAR = cumulativeNextAR % 100;
+
+            // 승급 여부 판단: 100단위 숫자가 바뀌었는지 확인
+            bool isPromoted = (cumulativeNextAR / 100) > (cumulativeCurrentAR / 100);
+
+            // 4. 티어 정보 갱신 (TierManager 사용)
+            var tierInfo = TierManager.GetTierInfo(cumulativeNextAR);
+
+            // 로비 및 프로필 즉시 반영을 위해 세션 데이터 갱신
+            if (ExperienceSession.UserProfile != null)
+            {
+                ExperienceSession.UserProfile.arena_rating = cumulativeNextAR;
+                ExperienceSession.UserProfile.tier_name = tierInfo.fullName;
+            }
+
+            // 5. 아레나 결과창 출력
+            if (arenaResultUI != null)
+            {
+                arenaResultUI.gameObject.SetActive(true);
+                arenaResultUI.Show(
+                    isWin,
+                    displayCurrentAR,
+                    displayNextAR,
+                    arChange,
+                    tierInfo.fullName,
+                    Resources.Load<Sprite>($"Tiers/Tier_{tierInfo.tierIdx}_{tierInfo.gradeIdx}"),
+                    isPromoted // 승급 시 결과창에 "티어 승급!" 알림 표시
+                );
+            }
+
+            Debug.Log(
+                $"<color=yellow>[아레나 종료]</color> 승리:{isWin}, 변화량:{arChange}, 최종누적AR:{cumulativeNextAR}, 승급:{isPromoted}"
+            );
         }
-        else
-            trainingResultUI?.Show(totalScore, isUpdated ? "전투력이 업데이트 되었습니다!" : "");
+        // [3] 훈련장 모드: 최고 기록 경신 여부 표시
+        else if (mode == BattleMode.Training)
+        {
+            if (trainingResultUI != null)
+            {
+                trainingResultUI.gameObject.SetActive(true);
+                string updateMessage = isUpdated
+                    ? "최고 기록을 경신했습니다! 프로필에 반영됩니다."
+                    : "기존 최고 기록에 미달하여 갱신되지 않았습니다.";
+                trainingResultUI.Show(totalScore, updateMessage);
+            }
+        }
     }
 
     private void UpdateLifeUI()
@@ -896,113 +1160,135 @@ public class ExperienceBattleController : MonoBehaviour
 
     // 6. [공용] 판정 연출 및 다음 문제 전환 (OX가 뜨게 하는 핵심)
     // ExperienceBattleController.cs 내의 ExecuteResultSequence 함수
-    private void ExecuteResultSequence(bool isCorrect, string answerForServer)
+    // [중요] ExecuteResultSequence 부분만 교체하시면 됩니다.
+    private void ExecuteResultSequence(bool isPlayerCorrect, string answerForServer)
     {
+        // [1] 중복 실행 방지 (타임아웃은 예외)
+        if (isProcessingAnswer && answerForServer != "TIMEOUT")
+            return;
+
+        // [2] 타이머 정지
+        if (battleTimer != null)
+        {
+            battleTimer.StopTimer();
+        }
+
         isProcessingAnswer = true;
 
-        // 1. 하트 차감 로직 (아레나 및 훈련장 대응)
+        // 사용자의 풀이 시간을 초 단위로 계산 [통일: solve_time_sec]
+        int solve_time_sec = Mathf.RoundToInt(Time.time - questionStartTime);
+
+        // [3] 점수 가산 (훈련장 및 아레나 공통)
+        if (isPlayerCorrect)
+        {
+            int earned = GetDifficultyScore(ParseDifficulty(currentDiffName));
+            ExperienceSession.TotalExpScore += earned;
+            UpdatePlayerScoreUI();
+        }
+
+        // 결과 데이터 생성
+        var resultData = new QuestionResultData
+        {
+            question_id = currentQuestionId,
+            solve_time_sec = solve_time_sec,
+            answer = answerForServer,
+            is_correct = isPlayerCorrect,
+        };
+        battleRecords.Add(resultData);
+
+        // [4] 서버 제출 (모드별 분기)
+        BattleResultRequest submitReq = new BattleResultRequest
+        {
+            session_id = (mode == BattleMode.Arena) ? "" : currentSessionId,
+            match_id = (mode == BattleMode.Arena) ? currentMatchId : "",
+            question_id = currentQuestionId,
+            category_name = currentCategory.ToString().ToLower(),
+            solve_time_sec = solve_time_sec,
+            is_correct = isPlayerCorrect,
+        };
+
+        if (currentCategory == ExperienceCategory.Design)
+            submitReq.answer_order = answerForServer;
+        else
+            submitReq.answer = answerForServer;
+
+        if (mode == BattleMode.Arena)
+            NetworkManager.Instance.SubmitMatch(submitReq, null, null);
+        else if (mode == BattleMode.Training)
+            NetworkManager.Instance.SubmitTraining(submitReq, null, null);
+        else
+            NetworkManager.Instance.SubmitExperience(submitReq, null, null);
+
+        // [5] 아레나 승패 판정 로직 (명세서 39~42번 기준)
+        bool playerAttacks = false;
+
         if (mode == BattleMode.Arena)
         {
-            if (isCorrect)
+            int currentQNum = ExperienceSession.CurrentQuestionCount + 1;
+
+            // [확인용 로그] 현재 리스트에 데이터가 몇 개나 있는지 먼저 찍어봅니다.
+            Debug.Log(
+                $"<color=white>[아레나 체크]</color> 현재 리스트 내 기록 개수: {currentOpponentRecords?.Count ?? 0}개"
+            );
+
+            var opponentData = currentOpponentRecords.Find(r =>
+                r.question_order_number == currentQNum
+            );
+
+            if (opponentData != null)
             {
-                // [승리 조건] 내가 맞히면 상대방의 하트를 하나 깎습니다.
-                opponentLife--;
-                if (opponentLife < 0)
-                    opponentLife = 0;
-                Debug.Log($"[아레나] 정답! 상대방 체력 차감. 남은 체력: {opponentLife}");
+                // [로그 추가] 상대방의 정답 여부와 풀이 시간을 실시간으로 출력합니다.
+                Debug.Log(
+                    $"<color=cyan>[아레나 대조]</color> {currentQNum}번 문제 "
+                        + $"| 나: {(isPlayerCorrect ? "O" : "X")} ({solve_time_sec}초) "
+                        + $"| 상대: {(opponentData.is_correct ? "O" : "X")} ({opponentData.solve_time_sec}초)"
+                );
+
+                if (!isPlayerCorrect)
+                {
+                    playerAttacks = false;
+                }
+                else if (isPlayerCorrect && !opponentData.is_correct)
+                {
+                    playerAttacks = true;
+                }
+                else if (isPlayerCorrect && opponentData.is_correct)
+                {
+                    playerAttacks = (solve_time_sec < opponentData.solve_time_sec);
+                }
             }
             else
             {
-                // [패배 조건] 내가 틀리면 나의 하트를 하나 깎습니다.
-                ExperienceSession.CurrentLife--;
-                if (ExperienceSession.CurrentLife < 0)
-                    ExperienceSession.CurrentLife = 0;
-                Debug.Log(
-                    $"[아레나] 오답... 내 체력 차감. 남은 체력: {ExperienceSession.CurrentLife}"
+                // 상대 기록이 없을 경우 일반 판정 (맞추면 공격)
+                // [중요] 봇이거나 기록이 없을 때 찍히는 로그
+                Debug.LogWarning(
+                    $"<color=red>[아레나 경고]</color> {currentQNum}번 문제에 대한 상대방 기록이 없습니다. (봇 판정)"
                 );
+                playerAttacks = isPlayerCorrect;
             }
-            UpdateLifeUI(); // UI에 반영 (내 하트와 상대 하트 모두 갱신)
-        }
-        else if (mode == BattleMode.Training)
-        {
-            // 훈련장 모드에서는 오답일 때만 내 하트를 깎습니다.
-            if (!isCorrect)
-            {
-                ExperienceSession.CurrentLife--;
-                if (ExperienceSession.CurrentLife < 0)
-                    ExperienceSession.CurrentLife = 0;
-                Debug.Log($"[훈련장] 오답. 남은 하트: {ExperienceSession.CurrentLife}");
-                UpdateLifeUI();
-            }
-        }
-
-        // 2. 판정 연출 및 씬 관리
-        if (sequenceManager != null && sequenceManager.gameObject.activeInHierarchy)
-        {
-            sequenceManager.OnSequenceComplete = () =>
-            {
-                // 다음 문제를 위해 설계 모드 선택 데이터 초기화
-                designUserSequence.Clear();
-                isProcessingAnswer = false;
-
-                // 3. 종료 조건 검사
-                if (mode == BattleMode.Arena)
-                {
-                    // 아레나: 누군가의 하트가 0이 되면 즉시 종료
-                    if (opponentLife <= 0 || ExperienceSession.CurrentLife <= 0)
-                    {
-                        FinishBattle();
-                    }
-                    else
-                    {
-                        ContinueBattleProcess();
-                    }
-                }
-                else if (mode == BattleMode.Training)
-                {
-                    // 훈련장: 내 하트가 0이 되면 즉시 종료
-                    if (ExperienceSession.CurrentLife <= 0)
-                    {
-                        FinishBattle();
-                    }
-                    else
-                    {
-                        ContinueBattleProcess();
-                    }
-                }
-                else
-                {
-                    // 경험 모드 등은 하트 상관없이 계속 진행
-                    ContinueBattleProcess();
-                }
-            };
-            sequenceManager.PlaySequence(isCorrect);
         }
         else
         {
-            // 연출 매니저가 없는 경우에도 동일한 종료 조건 로직 수행
-            designUserSequence.Clear();
-            isProcessingAnswer = false;
-
-            if (mode == BattleMode.Arena)
-            {
-                if (opponentLife <= 0 || ExperienceSession.CurrentLife <= 0)
-                    FinishBattle();
-                else
-                    ContinueBattleProcess();
-            }
-            else if (mode == BattleMode.Training && ExperienceSession.CurrentLife <= 0)
-            {
-                FinishBattle();
-            }
-            else
-            {
-                ContinueBattleProcess();
-            }
+            playerAttacks = isPlayerCorrect;
         }
 
-        // 서버에 기록 전송 (답변 및 정답 여부)
-        SendRecordToServer(answerForServer, isCorrect);
+        // [6] 체력 차감 및 UI 업데이트
+        if (playerAttacks)
+        {
+            opponentLife--; // 사용자가 공격 성공
+        }
+        else
+        {
+            ExperienceSession.CurrentLife--; // 상대방이 공격 성공
+        }
+        UpdateLifeUI();
+
+        // [7] 애니메이션 및 시퀀스 실행
+        if (sequenceManager != null)
+        {
+            sequenceManager.PlaySequence(playerAttacks);
+            sequenceManager.OnSequenceComplete = () => CheckBattleEndCondition();
+        }
     }
 
     // 7. [설계] 순서 라벨 갱신
@@ -1037,5 +1323,36 @@ public class ExperienceBattleController : MonoBehaviour
                 designChoiceButtons[btnIdx].image.color = c;
             }
         }
+    }
+
+    // --- 마지막 남은 에러 해결: 심판 함수 추가 ---
+    private void CheckBattleEndCondition()
+    {
+        // 1. 연출이 끝났으므로 다음 입력을 받을 수 있게 잠금 해제
+        //isProcessingAnswer = false;
+
+        // 2. 아레나 모드: 나 혹은 상대방의 생명이 0인지 확인
+        if (mode == BattleMode.Arena)
+        {
+            if (ExperienceSession.CurrentLife <= 0 || opponentLife <= 0)
+            {
+                Debug.Log("[아레나] 전투 종료 조건 충족");
+                isProcessingAnswer = false;
+                FinishBattle();
+                return;
+            }
+        }
+        // 3. 훈련장 모드: 내 생명이 0인지 확인
+        else if (mode == BattleMode.Training)
+        {
+            if (ExperienceSession.CurrentLife <= 0)
+            {
+                Debug.Log("[훈련장] 생명력 소진으로 종료");
+                FinishBattle();
+                return;
+            }
+        }
+
+        ContinueBattleProcess();
     }
 }

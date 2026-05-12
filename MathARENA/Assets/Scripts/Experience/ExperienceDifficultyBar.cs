@@ -5,74 +5,55 @@ using UnityEngine.UI;
 public class ExperienceDifficultyBar : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private TMP_Text difficultyText; // 난이도 텍스트 (예: "Tough")
-    [SerializeField] private Image difficultyIcon;    // 표정 NPC 이미지
+    [SerializeField]
+    private TMP_Text difficultyText;
 
-    [Header("Difficulty Icons (1-6)")]
-    [SerializeField] private Sprite iconVeryEasy;  // 1. VERY EASY.jpg
-    [SerializeField] private Sprite iconEasy;      // 2. EASY.jpg
-    [SerializeField] private Sprite iconHard;      // 3. HARD.jpg
-    [SerializeField] private Sprite iconVeryHard;  // 4. VERY HARD.jpg
-    [SerializeField] private Sprite iconTough;     // 5. TOUGH.jpg
-    [SerializeField] private Sprite iconVeryTough; // 6. VERY TOUGH.jpg
+    [SerializeField]
+    private Image difficultyIcon;
 
-    private void Start()
-    {
-        // 현재 세션의 난이도를 기반으로 초기화
-        ApplyDifficulty(ExperienceSession.CurrentDifficulty);
-    }
+    [Header("Difficulty Icons")]
+    [SerializeField]
+    private Sprite iconVeryEasy;
 
-    /// <summary>
-    /// 난이도에 따라 텍스트와 NPC 아이콘을 변경합니다.
-    /// </summary>
+    [SerializeField]
+    private Sprite iconEasy;
+
+    [SerializeField]
+    private Sprite iconHard;
+
+    [SerializeField]
+    private Sprite iconVeryHard;
+
+    [SerializeField]
+    private Sprite iconTough;
+
+    [SerializeField]
+    private Sprite iconVeryTough;
+
+    // [중요] 타이머 관련 변수와 Update 문을 모두 삭제했습니다.
+
     public void ApplyDifficulty(ExperienceDifficulty difficulty)
     {
-        // 1. 텍스트 업데이트
         if (difficultyText != null)
-        {
-            difficultyText.text = GetDifficultyString(difficulty);
-        }
+            difficultyText.text = difficulty.ToString().Replace("Very", "Very ");
 
-        // 2. 아이콘(표정 NPC) 업데이트
         if (difficultyIcon != null)
-        {
-            Sprite targetSprite = GetDifficultySprite(difficulty);
-            if (targetSprite != null)
-            {
-                difficultyIcon.sprite = targetSprite;
-                // 이미지 본연의 색상을 보여주기 위해 Color를 화이트로 초기화합니다.
-                difficultyIcon.color = Color.white; 
-            }
-        }
+            difficultyIcon.sprite = GetDifficultySprite(difficulty);
+
+        Debug.Log($"[난이도] {difficulty} 아이콘 적용");
     }
 
-    // 난이도별 출력 문자열 반환 (EX-04-1 대응)
-    private string GetDifficultyString(ExperienceDifficulty difficulty)
+    private Sprite GetDifficultySprite(ExperienceDifficulty diff)
     {
-        return difficulty switch
+        return diff switch
         {
-            ExperienceDifficulty.VeryEasy  => "Very Easy",
-            ExperienceDifficulty.Easy      => "Easy",
-            ExperienceDifficulty.Hard      => "Hard",
-            ExperienceDifficulty.VeryHard  => "Very Hard",
-            ExperienceDifficulty.Tough     => "Tough",      // 신규 추가
-            ExperienceDifficulty.VeryTough => "Very Tough", // 신규 추가
-            _ => "Unknown"
-        };
-    }
-
-    // 난이도별 스프라이트 반환 (EX-04-1 대응)
-    private Sprite GetDifficultySprite(ExperienceDifficulty difficulty)
-    {
-        return difficulty switch
-        {
-            ExperienceDifficulty.VeryEasy  => iconVeryEasy,
-            ExperienceDifficulty.Easy      => iconEasy,
-            ExperienceDifficulty.Hard      => iconHard,
-            ExperienceDifficulty.VeryHard  => iconVeryHard,
-            ExperienceDifficulty.Tough     => iconTough,     // 신규 추가
-            ExperienceDifficulty.VeryTough => iconVeryTough, // 신규 추가
-            _ => iconVeryEasy
+            ExperienceDifficulty.VeryEasy => iconVeryEasy,
+            ExperienceDifficulty.Easy => iconEasy,
+            ExperienceDifficulty.Hard => iconHard,
+            ExperienceDifficulty.VeryHard => iconVeryHard,
+            ExperienceDifficulty.Tough => iconTough,
+            ExperienceDifficulty.VeryTough => iconVeryTough,
+            _ => iconVeryEasy,
         };
     }
 }

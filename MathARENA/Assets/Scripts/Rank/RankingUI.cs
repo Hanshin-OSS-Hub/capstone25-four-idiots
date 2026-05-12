@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MathArena.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -64,22 +65,19 @@ public class RankingUI : MonoBehaviour
 
         ClearList();
 
-        // 닉네임 순으로 정렬 (User1, User2...)
         List<RankingEntryData> sorted = debugEntries
-            .OrderBy(x => x.nickname.Length) // 글자수 순 (User1, User10 구분용)
+            .OrderBy(x => x.nickname.Length)
             .ThenBy(x => x.nickname)
             .ToList();
 
         for (int i = 0; i < sorted.Count; i++)
         {
             sorted[i].rank = i + 1;
-
             GameObject rowObj = Instantiate(rankingRowPrefab, contentRoot);
             RankingRowView rowView = rowObj.GetComponent<RankingRowView>();
-
             if (rowView != null)
             {
-                rowView.Setup(sorted[i]); // 0AR이므로 모두 Normal Bronze로 나옵니다.
+                rowView.Setup(sorted[i]);
             }
         }
     }
@@ -92,24 +90,18 @@ public class RankingUI : MonoBehaviour
         }
     }
 
-    // [핵심] 호건님이 요청하신 User1, 2... 생성 로직
+    
     private void GenerateDebugRankingData()
     {
         debugEntries = new List<RankingEntryData>();
-
         for (int i = 0; i < dummyPlayerCount; i++)
         {
-            debugEntries.Add(
-                new RankingEntryData
-                {
-                    nickname = $"User{i + 1}", // 규칙적인 닉네임
-                    ar = 0, // 모든 유저 0 AR 고정
-                    level = 1,
-                    score = 0,
-                    profileIcon = GetRandomOtherProfileIcon(),
-                    tier = RankingTierType.Bronze,
-                }
-            );
+            debugEntries.Add(new RankingEntryData
+            {
+                nickname = $"User{i + 1}",
+                arena_rating = 0, // [수정] ar 대신 arena_rating 사용
+                level = 1
+            });
         }
     }
 

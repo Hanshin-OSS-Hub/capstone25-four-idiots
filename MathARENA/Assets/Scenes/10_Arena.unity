@@ -1978,17 +1978,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -0.70000076}
   m_SizeDelta: {x: -80, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2632037451575333112 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6682094108366908061, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
-  m_PrefabInstance: {fileID: 5392006940328640890}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2642229018855451736
 GameObject:
   m_ObjectHideFlags: 0
@@ -2043,7 +2032,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC5C4\uC900\uC2DD"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
   m_sharedMaterial: {fileID: -4869816015449211322, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
@@ -2626,7 +2615,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2,840 BP
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
   m_sharedMaterial: {fileID: -4869816015449211322, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
@@ -4106,11 +4095,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5483662859273391033, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -70
+      value: -200
       objectReference: {fileID: 0}
     - target: {fileID: 5483662859273391033, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 500
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 5483662859273391033, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4142,11 +4131,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5483662859273391033, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5483662859273391033, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -30.119995
+      value: 37.9
       objectReference: {fileID: 0}
     - target: {fileID: 5483662859273391033, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4163,7 +4152,7 @@ PrefabInstance:
     - target: {fileID: 6682094108366908061, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 230707709019456896, guid: 2628d4aad266bb448a1388ce3e8c349f, type: 3}
+      objectReference: {fileID: 21300000, guid: fc3ffa37c9db3384d86544aa35d0161c, type: 3}
     - target: {fileID: 6682094108366908061, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_Color.a
       value: 1
@@ -4178,6 +4167,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6682094108366908061, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
       propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6682094108366908061, guid: 6e8cf48f0e5efc846ab12c6b07d3cab9, type: 3}
+      propertyPath: m_PreserveAspect
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -4283,7 +4276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d4e9e7a420c514183008b5e18877e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSceneName: 09_ArenaSelect
+  targetSceneName: 02_Lobby
 --- !u!1 &5654694543395759791
 GameObject:
   m_ObjectHideFlags: 0
@@ -5206,7 +5199,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB808\uC804\uB4DC \uBE0C\uB860\uC988"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
   m_sharedMaterial: {fileID: -4869816015449211322, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
@@ -5419,8 +5412,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArenaMatchingUI
   opponentNicknameText: {fileID: 2724853223404572876}
+  opponentTierText: {fileID: 7716442171608391039}
   opponentBPDisplayText: {fileID: 3558462560735453221}
-  opponentIconImage: {fileID: 2632037451575333112}
+  loadingOverlay: {fileID: 0}
   battleSceneName: 11_ArenaBattle
 --- !u!224 &8274372385858281024
 RectTransform:

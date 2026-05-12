@@ -29,25 +29,13 @@ public class TrainingResultUI : MonoBehaviour
         if (rootPanel != null)
             rootPanel.SetActive(true);
 
-        // 1. BP 점수 표시
         if (bpScoreText != null)
             bpScoreText.text = $"{finalBP} BP";
 
-        // 2. 해금 메시지 처리
+        // [수정] 해금 메시지 텍스트를 아예 비활성화하여 화면에 뜨지 않게 합니다.
         if (unlockMessageText != null)
         {
-            if (!string.IsNullOrEmpty(unlockedDiffs))
-            {
-                unlockMessageText.text =
-                    $"전투력 {finalBP}을 달성하여\n"
-                    + $"<color=#FFCC00>{unlockedDiffs}</color> 난이도가\n"
-                    + "해금되었습니다";
-                unlockMessageText.gameObject.SetActive(true);
-            }
-            else
-            {
-                unlockMessageText.gameObject.SetActive(false); // 해금된 게 없으면 숨김
-            }
+            unlockMessageText.gameObject.SetActive(false);
         }
     }
 

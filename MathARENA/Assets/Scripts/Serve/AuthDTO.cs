@@ -61,9 +61,19 @@ namespace MathArena.Network
     [Serializable]
     public class BattleResultRequest
     {
-        public string session_id;
-        public string category_name;
-        public int total_score;
+        public string session_id = "";
+        public string question_id = "";
+        public string answer = "";
+        public string answer_order = "";
+        public string match_id = "";
+        public string category_name = ""; // .ToLower() 변환 필수
+
+        public int solve_time_sec;
+        public bool is_correct;
+
+        // [핵심 수정] total_score 대신 서버가 요구하는 updated_cp를 사용합니다.
+        public int total_power;
+
         public List<QuestionResultData> results = new List<QuestionResultData>();
     }
 
@@ -82,6 +92,7 @@ namespace MathArena.Network
     {
         public string category;
         public string difficulty;
+        public string match_id; // [추가] 이 자리가 있어야 서버로 ID가 전달됩니다.
     }
 
     [Serializable]
@@ -109,15 +120,23 @@ namespace MathArena.Network
     [Serializable]
     public class UserProfileData
     {
+        public string user_id;
         public string nickname;
-        public string tier;
-        public int arena_rating;
+
+        // 전투력 5종 (ExperienceBattleController 220~230번 줄에서 참조)
         public int cp_concept;
         public int cp_calc;
         public int cp_idea;
         public int cp_design;
         public int cp_practical;
-        public string email;
+
+        // 티어 및 레이팅 (결과창 및 프로필 UI에서 참조)
+        public string tier_name;
+        public int arena_rating;
+
+        // 로비 UI 호환용 (추가)
+        public int gold;
+        public int arenaTickets;
     }
 
     [Serializable]
@@ -125,7 +144,13 @@ namespace MathArena.Network
     {
         public string nickname;
         public string tier;
-        public int arena_rating;
+        public int arena_rating; // 서버 규격 (필수)
+
+        // --- 아래는 UI 표시를 위해 필요한 추가 필드들입니다 ---
+        public int rank;
+        public int level;
+        public int score;
+        public UnityEngine.Sprite profileIcon;
     }
 
     [Serializable]
@@ -141,5 +166,57 @@ namespace MathArena.Network
         public string access_token;
         public string nickname;
         public int arena_rating;
+    }
+
+    // 상대방의 훈련 기록 데이터 (TRAINING_Q_SET_RECORD 기반)
+    [Serializable]
+    public class OpponentRecord
+    {
+        public int question_order_number;
+        public string q_id;
+        public int solve_time_sec;
+        public bool is_correct;
+    }
+
+    [Serializable]
+    public class ArenaMatchCandidate
+    {
+        public string match_id;
+        public string set_id;
+
+        // [수정] 상대 정보가 중첩 객체로 들어오므로 구조를 맞춥니다.
+        public OpponentData opponent;
+
+        // [확인 필요] 로그에는 이 필드가 보이지 않습니다. 서버 팀에 확인이 필요합니다.
+        public List<OpponentRecord> opponent_records;
+
+        public int last_question_order;
+    }
+
+    [Serializable]
+    public class ArenaMatchData
+    {
+        public List<ArenaMatchCandidate> candidates; // [수정] 단일 객체가 아닌 리스트로 변경
+        public string status;
+    }
+
+    // AuthDTO.cs [80번 줄 근처]
+    [Serializable]
+    public class ArenaStartData // [추가] 아레나 시작 시 내려오는 데이터 묶음
+    {
+        public string match_id;
+        public List<ServerQuestionData> questions; // 핵심: 문제들이 리스트로 들어옵니다.
+        public int my_lives;
+        public int opponent_lives;
+    }
+
+    [Serializable]
+    public class OpponentData // [새로 추가] 중첩된 상대 정보를 담는 클래스
+    {
+        public string id;
+        public string nickname;
+        public int power;
+        public int arena_rating;
+        public string tier;
     }
 }

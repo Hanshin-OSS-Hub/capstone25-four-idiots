@@ -1686,6 +1686,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2084140097009329441}
+  - component: {fileID: 2084140097009329442}
   m_Layer: 5
   m_Name: Panel_Count
   m_TagString: Untagged
@@ -1864,7 +1865,9 @@ MonoBehaviour:
   panelInput: {fileID: 1593717647}
   sequenceManager: {fileID: 1855054932}
   difficultyBar: {fileID: 149972091883061543}
+  battleTimer: {fileID: 2084140097009329442}
   questionCounterText: {fileID: 0}
+  playerCurrentScoreText: {fileID: 4525229727594624990}
   questionText: {fileID: 4193077824075179455}
   choiceButtons:
   - {fileID: 4457128431347891394}
@@ -2469,7 +2472,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -28.448395, y: -9.7744}
+  m_AnchoredPosition: {x: -28.448364, y: -9.774399}
   m_SizeDelta: {x: 167.0717, y: 106.2856}
   m_Pivot: {x: 1, y: 1}
 --- !u!224 &1448209473796565425
@@ -2663,12 +2666,12 @@ GameObject:
   - component: {fileID: 7566159189585295499}
   - component: {fileID: 4525229727594624990}
   m_Layer: 5
-  m_Name: Text_BP
+  m_Name: Text_PlayerScore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1800108111158604610
 GameObject:
   m_ObjectHideFlags: 0
@@ -2916,6 +2919,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 93}
   m_SizeDelta: {x: 116.858215, y: 111.75928}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &2084140097009329442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83707534961974676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317aa971471476544930c046b4b93fbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExperienceTimer
+  timerText: {fileID: 6948355969556311298}
 --- !u!224 &2102175349524241742
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2970,11 +2986,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5506269616149169831}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 156.9861, y: -85}
-  m_SizeDelta: {x: 200, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 0, y: -42.3}
+  m_SizeDelta: {x: 0, y: 50}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &2267812561747097013
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4058,7 +4074,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2,840 BP
+  m_text: 0 BP
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
   m_sharedMaterial: {fileID: -4869816015449211322, guid: 25199307e5f162643b3e80269f94adfc, type: 2}
@@ -4067,8 +4083,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4293125091
-  m_fontColor: {r: 0.8901961, g: 0.8901961, b: 0.8901961, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4399,9 +4415,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 1
   titleText: {fileID: 2007974964067930831}
-  timerText: {fileID: 6948355969556311298}
-  exitSceneName: 07_TrainingSelect
-  startMinutes: 1
+  exitSceneName: 02_Lobby
 --- !u!114 &5076087615492443253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5786,7 +5800,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 728}
+  m_AnchoredPosition: {x: 0, y: 806}
   m_SizeDelta: {x: 1080, y: 634.29}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!224 &8099525016899681427
