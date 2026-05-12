@@ -202,6 +202,7 @@ def start_battle():
             question_id = row["q_id"]
             payload, correct_answer = _prepare_question_for_delivery(match["category"], row)
             question_map[question_id] = {
+                "category": match["category"],
                 "correct_answer": correct_answer,
                 "score": int(row["score"] or 0),
                 "opponent_time_sec": int(record["solve_time_sec"] or 0),
