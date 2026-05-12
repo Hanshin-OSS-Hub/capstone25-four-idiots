@@ -266,6 +266,10 @@ def prepare_question_for_delivery(category, row):
     correct_answer = str(row.get("correct_answer", "")).strip()
 
     if answer_type not in {"choice", "order"}:
+        payload["correct_answer"] = correct_answer
+        payload["answer"] = correct_answer
+        if answer_type == "ocr":
+            payload["ocr_answer"] = correct_answer
         return payload, correct_answer
 
     original_choices = [row["opt1"], row["opt2"], row["opt3"], row["opt4"]]
@@ -287,6 +291,14 @@ def prepare_question_for_delivery(category, row):
             ]
             if remapped:
                 correct_answer = "-".join(remapped)
+
+    payload["correct_answer"] = correct_answer
+    if answer_type == "order":
+        payload["answer_order"] = correct_answer
+        payload["answerOrder"] = correct_answer
+        payload["answer"] = correct_answer
+    elif answer_type == "choice":
+        payload["answer"] = correct_answer
 
     return payload, correct_answer
 
