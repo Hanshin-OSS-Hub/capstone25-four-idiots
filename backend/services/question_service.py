@@ -231,9 +231,12 @@ def build_question_payload(category, row):
     answer_type = CATEGORY_TABLES[category]["answer_type"]
     payload = {
         "question_id": row["q_id"],
+        "q_id": row["q_id"],
         "category": category,
         "difficulty": row["diff_name"],
+        "diff_name": row["diff_name"],
         "text": row["content"],
+        "content": row["content"],
         "answer_type": answer_type,
         "choices": [],
     }
@@ -244,6 +247,14 @@ def build_question_payload(category, row):
 
     if answer_type in {"choice", "order"}:
         payload["choices"] = [row["opt1"], row["opt2"], row["opt3"], row["opt4"]]
+        payload.update(
+            {
+                "opt1": row["opt1"],
+                "opt2": row["opt2"],
+                "opt3": row["opt3"],
+                "opt4": row["opt4"],
+            }
+        )
     return payload
 
 
@@ -276,6 +287,14 @@ def prepare_question_for_delivery(category, row):
     shuffle_order = list(range(len(original_choices)))
     random.shuffle(shuffle_order)
     payload["choices"] = [original_choices[index] for index in shuffle_order]
+    payload.update(
+        {
+            "opt1": payload["choices"][0],
+            "opt2": payload["choices"][1],
+            "opt3": payload["choices"][2],
+            "opt4": payload["choices"][3],
+        }
+    )
 
     if answer_type == "order":
         target_order = parse_order_answer(correct_answer)

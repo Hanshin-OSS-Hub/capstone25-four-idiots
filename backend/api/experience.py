@@ -176,8 +176,8 @@ def submit_experience_answer():
     try:
         db = get_db()
         data = request.get_json(silent=True) or {}
-        session_id = data.get("session_id")
-        question_id = data.get("question_id")
+        session_id = data.get("session_id") or data.get("sessionId")
+        question_id = data.get("question_id") or data.get("questionId") or data.get("q_id") or data.get("qId")
         submitted_answer = data.get("answer")
         if submitted_answer is None:
             submitted_answer = data.get("choice")
@@ -241,7 +241,7 @@ def submit_experience_answer():
 @require_user
 def finish_experience():
     data = request.get_json(silent=True) or {}
-    session_id = data.get("session_id")
+    session_id = data.get("session_id") or data.get("sessionId")
     if not session_id:
         return fail("BAD_REQUEST", "session_id is required", 400)
 

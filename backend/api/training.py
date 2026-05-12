@@ -165,14 +165,14 @@ def submit_result():
         data = request.get_json(silent=True) or {}
 
         category = _normalize_category(data.get("category") or data.get("categoryName"))
-        question_id = data.get("question_id")
+        question_id = data.get("question_id") or data.get("questionId") or data.get("q_id") or data.get("qId")
         submitted_answer = data.get("answer")
         if submitted_answer is None:
             submitted_answer = data.get("choice")
         if submitted_answer is None:
             submitted_answer = data.get("answer_order", data.get("answerOrder"))
         time_sec = int(data.get("time_sec", 0))
-        session_id = data.get("session_id")
+        session_id = data.get("session_id") or data.get("sessionId")
         if not session_id or not question_id:
             return fail("BAD_REQUEST", "session_id and question_id are required", 400)
 
@@ -253,7 +253,7 @@ def finish_training():
     try:
         db = get_db()
         data = request.get_json(silent=True) or {}
-        session_id = data.get("session_id")
+        session_id = data.get("session_id") or data.get("sessionId")
 
         if not session_id:
             return fail("BAD_REQUEST", "session_id is required", 400)
@@ -261,6 +261,35 @@ def finish_training():
         session = _get_training_session(session_id)
         if not session:
             return fail("NOT_FOUND", "training session not found", 404)
+
+        client_results = data.get("results") or []
+        if isinstance(client_results, list) and client_results:
+            normalized_records = []
+            for record in client_results:
+                question_id = (
+                    record.get("question_id")
+                    or record.get("questionId")
+                    or record.get("q_id")
+                    or record.get("qId")
+                )
+                if not question_id:
+                    continue
+                normalized_records.append(
+                    {
+                        "question_id": question_id,
+                        "time_sec": int(record.get("time_sec", record.get("solve_time_sec", 0)) or 0),
+                        "is_correct": bool(record.get("is_correct", record.get("isCorrect", False))),
+                    }
+                )
+
+            if normalized_records:
+                session["records"] = normalized_records
+                session["question_count"] = len(normalized_records)
+                wrong_count = sum(1 for record in normalized_records if not record["is_correct"])
+                session["lives"] = max(0, MAX_LIVES - wrong_count)
+
+        if data.get("total_power") is not None:
+            session["total_power"] = int(data.get("total_power") or 0)
 
         profile_result = _apply_training_result(
             db,
