@@ -258,6 +258,35 @@ def finish_training():
         if not session:
             return fail("NOT_FOUND", "training session not found", 404)
 
+        client_results = data.get("results") or []
+        if isinstance(client_results, list) and client_results:
+            normalized_records = []
+            for record in client_results:
+                question_id = (
+                    record.get("question_id")
+                    or record.get("questionId")
+                    or record.get("q_id")
+                    or record.get("qId")
+                )
+                if not question_id:
+                    continue
+                normalized_records.append(
+                    {
+                        "question_id": question_id,
+                        "time_sec": int(record.get("time_sec", record.get("solve_time_sec", 0)) or 0),
+                        "is_correct": bool(record.get("is_correct", record.get("isCorrect", False))),
+                    }
+                )
+
+            if normalized_records:
+                session["records"] = normalized_records
+                session["question_count"] = len(normalized_records)
+                wrong_count = sum(1 for record in normalized_records if not record["is_correct"])
+                session["lives"] = max(0, MAX_LIVES - wrong_count)
+
+        if data.get("total_power") is not None:
+            session["total_power"] = int(data.get("total_power") or 0)
+
         profile_result = _apply_training_result(
             db,
             user_id=session["user_id"],
