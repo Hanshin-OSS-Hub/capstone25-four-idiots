@@ -26,6 +26,7 @@ public class ArenaMatchingUI : MonoBehaviour
     private string battleSceneName = "11_ArenaBattle";
 
     private List<RankingEntryData> opponentList = new List<RankingEntryData>();
+    private List<ArenaMatchCandidate> serverCandidates = new List<ArenaMatchCandidate>();
     private int currentOpponentIndex = 0;
 
     void Start()
@@ -44,14 +45,16 @@ public class ArenaMatchingUI : MonoBehaviour
             currentCat,
             (res) =>
             {
-                if (res.success && res.data != null)
+                // 서버 데이터가 있으면 실제 데이터 사용, 없으면 더미
+                if (res.success && res.data?.candidates != null && res.data.candidates.Count > 0)
                 {
-                    GenerateDummyOpponents();
+                    LoadRealOpponents(res.data.candidates);
                 }
                 else
                 {
                     GenerateDummyOpponents();
                 }
+
                 if (loadingOverlay != null)
                     loadingOverlay.SetActive(false);
                 RefreshUI();
@@ -64,6 +67,25 @@ public class ArenaMatchingUI : MonoBehaviour
                 RefreshUI();
             }
         );
+    }
+
+    // 실제 서버 candidates 데이터를 리스트에 매핑
+    private void LoadRealOpponents(List<ArenaMatchCandidate> candidates)
+    {
+        serverCandidates = candidates; // ← 보관
+        opponentList = new List<RankingEntryData>();
+        foreach (var c in candidates)
+        {
+            opponentList.Add(
+                new RankingEntryData
+                {
+                    nickname = c.opponent?.nickname ?? "User",
+                    arena_rating = c.opponent?.arena_rating ?? 0,
+                    score = c.opponent?.power ?? 0,
+                }
+            );
+        }
+        currentOpponentIndex = 0;
     }
 
     private void GenerateDummyOpponents()
@@ -155,10 +177,13 @@ public class ArenaMatchingUI : MonoBehaviour
     public void OnClickStartBattle()
     {
         var selected = opponentList[currentOpponentIndex];
-        ArenaSession.OpponentId = string.IsNullOrEmpty(selected.nickname)
-            ? "User"
-            : selected.nickname;
+        ArenaSession.OpponentId = selected.nickname;
         ArenaSession.OpponentRating = selected.arena_rating;
+
+        // 서버 데이터가 있을 때만 match_id 저장
+        if (serverCandidates != null && serverCandidates.Count > currentOpponentIndex)
+            ArenaSession.MatchId = serverCandidates[currentOpponentIndex].match_id;
+
         SceneManager.LoadScene(battleSceneName);
     }
 }

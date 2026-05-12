@@ -38,7 +38,8 @@ public class ArenaResultUI : MonoBehaviour
         int changeAmount,
         string tierName,
         Sprite tierSprite,
-        bool isPromoted // [추가] 승급 여부 매개변수 [cite: 49]
+        bool isPromoted, // [추가] 승급 여부 매개변수 [cite: 49]
+        bool isDemoted
     )
     {
         if (rootPanel != null)
@@ -68,11 +69,15 @@ public class ArenaResultUI : MonoBehaviour
             tierIconImage.sprite = tierSprite;
 
         if (promotionText != null)
-        {
-            promotionText.gameObject.SetActive(isPromoted);
-            if (isPromoted)
-                promotionText.text = "티어 승급!";
-        }
+            if (promotionText != null)
+            {
+                bool showAlert = isPromoted || isDemoted;
+                promotionText.gameObject.SetActive(showAlert);
+                if (isPromoted)
+                    promotionText.text = "티어 승급!";
+                else if (isDemoted)
+                    promotionText.text = "티어 강등!";
+            }
     }
 
     public void OnClickExit()

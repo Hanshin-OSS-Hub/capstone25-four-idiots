@@ -28,4 +28,5 @@ public static class ArenaSession
     // 상대방 정보
     public static string OpponentId;
     public static int OpponentRating;
+    public static string MatchId; // ← 추가
 }

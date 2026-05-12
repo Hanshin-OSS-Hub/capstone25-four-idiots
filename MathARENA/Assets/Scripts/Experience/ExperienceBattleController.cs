@@ -199,6 +199,7 @@ public class ExperienceBattleController : MonoBehaviour
 
         battleRecords.Clear();
         solvedQuestionIds.Clear();
+        arenaQuestionList.Clear();
 
         // 점수판 UI를 현재 BP로 즉시 갱신
         UpdatePlayerScoreUI();
@@ -285,6 +286,26 @@ public class ExperienceBattleController : MonoBehaviour
                     currentMatchId = candidate.match_id;
                     currentOpponentPower = candidate.opponent.power;
                     currentOpponentRecords = candidate.opponent_records;
+
+                    Debug.Log(
+                        $"[상대 기록] opponent_records 수: {currentOpponentRecords?.Count ?? 0}"
+                    );
+                    if (currentOpponentRecords != null)
+                    {
+                        foreach (var r in currentOpponentRecords)
+                            Debug.Log(
+                                $"  → 문제순서:{r.question_order_number}, 정답:{r.is_correct}, 시간:{r.solve_time_sec}초"
+                            );
+                    }
+
+                    // ✅ 추가: 서버에서 받은 내 최신 프로필을 세션에 반영
+                    if (ExperienceSession.UserProfile != null && res.data.my_profile != null)
+                    {
+                        ExperienceSession.UserProfile.arena_rating = res.data
+                            .my_profile
+                            .arena_rating;
+                        ExperienceSession.UserProfile.tier_name = res.data.my_profile.tier_name;
+                    }
 
                     // [핵심] 명세서 38번: 마지막으로 푼 문제 번호 다음부터 시작
                     // 만약 5번까지 풀었다면(0~4), 5번 인덱스부터 시작합니다.
@@ -591,7 +612,15 @@ public class ExperienceBattleController : MonoBehaviour
         }
 
         UpdateQuestionCounterUI();
-        HookAllButtons();
+        //HookAllButtons();
+
+        // [추가] 다음 문제를 위해 버튼들 다시 활성화
+        foreach (var btn in choiceButtons)
+        {
+            if (btn != null)
+                btn.interactable = true;
+        }
+
         if (loadingOverlay != null)
             loadingOverlay.SetActive(false);
 
@@ -786,6 +815,7 @@ public class ExperienceBattleController : MonoBehaviour
 
             // 승급 여부 판단: 100단위 숫자가 바뀌었는지 확인
             bool isPromoted = (cumulativeNextAR / 100) > (cumulativeCurrentAR / 100);
+            bool isDemoted = (cumulativeNextAR / 100) < (cumulativeCurrentAR / 100);
 
             // 4. 티어 정보 갱신 (TierManager 사용)
             var tierInfo = TierManager.GetTierInfo(cumulativeNextAR);
@@ -808,7 +838,8 @@ public class ExperienceBattleController : MonoBehaviour
                     arChange,
                     tierInfo.fullName,
                     Resources.Load<Sprite>($"Tiers/Tier_{tierInfo.tierIdx}_{tierInfo.gradeIdx}"),
-                    isPromoted // 승급 시 결과창에 "티어 승급!" 알림 표시
+                    isPromoted, // 승급 시 결과창에 "티어 승급!" 알림 표시
+                    isDemoted // 추가
                 );
             }
 
@@ -1030,40 +1061,45 @@ public class ExperienceBattleController : MonoBehaviour
 
     private void HookAllButtons()
     {
-        // 1. [중요] OCR 전용 제출 버튼 연결
+        // [보완] 모든 버튼의 리스너를 먼저 확실하게 제거
+        if (submitButton != null)
+            submitButton.onClick.RemoveAllListeners();
+        if (designSubmitButton != null)
+            designSubmitButton.onClick.RemoveAllListeners();
+
+        // 1. OCR 제출 버튼
         if (submitButton != null)
         {
-            submitButton.onClick.RemoveAllListeners();
             submitButton.onClick.AddListener(OnClickSubmitOCR);
-            Debug.Log("[연결 완료] OCR 제출 버튼 -> OnClickSubmitOCR");
         }
 
-        // 2. [중요] 설계 모드 전용 제출 버튼 연결
+        // 2. 설계 제출 버튼
         if (designSubmitButton != null)
         {
-            designSubmitButton.onClick.RemoveAllListeners();
             designSubmitButton.onClick.AddListener(OnClickSubmitDesign);
-            Debug.Log("[연결 완료] 설계 제출 버튼 -> OnClickSubmitDesign");
         }
 
-        // 3. 객관식(Concept/Idea) 보기 버튼 설정
+        // 3. 객관식(Concept/Idea) 보기 버튼
         for (int i = 0; i < choiceButtons.Length; i++)
         {
-            int index = i;
-            if (choiceButtons[index] == null)
+            if (choiceButtons[i] == null)
                 continue;
-
+            int index = i;
             choiceButtons[index].onClick.RemoveAllListeners();
-            choiceButtons[index].onClick.AddListener(() => OnClickChoice(index));
+            // [중요] 람다식 대신 직접적인 호출 구조로 변경하여 중첩 최소화
+            choiceButtons[index]
+                .onClick.AddListener(() =>
+                {
+                    OnClickChoice(index);
+                });
         }
 
-        // 4. 설계 모드(Design) 보기 버튼 설정 (선택 및 취소 기능)
+        // 4. 설계 보기 버튼
         for (int i = 0; i < designChoiceButtons.Length; i++)
         {
-            int index = i;
-            if (designChoiceButtons[index] == null)
+            if (designChoiceButtons[i] == null)
                 continue;
-
+            int index = i;
             designChoiceButtons[index].onClick.RemoveAllListeners();
             designChoiceButtons[index].onClick.AddListener(() => OnClickDesignElement(index));
         }
@@ -1072,24 +1108,33 @@ public class ExperienceBattleController : MonoBehaviour
     // 2. [객관식] 클릭 처리
     private void OnClickChoice(int index)
     {
+        // 1. 이미 처리 중이면 즉시 리턴
         if (isProcessingAnswer)
             return;
+        isProcessingAnswer = true; // 자물쇠 잠금
+
+        // [핵심 추가] 모든 객관식 버튼을 즉시 비활성화 (물리적 차단)
+        foreach (var btn in choiceButtons)
+        {
+            if (btn != null)
+                btn.interactable = false;
+        }
 
         string userChoiceText = choiceTexts[index].text.Trim();
         string serverAnswer = correctAnswerText.Trim();
         bool isCorrect = (index.ToString() == serverAnswer) || (userChoiceText == serverAnswer);
 
-        Debug.Log($"[객관식] 선택: {index}, 결과: {isCorrect}");
+        Debug.Log($"[객관식 클릭] index: {index}, 결과: {isCorrect}");
         ExecuteResultSequence(isCorrect, userChoiceText);
     }
 
     // 3. [설계] 보기 클릭 처리 (선택/취소)
     private void OnClickDesignElement(int index)
     {
-        if (isProcessingAnswer)
-            return;
+        // [수정] 여기서는 잠금을 걸면 안 됩니다. 제출 버튼을 누를 때까지 여러 번 클릭해야 하기 때문입니다.
+        // if (isProcessingAnswer) return;
+        // isProcessingAnswer = true; <-- 이 줄을 지우거나 주석 처리하세요.
 
-        // 리스트에 이미 있으면 제거(취소), 없으면 추가(선택)
         if (designUserSequence.Contains(index))
         {
             designUserSequence.Remove(index);
@@ -1099,7 +1144,6 @@ public class ExperienceBattleController : MonoBehaviour
             designUserSequence.Add(index);
         }
 
-        // 상태가 변했으니 UI(텍스트 + 투명도)를 다시 그림
         RefreshDesignOrderLabels();
     }
 
@@ -1163,22 +1207,22 @@ public class ExperienceBattleController : MonoBehaviour
     // [중요] ExecuteResultSequence 부분만 교체하시면 됩니다.
     private void ExecuteResultSequence(bool isPlayerCorrect, string answerForServer)
     {
-        // [1] 중복 실행 방지 (타임아웃은 예외)
-        if (isProcessingAnswer && answerForServer != "TIMEOUT")
-            return;
+        // [수정] 본인이 잠근 자물쇠 때문에 실행이 취소되는 중복 체크 블록을 제거했습니다.
+        // 입구(OnClickChoice, OnClickSubmit 등)에서 이미 체크를 하고 들어오므로, 여기서는 바로 실행합니다.
 
-        // [2] 타이머 정지
+        // 1. 상태 잠금 유지 및 타이머 정지
+
+        isProcessingAnswer = true;
+
         if (battleTimer != null)
         {
             battleTimer.StopTimer();
         }
 
-        isProcessingAnswer = true;
-
-        // 사용자의 풀이 시간을 초 단위로 계산 [통일: solve_time_sec]
+        // 2. 풀이 시간 계산 (초 단위)
         int solve_time_sec = Mathf.RoundToInt(Time.time - questionStartTime);
 
-        // [3] 점수 가산 (훈련장 및 아레나 공통)
+        // 3. 점수 가산 및 기록 생성
         if (isPlayerCorrect)
         {
             int earned = GetDifficultyScore(ParseDifficulty(currentDiffName));
@@ -1186,7 +1230,6 @@ public class ExperienceBattleController : MonoBehaviour
             UpdatePlayerScoreUI();
         }
 
-        // 결과 데이터 생성
         var resultData = new QuestionResultData
         {
             question_id = currentQuestionId,
@@ -1196,7 +1239,7 @@ public class ExperienceBattleController : MonoBehaviour
         };
         battleRecords.Add(resultData);
 
-        // [4] 서버 제출 (모드별 분기)
+        // 4. 서버 데이터 제출 (모드별 분기)
         BattleResultRequest submitReq = new BattleResultRequest
         {
             session_id = (mode == BattleMode.Arena) ? "" : currentSessionId,
@@ -1212,58 +1255,44 @@ public class ExperienceBattleController : MonoBehaviour
         else
             submitReq.answer = answerForServer;
 
-        if (mode == BattleMode.Arena)
-            NetworkManager.Instance.SubmitMatch(submitReq, null, null);
-        else if (mode == BattleMode.Training)
-            NetworkManager.Instance.SubmitTraining(submitReq, null, null);
+        // [중복 방지] 이미 제출한 문제면 스킵 ← submitReq 선언 후에 사용
+        if (solvedQuestionIds.Contains(currentQuestionId))
+        {
+            Debug.LogWarning($"[중복 방지] {currentQuestionId} 이미 제출됨, 서버 전송 스킵");
+        }
         else
-            NetworkManager.Instance.SubmitExperience(submitReq, null, null);
+        {
+            solvedQuestionIds.Add(currentQuestionId);
+            if (mode == BattleMode.Arena)
+                NetworkManager.Instance.SubmitMatch(submitReq, null, null);
+            else if (mode == BattleMode.Training)
+                NetworkManager.Instance.SubmitTraining(submitReq, null, null);
+            else
+                NetworkManager.Instance.SubmitExperience(submitReq, null, null);
+        }
 
-        // [5] 아레나 승패 판정 로직 (명세서 39~42번 기준)
+        // 5. 아레나 승패 판정 로직
         bool playerAttacks = false;
-
         if (mode == BattleMode.Arena)
         {
             int currentQNum = ExperienceSession.CurrentQuestionCount + 1;
-
-            // [확인용 로그] 현재 리스트에 데이터가 몇 개나 있는지 먼저 찍어봅니다.
-            Debug.Log(
-                $"<color=white>[아레나 체크]</color> 현재 리스트 내 기록 개수: {currentOpponentRecords?.Count ?? 0}개"
-            );
-
-            var opponentData = currentOpponentRecords.Find(r =>
+            var opponentData = currentOpponentRecords?.Find(r =>
                 r.question_order_number == currentQNum
             );
 
             if (opponentData != null)
             {
-                // [로그 추가] 상대방의 정답 여부와 풀이 시간을 실시간으로 출력합니다.
-                Debug.Log(
-                    $"<color=cyan>[아레나 대조]</color> {currentQNum}번 문제 "
-                        + $"| 나: {(isPlayerCorrect ? "O" : "X")} ({solve_time_sec}초) "
-                        + $"| 상대: {(opponentData.is_correct ? "O" : "X")} ({opponentData.solve_time_sec}초)"
-                );
-
-                if (!isPlayerCorrect)
-                {
-                    playerAttacks = false;
-                }
+                if (!isPlayerCorrect && !opponentData.is_correct)
+                    playerAttacks = false; // 둘 다 틀림 → 아무도 공격 안 함
+                else if (!isPlayerCorrect && opponentData.is_correct)
+                    playerAttacks = false; // 상대만 맞힘 → 상대가 공격
                 else if (isPlayerCorrect && !opponentData.is_correct)
-                {
-                    playerAttacks = true;
-                }
-                else if (isPlayerCorrect && opponentData.is_correct)
-                {
+                    playerAttacks = true; // 나만 맞힘 → 내가 공격
+                else
                     playerAttacks = (solve_time_sec < opponentData.solve_time_sec);
-                }
             }
             else
             {
-                // 상대 기록이 없을 경우 일반 판정 (맞추면 공격)
-                // [중요] 봇이거나 기록이 없을 때 찍히는 로그
-                Debug.LogWarning(
-                    $"<color=red>[아레나 경고]</color> {currentQNum}번 문제에 대한 상대방 기록이 없습니다. (봇 판정)"
-                );
                 playerAttacks = isPlayerCorrect;
             }
         }
@@ -1272,22 +1301,23 @@ public class ExperienceBattleController : MonoBehaviour
             playerAttacks = isPlayerCorrect;
         }
 
-        // [6] 체력 차감 및 UI 업데이트
+        // 6. 체력 UI 반영
         if (playerAttacks)
-        {
-            opponentLife--; // 사용자가 공격 성공
-        }
+            opponentLife--;
         else
-        {
-            ExperienceSession.CurrentLife--; // 상대방이 공격 성공
-        }
+            ExperienceSession.CurrentLife--;
         UpdateLifeUI();
 
-        // [7] 애니메이션 및 시퀀스 실행
-        if (sequenceManager != null)
+        // 7. 애니메이션 실행 (완료 후 CheckBattleEndCondition 호출)
+        if (sequenceManager != null && sequenceManager.gameObject.activeInHierarchy)
         {
             sequenceManager.PlaySequence(playerAttacks);
             sequenceManager.OnSequenceComplete = () => CheckBattleEndCondition();
+        }
+        else
+        {
+            // 애니메이션 매니저가 없으면 즉시 심판 함수 호출
+            CheckBattleEndCondition();
         }
     }
 
@@ -1329,7 +1359,7 @@ public class ExperienceBattleController : MonoBehaviour
     private void CheckBattleEndCondition()
     {
         // 1. 연출이 끝났으므로 다음 입력을 받을 수 있게 잠금 해제
-        //isProcessingAnswer = false;
+        isProcessingAnswer = false;
 
         // 2. 아레나 모드: 나 혹은 상대방의 생명이 0인지 확인
         if (mode == BattleMode.Arena)
@@ -1337,7 +1367,6 @@ public class ExperienceBattleController : MonoBehaviour
             if (ExperienceSession.CurrentLife <= 0 || opponentLife <= 0)
             {
                 Debug.Log("[아레나] 전투 종료 조건 충족");
-                isProcessingAnswer = false;
                 FinishBattle();
                 return;
             }

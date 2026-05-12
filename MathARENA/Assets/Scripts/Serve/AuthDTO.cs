@@ -198,6 +198,7 @@ namespace MathArena.Network
     {
         public List<ArenaMatchCandidate> candidates; // [수정] 단일 객체가 아닌 리스트로 변경
         public string status;
+        public UserProfileData my_profile; // ← 이 줄 추가
     }
 
     // AuthDTO.cs [80번 줄 근처]
