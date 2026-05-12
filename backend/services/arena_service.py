@@ -170,39 +170,31 @@ def load_arena_progress(db, user_id, opponent_id, category):
 
 def upsert_arena_progress(db, match, last_question_order):
     category_name = CATEGORY_DISPLAY_NAMES[match["category"]]
-    existing = load_arena_progress(db, match["user_id"], match["opponent_id"], match["category"])
-    params = {
-        "user_id": match["user_id"],
-        "opponent_id": match["opponent_id"],
-        "category_name": category_name,
-        "updated_cp": match["updated_cp"],
-        "set_id": match["set_id"],
-        "last_question_order": last_question_order,
-    }
-    if existing:
-        query = text(
-            """
-            UPDATE ARENA_PROGRESS
-            SET updated_cp = :updated_cp,
-                set_id = :set_id,
-                last_question_order = :last_question_order
-            WHERE user_id = :user_id
-              AND opponent_id = :opponent_id
-              AND category_name = :category_name
-            """
+    query = text(
+        """
+        INSERT INTO ARENA_PROGRESS (
+            user_id, opponent_id, category_name, updated_cp, set_id, last_question_order
         )
-    else:
-        query = text(
-            """
-            INSERT INTO ARENA_PROGRESS (
-                user_id, opponent_id, category_name, updated_cp, set_id, last_question_order
-            )
-            VALUES (
-                :user_id, :opponent_id, :category_name, :updated_cp, :set_id, :last_question_order
-            )
-            """
+        VALUES (
+            :user_id, :opponent_id, :category_name, :updated_cp, :set_id, :last_question_order
         )
-    db.execute(query, params)
+        ON DUPLICATE KEY UPDATE
+            updated_cp = VALUES(updated_cp),
+            set_id = VALUES(set_id),
+            last_question_order = VALUES(last_question_order)
+        """
+    )
+    db.execute(
+        query,
+        {
+            "user_id": match["user_id"],
+            "opponent_id": match["opponent_id"],
+            "category_name": category_name,
+            "updated_cp": match["updated_cp"],
+            "set_id": match["set_id"],
+            "last_question_order": last_question_order,
+        },
+    )
     db.commit()
 
 
