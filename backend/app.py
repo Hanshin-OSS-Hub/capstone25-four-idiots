@@ -13,6 +13,7 @@ from common.responses import ok, fail
 from common.errors import AppError
 from config import load_config
 from database import get_db, init_db
+from services.question_service import ensure_user_solved_question_table
 from services.runtime_state import ensure_runtime_state_table
 
 # --------------------------------------------
@@ -49,6 +50,7 @@ def create_app():
     with app.app_context():
         try:
             init_db(app)
+            ensure_user_solved_question_table(get_db())
             ensure_runtime_state_table()
         except Exception as e:
             app.logger.error(f"??DB 珥덇린???ㅽ뙣: {str(e)}")

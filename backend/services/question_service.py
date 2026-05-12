@@ -152,7 +152,6 @@ def _question_ids_for_difficulty(db, category, question_ids, difficulty):
 
 
 def get_user_history(db, user_id, category, difficulty=None):
-    ensure_user_solved_question_table(db)
     category_name = CATEGORY_DISPLAY_NAMES[category]
     table_name = CATEGORY_TABLES[category]["table"]
     params = {"user_id": user_id, "category_name": category_name}
@@ -178,7 +177,6 @@ def get_user_history(db, user_id, category, difficulty=None):
 
 
 def remember_question(db, user_id, category, question_id):
-    ensure_user_solved_question_table(db)
     category_name = CATEGORY_DISPLAY_NAMES[category]
     db.execute(
         text(
@@ -198,7 +196,6 @@ def remember_question(db, user_id, category, question_id):
 
 
 def reset_user_history(db, user_id, category, difficulty=None):
-    ensure_user_solved_question_table(db)
     category_name = CATEGORY_DISPLAY_NAMES[category]
     table_name = CATEGORY_TABLES[category]["table"]
     params = {"user_id": user_id, "category_name": category_name}
@@ -269,10 +266,6 @@ def prepare_question_for_delivery(category, row):
     correct_answer = str(row.get("correct_answer", "")).strip()
 
     if answer_type not in {"choice", "order"}:
-        payload["correct_answer"] = correct_answer
-        payload["answer"] = correct_answer
-        if answer_type == "ocr":
-            payload["ocr_answer"] = correct_answer
         return payload, correct_answer
 
     original_choices = [row["opt1"], row["opt2"], row["opt3"], row["opt4"]]
@@ -295,13 +288,6 @@ def prepare_question_for_delivery(category, row):
             if remapped:
                 correct_answer = "-".join(remapped)
 
-    payload["correct_answer"] = correct_answer
-    if answer_type == "order":
-        payload["answer_order"] = correct_answer
-        payload["answerOrder"] = correct_answer
-        payload["answer"] = correct_answer
-    else:
-        payload["answer"] = correct_answer
     return payload, correct_answer
 
 
@@ -344,14 +330,11 @@ def load_question(db, category, question_id):
 
 def load_random_question(db, category, difficulty=None, excluded_ids=None):
     table_name = CATEGORY_TABLES[category]["table"]
-    answer_column = get_answer_column(category)
-    select_columns = _question_select_columns(category, answer_column)
     excluded_ids = excluded_ids or []
 
     base_query = f"""
-    SELECT {select_columns}
+    SELECT q.q_id
     FROM {table_name} q
-    JOIN DIFFICULTY d ON d.diff_name = q.diff_name
     WHERE 1=1
     """
 
@@ -368,8 +351,12 @@ def load_random_question(db, category, difficulty=None, excluded_ids=None):
             params[key] = question_id
         base_query += f" AND q.q_id NOT IN ({', '.join(placeholders)})"
 
-    base_query += " ORDER BY RAND() LIMIT 1"
-    return db.execute(text(base_query), params).mappings().first()
+    candidate_rows = db.execute(text(base_query), params).mappings().all()
+    if not candidate_rows:
+        return None
+
+    selected_question_id = random.choice(candidate_rows)["q_id"]
+    return load_question(db, category, selected_question_id)
 
 
 def load_question_detail(db, category, question_id):
