@@ -98,7 +98,7 @@ Math ARENA는 중등 수학을 기반으로
 
 아래 버튼을 눌러 최신 버전의 APK 파일을 다운로드하세요.
 
-[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/Hanshin-OSS-Hub/capstone25-four-idiots/releases/download/v0.0.1/MathArena.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/Hanshin-OSS-Hub/capstone25-four-idiots/releases/download/v0.0.2/MathArenaBeta.apk)
 
 1. 최신 `.apk` 파일을 다운로드합니다.
 2. 안드로이드 기기에서 파일을 실행하여 설치합니다.
