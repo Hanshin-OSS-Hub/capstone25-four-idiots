@@ -20,6 +20,11 @@ def _write_temp_ssl_file(pem_text, suffix):
 
 
 def _build_connect_args(app):
+    connect_args = {
+        "connect_timeout": int(os.getenv("DB_CONNECT_TIMEOUT", "10")),
+        "read_timeout": int(os.getenv("DB_READ_TIMEOUT", "30")),
+        "write_timeout": int(os.getenv("DB_WRITE_TIMEOUT", "30")),
+    }
     ssl_args = {}
 
     ca_path = app.config.get("DB_SSL_CA_PATH")
@@ -40,9 +45,9 @@ def _build_connect_args(app):
 
     if ssl_args:
         app.logger.info("Database SSL is enabled")
-        return {"ssl": ssl_args}
+        connect_args["ssl"] = ssl_args
 
-    return {}
+    return connect_args
 
 
 def init_db(app):
@@ -58,6 +63,8 @@ def init_db(app):
         database_url,
         echo=app.config.get("DEBUG", False),
         pool_pre_ping=True,
+        pool_recycle=int(os.getenv("DB_POOL_RECYCLE", "240")),
+        pool_timeout=int(os.getenv("DB_POOL_TIMEOUT", "30")),
         connect_args=connect_args,
     )
 
