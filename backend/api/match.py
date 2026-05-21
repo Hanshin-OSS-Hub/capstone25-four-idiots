@@ -107,6 +107,19 @@ def find_match():
             if row["opponent_id"] in seen_opponents:
                 continue
             seen_opponents.add(row["opponent_id"])
+            progress = _load_arena_progress(db, user_id, row["opponent_id"], category)
+            if progress and progress["set_id"] != row["set_id"]:
+                progress = None
+            last_question_order = int(progress["last_question_order"] or 0) if progress else 0
+            opponent_records = [
+                {
+                    "question_order_number": int(record["question_order_number"] or 0),
+                    "q_id": record["q_id"],
+                    "solve_time_sec": int(record["solve_time_sec"] or 0),
+                    "is_correct": bool(record["is_correct"]),
+                }
+                for record in _load_opponent_set(db, row["set_id"], category)
+            ]
             match_id = f"match-{uuid4().hex[:8]}"
             room_id = f"room-{uuid4().hex[:8]}"
             create_arena_match(match_id, {
@@ -141,6 +154,8 @@ def find_match():
                     },
                     "set_id": row["set_id"],
                     "cp_gap": int(row["cp_gap"] or 0),
+                    "opponent_records": opponent_records,
+                    "last_question_order": last_question_order,
                 }
             )
             if len(candidates) >= 3:
