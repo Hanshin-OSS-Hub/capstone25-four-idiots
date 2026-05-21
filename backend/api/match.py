@@ -111,6 +111,7 @@ def find_match():
             if progress and progress["set_id"] != row["set_id"]:
                 progress = None
             last_question_order = int(progress["last_question_order"] or 0) if progress else 0
+            raw_opponent_records = _load_opponent_set(db, row["set_id"], category)
             opponent_records = [
                 {
                     "question_order_number": int(record["question_order_number"] or 0),
@@ -118,7 +119,9 @@ def find_match():
                     "solve_time_sec": int(record["solve_time_sec"] or 0),
                     "is_correct": bool(record["is_correct"]),
                 }
-                for record in _load_opponent_set(db, row["set_id"], category)
+                for record in _unique_records_by_question(
+                    _rotate_records(raw_opponent_records, last_question_order)
+                )
             ]
             match_id = f"match-{uuid4().hex[:8]}"
             room_id = f"room-{uuid4().hex[:8]}"
