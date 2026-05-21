@@ -1,5 +1,7 @@
 # config.py
 import os
+from urllib.parse import quote_plus
+
 from dotenv import load_dotenv
 
 def load_config(app):
@@ -18,9 +20,12 @@ def load_config(app):
     db_host = os.getenv("MYSQL_HOST", "localhost")
     db_port = os.getenv("MYSQL_PORT", "3307")
     db_name = os.getenv("MYSQL_DATABASE", "arena")
+    db_user_quoted = quote_plus(db_user)
+    db_pw_quoted = quote_plus(db_pw)
+    db_name_quoted = quote_plus(db_name)
     app.config["DB_URL"] = os.getenv(
         "DB_URL",
-        f"mysql+pymysql://{db_user}:{db_pw}@{db_host}:{db_port}/{db_name}?charset=utf8mb4"
+        f"mysql+pymysql://{db_user_quoted}:{db_pw_quoted}@{db_host}:{db_port}/{db_name_quoted}?charset=utf8mb4"
     )
     app.config["DB_SSL_CA_PATH"] = os.getenv("DB_SSL_CA_PATH")
     app.config["DB_SSL_CA_PEM"] = os.getenv("DB_SSL_CA_PEM")
