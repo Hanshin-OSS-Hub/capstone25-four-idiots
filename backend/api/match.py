@@ -209,6 +209,7 @@ def start_battle():
         question_map = {}
         question_order = []
         question_number_map = {}
+        opponent_records = []
         opponent_total_score = 0
 
         for record in rotated_records:
@@ -228,6 +229,14 @@ def start_battle():
             question_number_map[question_id] = int(record["question_order_number"] or 0)
             question_order.append(question_id)
             safe_questions.append(payload)
+            opponent_records.append(
+                {
+                    "question_order_number": int(record["question_order_number"] or 0),
+                    "q_id": question_id,
+                    "solve_time_sec": int(record["solve_time_sec"] or 0),
+                    "is_correct": bool(record["is_correct"]),
+                }
+            )
             if bool(record["is_correct"]):
                 opponent_total_score += int(row["score"] or 0)
 
@@ -255,6 +264,9 @@ def start_battle():
                 "opponent_lives": match["opponent_lives"],
                 "resumed": progress is not None,
                 "resume_from_order": resume_order,
+                "set_id": match["set_id"],
+                "last_question_order": resume_order,
+                "opponent_records": opponent_records,
                 "questions": safe_questions,
             }
         )
