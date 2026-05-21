@@ -12,9 +12,12 @@ _temp_ssl_files = []
 
 
 def _write_temp_ssl_file(pem_text, suffix):
+    pem_text = str(pem_text or "").strip().replace("\\n", "\n")
     fd, path = tempfile.mkstemp(prefix="math_arena_db_ssl_", suffix=suffix)
     with os.fdopen(fd, "w", encoding="utf-8") as handle:
         handle.write(pem_text)
+        if pem_text and not pem_text.endswith("\n"):
+            handle.write("\n")
     _temp_ssl_files.append(path)
     return path
 
@@ -58,6 +61,13 @@ def init_db(app):
         raise ValueError("DB_URL is not configured. Check your environment variables.")
 
     connect_args = _build_connect_args(app)
+    app.logger.info(
+        "DB config loaded: url_set=%s ssl_ca_path_set=%s ssl_ca_pem_set=%s ssl_enabled=%s",
+        bool(database_url),
+        bool(app.config.get("DB_SSL_CA_PATH")),
+        bool(app.config.get("DB_SSL_CA_PEM")),
+        bool(connect_args.get("ssl")),
+    )
 
     engine = create_engine(
         database_url,
