@@ -46,11 +46,12 @@ public sealed class ExperienceBattleAppBar : MonoBehaviour
 
     private CommonCategory ReadCurrentCategory()
     {
-        // 기존 카테고리 읽기 로직 유지
+        // [수정 완료] 훈련장과 체험장의 세션 데이터가 통합되어 있다면 동일하게 ExperienceSession을 참조하도록 수정합니다.
+        // 만약 아레나도 통합 세션을 쓴다면 전원 ExperienceSession으로 대체해도 좋습니다.
         return mode switch
         {
             BattleMode.Arena => (CommonCategory)ArenaSession.CurrentCategory,
-            BattleMode.Training => (CommonCategory)TrainingSession.CurrentCategory,
+            BattleMode.Training => (CommonCategory)ExperienceSession.CurrentCategory, // 훈련장도 ExperienceSession의 카테고리를 읽도록 변경
             _ => (CommonCategory)ExperienceSession.CurrentCategory,
         };
     }
