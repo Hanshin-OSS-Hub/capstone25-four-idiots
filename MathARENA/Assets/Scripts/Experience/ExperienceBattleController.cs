@@ -391,18 +391,24 @@ public class ExperienceBattleController : MonoBehaviour
         }
         else if (mode == BattleMode.Arena)
         {
-            // 이미 리스트를 받아놓은 상태라면 서버에 또 묻지 않고 리스트에서 가져옵니다.
-            if (
-                arenaQuestionList != null
-                && arenaQuestionList.Count > ExperienceSession.CurrentQuestionCount
-            )
+            // 1. 이미 받아온 아레나 문제 리스트가 존재하는 경우
+            if (arenaQuestionList != null && arenaQuestionList.Count > 0)
             {
-                // 리스트에서 꺼낼 때도 안전하게 다시 플래그 정비 후 바인딩
+                // ⭐ [기획서 반영] 인덱스가 리스트 크기를 넘어섰다면, 처음(0번)부터 다시 순환시킵니다.
+                if (ExperienceSession.CurrentQuestionCount >= arenaQuestionList.Count)
+                {
+                    Debug.Log(
+                        "<color=yellow>[아레나 기획 반영] 마지막 문제에 도달하여 첫 번째 문제부터 재출제합니다.</color>"
+                    );
+                    ExperienceSession.CurrentQuestionCount = 0;
+                }
+
                 isArenaTickTriggered = false;
                 ApplyServerDataToUI(arenaQuestionList[ExperienceSession.CurrentQuestionCount]);
                 return;
             }
 
+            // 2. 리스트가 아예 없는 최초 진입 시점에만 방 진입(StartMatch) API 호출
             NetworkManager.Instance.StartMatch(
                 cat,
                 currentDiffName,
@@ -413,14 +419,12 @@ public class ExperienceBattleController : MonoBehaviour
                     {
                         arenaQuestionList = res.data.questions;
                         Debug.Log(
-                            $"<color=orange>[아레나] {arenaQuestionList.Count}개의 문제를 수신했습니다.</color>"
+                            $"<color=orange>[아레나] {arenaQuestionList.Count}개의 문제를 최초 수신했습니다.</color>"
                         );
 
+                        // 안전장치: 혹시 모를 인덱스 초과 방어
                         if (ExperienceSession.CurrentQuestionCount >= arenaQuestionList.Count)
                         {
-                            Debug.LogWarning(
-                                $"[아레나 경고] 시작 인덱스({ExperienceSession.CurrentQuestionCount})가 수신된 문제 수({arenaQuestionList.Count})를 초과하여 0번 문제부터 시작합니다."
-                            );
                             ExperienceSession.CurrentQuestionCount = 0;
                         }
 
