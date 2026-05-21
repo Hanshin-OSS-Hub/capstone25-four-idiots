@@ -208,6 +208,7 @@ public class ExperienceBattleController : MonoBehaviour
 
         ExperienceSession.CurrentQuestionCount = 0;
         currentOpponentRecordIndex = 0;
+        currentSessionId = "";
 
         battleRecords.Clear();
         solvedQuestionIds.Clear();
@@ -353,6 +354,13 @@ public class ExperienceBattleController : MonoBehaviour
 
         if (mode == BattleMode.Training)
         {
+            if (!string.IsNullOrEmpty(currentSessionId))
+            {
+                RequestTrainingQuestion();
+                return;
+            }
+
+            // --- [훈련장] 세션 생성 및 문제 상세 요청 ---
             NetworkManager.Instance.StartTraining(
                 cat,
                 currentDiffName,
@@ -436,6 +444,13 @@ public class ExperienceBattleController : MonoBehaviour
         }
         else
         {
+            // --- [체험장] 세션 생성 및 문제 상세 요청 ---
+            if (!string.IsNullOrEmpty(currentSessionId))
+            {
+                RequestExperienceQuestion();
+                return;
+            }
+
             NetworkManager.Instance.StartExperience(
                 cat,
                 currentDiffName,
@@ -476,6 +491,42 @@ public class ExperienceBattleController : MonoBehaviour
     }
 
     // 공통 에러 처리 함수
+    private void RequestTrainingQuestion()
+    {
+        NetworkManager.Instance.GetTrainingQuestion(
+            currentSessionId,
+            (questionRes) =>
+            {
+                if (questionRes.success && questionRes.data != null)
+                {
+                    Debug.Log("<color=lime>[Training] Question received -> applying UI</color>");
+                    ApplyServerDataToUI(questionRes.data);
+                }
+                else
+                    HandleNetworkError("Question data is empty.");
+            },
+            (err) => HandleNetworkError(err)
+        );
+    }
+
+    private void RequestExperienceQuestion()
+    {
+        NetworkManager.Instance.GetExperienceQuestion(
+            currentSessionId,
+            (questionRes) =>
+            {
+                if (questionRes.success && questionRes.data != null)
+                {
+                    Debug.Log("<color=lime>[Experience] Question received -> applying UI</color>");
+                    ApplyServerDataToUI(questionRes.data);
+                }
+                else
+                    HandleNetworkError("Question data is empty.");
+            },
+            (err) => HandleNetworkError(err)
+        );
+    }
+
     private void HandleNetworkError(string err)
     {
         Debug.LogError($"네트워크 에러: {err}");
