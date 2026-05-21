@@ -236,16 +236,9 @@ public class ExperienceBattleController : MonoBehaviour
         if (playerCurrentScoreText == null)
             return;
 
-        // --- [수정] 훈련장 진행 중에는 보안을 위해 최종 전투력을 숨겨줍니다. ---
-        if (mode == BattleMode.Training)
-        {
-            playerCurrentScoreText.text = "?? BP"; // 전투가 끝날 때까지 점수 은폐
-        }
-        else
-        {
-            // 아레나와 체험장은 실시간으로 현재 보유/누적 BP 노출
-            playerCurrentScoreText.text = $"{ExperienceSession.TotalExpScore} BP";
-        }
+        // --- [수정 완료] 기획 명세서에 맞게 훈련장에서도 실시간으로 합산된 전투력(BP)을 표시합니다. ---
+        // 기존의 "?? BP" 은폐 로직을 제거하고, 모든 모드(체험장, 훈련장, 아레나)에서 현재 점수를 실시간 노출합니다.
+        playerCurrentScoreText.text = $"{ExperienceSession.TotalExpScore} BP";
     }
 
     private void SetTotalQuestionLimit()
@@ -493,36 +486,42 @@ public class ExperienceBattleController : MonoBehaviour
 
     private string DetermineDifficulty()
     {
-        if (mode == BattleMode.Experience)
-            return (ExperienceSession.CurrentQuestionCount + 1 <= 20) ? "VERY EASY" : "EASY";
-
         int qIdx = ExperienceSession.CurrentQuestionCount + 1;
         int cp = GetCurrentCategoryCP();
+
+        // [기획서 반영] 체험장과 훈련장은 동일한 난이도 구성을 공유합니다.
+        // 기존의 "체험장이면 무조건 VERY EASY / EASY 고정" 하드코딩 로직을 제거하고 통합합니다.
+
+        // 1단계: 전투력 500 이상 (고급)
         if (cp >= 500)
         {
             if (qIdx <= 5)
-                return "VERY EASY";
+                return "VERY EASY"; // 1 ~ 5번째
             if (qIdx <= 10)
-                return "EASY";
+                return "EASY"; // 6 ~ 10번째
             if (qIdx <= 15)
-                return "HARD";
+                return "HARD"; // 11 ~ 15번째
             if (qIdx <= 20)
-                return "VERY HARD";
+                return "VERY HARD"; // 16 ~ 20번째
             if (qIdx <= 30)
-                return "TOUGH";
-            return "VERY TOUGH";
+                return "TOUGH"; // 21 ~ 30번째
+            return "VERY TOUGH"; // 31번째 이후~
         }
-        else if (cp >= 200)
+
+        // 2단계: 전투력 200 이상 500 미만 (중급)
+        if (cp >= 200)
         {
             if (qIdx <= 10)
-                return "VERY EASY";
+                return "VERY EASY"; // 1 ~ 10번째
             if (qIdx <= 20)
-                return "EASY";
+                return "EASY"; // 11 ~ 20번째
             if (qIdx <= 30)
-                return "HARD";
-            return "VERY HARD";
+                return "HARD"; // 21 ~ 30번째
+            return "VERY HARD"; // 31번째 이후~
         }
-        return qIdx <= 20 ? "VERY EASY" : "EASY";
+
+        // 3단계: 전투력 200 미만 기본 상태 (초급)
+        return qIdx <= 20 ? "VERY EASY" : "EASY"; // 1~20번째 VERY EASY, 21번째~ EASY
     }
 
     // ExperienceBattleController.cs의 ApplyServerDataToUI 함수 전문 (334번 줄 근처)
