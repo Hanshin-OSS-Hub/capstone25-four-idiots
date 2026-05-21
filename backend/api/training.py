@@ -160,6 +160,8 @@ def get_random_question():
 
         payload, correct_answer = _prepare_question_for_delivery(category, row)
         payload["recycled"] = recycled
+        if user_id:
+            _remember_question(db, user_id, category, row["q_id"])
         if session_id:
             session["served_answers"][row["q_id"]] = correct_answer
             save_training_session(session_id, session)
@@ -316,14 +318,15 @@ def finish_training():
             return fail("NOT_FOUND", "profile not found", 404)
 
         set_id = None
+        for record in session["records"]:
+            _remember_question(
+                db,
+                session["user_id"],
+                session["category"],
+                record["question_id"],
+            )
+
         if profile_result["updated"]:
-            for record in session["records"]:
-                _remember_question(
-                    db,
-                    session["user_id"],
-                    session["category"],
-                    record["question_id"],
-                )
             set_id = _save_training_records(db, session, profile_result["nickname"])
 
         result = {

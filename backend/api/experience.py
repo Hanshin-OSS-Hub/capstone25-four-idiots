@@ -165,6 +165,7 @@ def get_experience_question():
             return fail("NO_QUESTIONS", "no question found", 404)
 
         payload, correct_answer = _prepare_question_for_delivery(category, row)
+        _remember_question(db, session["user_id"], category, row["q_id"])
         session["served_answers"][row["q_id"]] = correct_answer
         save_experience_session(session_id, session)
         payload.update(
