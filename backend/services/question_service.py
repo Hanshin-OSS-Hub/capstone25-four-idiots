@@ -1,6 +1,9 @@
+import csv
 import random
 import re
 import unicodedata
+from functools import lru_cache
+from pathlib import Path
 
 from sqlalchemy import text
 
@@ -271,10 +274,40 @@ def parse_order_answer(order_answer):
     return [int(token) - 1 for token in tokens]
 
 
+@lru_cache(maxsize=1)
+def load_design_answer_fallbacks():
+    root = Path(__file__).resolve().parents[1]
+    candidate_paths = [
+        root / "data" / "Q_DESIGN.csv",
+        root / "data" / "4. 설계 문제.csv",
+    ]
+    answers = {}
+    for path in candidate_paths:
+        if not path.exists():
+            continue
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.reader(handle)
+            for row in reader:
+                if len(row) < 2:
+                    continue
+                question_id = str(row[0] or "").strip()
+                answer = str(row[-1] or "").strip()
+                if question_id.startswith("DESIGN_") and answer:
+                    answers[question_id] = answer
+    return answers
+
+
+def resolve_correct_answer(category, row):
+    correct_answer = str(row.get("correct_answer", "")).strip()
+    if correct_answer or category != "design":
+        return correct_answer
+    return load_design_answer_fallbacks().get(str(row.get("q_id", "")).strip(), "")
+
+
 def prepare_question_for_delivery(category, row):
     payload = build_question_payload(category, row)
     answer_type = CATEGORY_TABLES[category]["answer_type"]
-    correct_answer = str(row.get("correct_answer", "")).strip()
+    correct_answer = resolve_correct_answer(category, row)
 
     if answer_type not in {"choice", "order"}:
         payload["correct_answer"] = correct_answer
