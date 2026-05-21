@@ -61,12 +61,13 @@ def init_db(app):
         raise ValueError("DB_URL is not configured. Check your environment variables.")
 
     connect_args = _build_connect_args(app)
-    app.logger.info(
-        "DB config loaded: url_set=%s ssl_ca_path_set=%s ssl_ca_pem_set=%s ssl_enabled=%s",
-        bool(database_url),
-        bool(app.config.get("DB_SSL_CA_PATH")),
-        bool(app.config.get("DB_SSL_CA_PEM")),
-        bool(connect_args.get("ssl")),
+    print(
+        "DB config loaded: "
+        f"url_set={bool(database_url)} "
+        f"ssl_ca_path_set={bool(app.config.get('DB_SSL_CA_PATH'))} "
+        f"ssl_ca_pem_set={bool(app.config.get('DB_SSL_CA_PEM'))} "
+        f"ssl_enabled={bool(connect_args.get('ssl'))}",
+        flush=True,
     )
 
     engine = create_engine(
