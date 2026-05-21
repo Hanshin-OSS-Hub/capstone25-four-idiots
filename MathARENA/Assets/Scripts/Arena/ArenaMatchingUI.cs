@@ -176,13 +176,25 @@ public class ArenaMatchingUI : MonoBehaviour
 
     public void OnClickStartBattle()
     {
-        var selected = opponentList[currentOpponentIndex];
-        ArenaSession.OpponentId = selected.nickname;
-        ArenaSession.OpponentRating = selected.arena_rating;
-
-        // 서버 데이터가 있을 때만 match_id 저장
+        // 서버에서 받은 실제 candidate가 있으면 한 번에 세션에 저장
         if (serverCandidates != null && serverCandidates.Count > currentOpponentIndex)
-            ArenaSession.MatchId = serverCandidates[currentOpponentIndex].match_id;
+        {
+            ArenaSession.SetOpponent(serverCandidates[currentOpponentIndex]);
+        }
+        else
+        {
+            // 더미 데이터일 때는 기존 방식으로 최소 세팅만
+            var selected = opponentList[currentOpponentIndex];
+            ArenaSession.OpponentId = string.IsNullOrEmpty(selected.nickname)
+                ? "User"
+                : selected.nickname;
+            ArenaSession.OpponentRating = selected.arena_rating;
+            ArenaSession.OpponentPower = selected.score;
+            ArenaSession.MatchId = "";
+            ArenaSession.OpponentRecords =
+                new System.Collections.Generic.List<MathArena.Network.OpponentRecord>();
+            ArenaSession.LastQuestionOrder = 0;
+        }
 
         SceneManager.LoadScene(battleSceneName);
     }

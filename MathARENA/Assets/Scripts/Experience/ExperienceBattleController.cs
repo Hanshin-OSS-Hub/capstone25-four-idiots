@@ -156,6 +156,12 @@ public class ExperienceBattleController : MonoBehaviour
 
     private bool isProcessingAnswer = false; // 155번 줄 (중복 제거됨)
 
+    // --- [실시간 아레나용 플래그 추가] ---
+    private bool isArenaTickTriggered = false;
+
+    // --- [연타 방지용 변수 추가] ---
+    private float buttonEnableTime = 0f;
+
     private List<int> designUserSequence = new List<int>();
     private int[] designCorrectSequence;
     private string[] designOriginalTexts;
@@ -191,8 +197,14 @@ public class ExperienceBattleController : MonoBehaviour
 
         UpdateLifeUI();
 
-        // [수정] 0점이 아닌, 현재 카테고리의 BP를 시작 점수로 설정합니다.
-        ExperienceSession.TotalExpScore = GetCurrentCategoryCP();
+        if (mode == BattleMode.Arena)
+        {
+            ExperienceSession.TotalExpScore = GetCurrentCategoryCP();
+        }
+        else
+        {
+            ExperienceSession.TotalExpScore = 0; // 훈련장과 체험장은 무조건 0점부터 합산
+        }
 
         ExperienceSession.CurrentQuestionCount = 0;
         currentOpponentRecordIndex = 0;
@@ -221,9 +233,17 @@ public class ExperienceBattleController : MonoBehaviour
     // 점수 UI를 갱신하는 공용 함수
     private void UpdatePlayerScoreUI()
     {
-        if (playerCurrentScoreText != null)
+        if (playerCurrentScoreText == null)
+            return;
+
+        // --- [수정] 훈련장 진행 중에는 보안을 위해 최종 전투력을 숨겨줍니다. ---
+        if (mode == BattleMode.Training)
         {
-            // 현재 내 BP에 획득한 점수가 실시간으로 합쳐져 보입니다.
+            playerCurrentScoreText.text = "?? BP"; // 전투가 끝날 때까지 점수 은폐
+        }
+        else
+        {
+            // 아레나와 체험장은 실시간으로 현재 보유/누적 BP 노출
             playerCurrentScoreText.text = $"{ExperienceSession.TotalExpScore} BP";
         }
     }
@@ -255,76 +275,72 @@ public class ExperienceBattleController : MonoBehaviour
         };
     }
 
+    // --- [🔥 수정: 아레나/훈련장 세션 데이터와 완벽 연동되는 UI 패널 스위칭 함수] ---
     private void SetupModeByCategory()
     {
-        panelChoices?.SetActive(
-            currentCategory == ExperienceCategory.Concept
-                || currentCategory == ExperienceCategory.Idea
-        );
-        panelDesign?.SetActive(currentCategory == ExperienceCategory.Design);
-        panelInput?.SetActive(
-            currentCategory == ExperienceCategory.Calc
-                || currentCategory == ExperienceCategory.Practice
-        );
+        // 현재 배틀 모드에 맞춰 알맞은 세션의 카테고리를 추려냅니다.
+        ExperienceCategory cat = ExperienceSession.CurrentCategory;
+
+        if (mode == BattleMode.Arena)
+        {
+            // 아레나 세션의 카테고리(정수형)를 ExperienceCategory 형변환하여 매핑
+            cat = (ExperienceCategory)ArenaSession.CurrentCategory;
+        }
+        else if (mode == BattleMode.Training)
+        {
+            // 만약 TrainingSession.CurrentCategory가 별도로 있다면 그것과 매핑,
+            // 현재 구조상 ExperienceSession을 공유 중이라면 그대로 유지됩니다.
+            cat = ExperienceSession.CurrentCategory;
+        }
+
+        Debug.Log($"<color=orange>[패널 매칭] 현재 배틀 모드: {mode} / 인식된 종목: {cat}</color>");
+
+        if (panelChoices != null)
+            panelChoices.SetActive(
+                cat == ExperienceCategory.Concept || cat == ExperienceCategory.Idea
+            );
+
+        if (panelDesign != null)
+            panelDesign.SetActive(cat == ExperienceCategory.Design);
+
+        if (panelInput != null)
+            panelInput.SetActive(
+                cat == ExperienceCategory.Calc || cat == ExperienceCategory.Practice
+            );
     }
 
     private void LoadArenaOpponentData()
     {
-        if (loadingOverlay != null)
-            loadingOverlay.SetActive(true);
+        // ── ArenaMatchingUI에서 ArenaSession에 이미 저장해 둔 데이터를 그대로 사용 ──
+        // 전투 씬에서 FindMatch를 다시 호출하면 매칭 씬에서 유저가 선택한 상대가
+        // 아닌 서버의 첫 번째 candidate가 쓰이는 문제가 생긴다.
 
-        // 아레나 매칭 시작 (서버에서 상대방의 기록 데이터를 가져옴)
-        string cat = currentCategory.ToString().ToLower();
+        currentMatchId = ArenaSession.MatchId;
+        currentOpponentPower = ArenaSession.OpponentPower;
+        currentOpponentRecords =
+            ArenaSession.OpponentRecords
+            ?? new System.Collections.Generic.List<MathArena.Network.OpponentRecord>();
 
-        NetworkManager.Instance.FindMatch(
-            cat,
-            (res) =>
-            {
-                if (res.success && res.data?.candidates?.Count > 0)
-                {
-                    var candidate = res.data.candidates[0];
-                    currentMatchId = candidate.match_id;
-                    currentOpponentPower = candidate.opponent.power;
-                    currentOpponentRecords = candidate.opponent_records;
+        // 같은 상대와 재대결 시 마지막 문제 다음부터 시작 (명세서 §아레나 재대결 조항)
+        int startIndex =
+            ArenaSession.LastQuestionOrder > 0 ? ArenaSession.LastQuestionOrder + 1 : 0;
+        ExperienceSession.CurrentQuestionCount = startIndex;
+        currentOpponentRecordIndex = startIndex;
 
-                    Debug.Log(
-                        $"[상대 기록] opponent_records 수: {currentOpponentRecords?.Count ?? 0}"
-                    );
-                    if (currentOpponentRecords != null)
-                    {
-                        foreach (var r in currentOpponentRecords)
-                            Debug.Log(
-                                $"  → 문제순서:{r.question_order_number}, 정답:{r.is_correct}, 시간:{r.solve_time_sec}초"
-                            );
-                    }
-
-                    // ✅ 추가: 서버에서 받은 내 최신 프로필을 세션에 반영
-                    if (ExperienceSession.UserProfile != null && res.data.my_profile != null)
-                    {
-                        ExperienceSession.UserProfile.arena_rating = res.data
-                            .my_profile
-                            .arena_rating;
-                        ExperienceSession.UserProfile.tier_name = res.data.my_profile.tier_name;
-                    }
-
-                    // [핵심] 명세서 38번: 마지막으로 푼 문제 번호 다음부터 시작
-                    // 만약 5번까지 풀었다면(0~4), 5번 인덱스부터 시작합니다.
-                    ExperienceSession.CurrentQuestionCount = candidate.last_question_order + 1;
-
-                    // 상대 기록 인덱스도 동일하게 맞춰줍니다.
-                    currentOpponentRecordIndex = candidate.last_question_order + 1;
-
-                    Debug.Log(
-                        $"<color=orange>[아레나]</color> {ExperienceSession.CurrentQuestionCount}번 문제부터 재개합니다."
-                    );
-
-                    if (loadingOverlay != null)
-                        loadingOverlay.SetActive(false);
-                    SetupQuestionByCategory();
-                }
-            },
-            (err) => HandleNetworkError(err)
+        Debug.Log(
+            $"<color=orange>[아레나]</color> 상대: {ArenaSession.OpponentId} "
+                + $"| matchId: {currentMatchId} "
+                + $"| 상대기록 {currentOpponentRecords.Count}개 "
+                + $"| {startIndex + 1}번 문제부터 시작"
         );
+
+        // 상대 기록 상세 로그
+        foreach (var r in currentOpponentRecords)
+            Debug.Log(
+                $"  → Q{r.question_order_number}: 정답={r.is_correct}, 시간={r.solve_time_sec}s"
+            );
+
+        SetupQuestionByCategory();
     }
 
     // ExperienceBattleController.cs의 SetupQuestionByCategory 메서드 수정
@@ -333,16 +349,17 @@ public class ExperienceBattleController : MonoBehaviour
         if (loadingOverlay != null)
             loadingOverlay.SetActive(true);
 
-        // [CCTV 1] 함수가 실행되는지 확인하는 로그
         Debug.Log("<color=white><b>[1단계] SetupQuestionByCategory 실행됨</b></color>");
 
+        // --- [🔥 수정: 서버 통신 중 레이스 컨디션 차단 자물쇠 선제 잠금] ---
         isProcessingAnswer = true;
+        isArenaTickTriggered = true; // 서버 응답이 와서 ApplyServerDataToUI가 열리기 전까지 Update 작동 강제 동결
+
         string cat = currentCategory.ToString().ToLower();
         currentDiffName = DetermineDifficulty();
 
         if (mode == BattleMode.Training)
         {
-            // --- [훈련장] 세션 생성 및 문제 상세 요청 ---
             NetworkManager.Instance.StartTraining(
                 cat,
                 currentDiffName,
@@ -387,11 +404,12 @@ public class ExperienceBattleController : MonoBehaviour
                 && arenaQuestionList.Count > ExperienceSession.CurrentQuestionCount
             )
             {
+                // 리스트에서 꺼낼 때도 안전하게 다시 플래그 정비 후 바인딩
+                isArenaTickTriggered = false;
                 ApplyServerDataToUI(arenaQuestionList[ExperienceSession.CurrentQuestionCount]);
                 return;
             }
 
-            // 처음 시작할 때만 서버에서 리스트를 가져옵니다.
             NetworkManager.Instance.StartMatch(
                 cat,
                 currentDiffName,
@@ -400,12 +418,19 @@ public class ExperienceBattleController : MonoBehaviour
                 {
                     if (res.success && res.data != null && res.data.questions != null)
                     {
-                        arenaQuestionList = res.data.questions; // 리스트 전체 저장
+                        arenaQuestionList = res.data.questions;
                         Debug.Log(
                             $"<color=orange>[아레나] {arenaQuestionList.Count}개의 문제를 수신했습니다.</color>"
                         );
 
-                        // 첫 번째 문제를 화면에 띄웁니다.
+                        if (ExperienceSession.CurrentQuestionCount >= arenaQuestionList.Count)
+                        {
+                            Debug.LogWarning(
+                                $"[아레나 경고] 시작 인덱스({ExperienceSession.CurrentQuestionCount})가 수신된 문제 수({arenaQuestionList.Count})를 초과하여 0번 문제부터 시작합니다."
+                            );
+                            ExperienceSession.CurrentQuestionCount = 0;
+                        }
+
                         ApplyServerDataToUI(
                             arenaQuestionList[ExperienceSession.CurrentQuestionCount]
                         );
@@ -418,7 +443,6 @@ public class ExperienceBattleController : MonoBehaviour
         }
         else
         {
-            // --- [체험장] 세션 생성 및 문제 상세 요청 ---
             NetworkManager.Instance.StartExperience(
                 cat,
                 currentDiffName,
@@ -445,6 +469,7 @@ public class ExperienceBattleController : MonoBehaviour
                                 }
                                 else
                                     HandleNetworkError("문제 데이터가 비어있습니다.");
+                                { }
                             },
                             (err) => HandleNetworkError(err)
                         );
@@ -513,10 +538,22 @@ public class ExperienceBattleController : MonoBehaviour
 
         // 1. 시간 및 세션 정보 초기화
         questionStartTime = Time.time;
+        isArenaTickTriggered = false;
         if (!string.IsNullOrEmpty(data.session_id))
             currentSessionId = data.session_id;
         currentQuestionId = !string.IsNullOrEmpty(data.question_id) ? data.question_id : data.q_id;
-        currentCategory = ExperienceSession.CurrentCategory;
+
+        // --- [🔥 수정: 이전 판의 카테고리 잔상이 남지 않도록 세션 데이터 기준으로 완벽 동기화] ---
+        if (mode == BattleMode.Arena)
+        {
+            currentCategory = (ExperienceCategory)ArenaSession.CurrentCategory;
+        }
+        else
+        {
+            currentCategory = ExperienceSession.CurrentCategory;
+        }
+
+        SetupModeByCategory();
 
         // [핵심] 타이머(Panel_Count) 리셋 명령
         if (battleTimer != null)
@@ -625,7 +662,59 @@ public class ExperienceBattleController : MonoBehaviour
             loadingOverlay.SetActive(false);
 
         isProcessingAnswer = false;
+
+        // --- [수정: 문제가 다 가동된 시점부터 1초간 연타 방지 쿨타임 적용] ---
+        buttonEnableTime = Time.time + 1.0f; // 1.0초를 원하는 쿨타임(예: 0.5f 등)으로 조절 가능합니다.
+
         Debug.Log("<color=white>[완료] 모든 데이터 적용 완료.</color>");
+    }
+
+    private void Update()
+    {
+        // [수정] loadingOverlay가 켜져있거나(서버 통신 중), 처리 중일 때는 실시간 판정을 원천 중지합니다.
+        if (loadingOverlay != null && loadingOverlay.activeInHierarchy)
+            return;
+
+        // 아레나 모드이고, 현재 문제가 활성화 상태이며, 아직 실시간 판정이 발동 안 했을 때만 수행
+        if (mode == BattleMode.Arena && !isProcessingAnswer && !isArenaTickTriggered)
+        {
+            int currentQNum = ExperienceSession.CurrentQuestionCount + 1;
+            OpponentRecord opponentData = null;
+
+            if (currentOpponentRecords != null && currentOpponentRecords.Count > 0)
+            {
+                int totalOpponentRecords = currentOpponentRecords.Count;
+                int virtualListIndex = (currentQNum - 1) % totalOpponentRecords;
+
+                opponentData = currentOpponentRecords[virtualListIndex];
+            }
+
+            if (opponentData != null)
+            {
+                float elapsed = Time.time - questionStartTime;
+                float targetTime = Mathf.Max(0.1f, opponentData.solve_time_sec);
+
+                if (elapsed >= targetTime)
+                {
+                    isArenaTickTriggered = true; // 중복 실행 방지
+
+                    if (opponentData.is_correct)
+                    {
+                        Debug.Log(
+                            $"<color=red>[아레나 실시간]</color> 제 {currentQNum}문 (상대 인덱스 {currentOpponentRecords.IndexOf(opponentData)}번 기록 순환): 플레이어 피격"
+                        );
+                        ExecuteResultSequence(false, "PLAYER_TOO_SLOW");
+                    }
+                    else
+                    {
+                        Debug.Log(
+                            $"<color=green>[아레나 실시간]</color> 제 {currentQNum}문 (상대 인덱스 {currentOpponentRecords.IndexOf(opponentData)}번 기록 순환): 상대 선 틀림 -> 상대방 피격"
+                        );
+                        ExecuteResultSequence(false, "OPPONENT_FAILED_FIRST");
+                    }
+                }
+            }
+        }
     }
 
     // --- [추가] 라텍스 이미지를 불러오는 코루틴 함수 --- [cite: 2026-05-05]
@@ -772,6 +861,7 @@ public class ExperienceBattleController : MonoBehaviour
             }
         }
         // [2] 아레나 모드: 명세서 기반 레이팅 가감 및 100AR 승급 로직
+        // [2] 아레나 모드: 명세서 기반 레이팅 가감 및 100AR 승급 로직
         else if (mode == BattleMode.Arena)
         {
             // 1. 전투력(BP) 차이(오차범위) 계산
@@ -779,55 +869,67 @@ public class ExperienceBattleController : MonoBehaviour
             int opponentCP = currentOpponentPower;
             int diff = Mathf.Abs(myCP - opponentCP);
 
-            bool isWin = opponentLife <= 0;
+            // [수정] 내 하트도 없고 상대 하트도 없는 무승부 상황 방어 (내가 살고 상대가 죽어야만 승리)
+            bool isWin = (opponentLife <= 0) && (ExperienceSession.CurrentLife > 0);
             int arChange = 0;
 
-            // 2. 명세서 51~56번: 오차범위별 AR 가감 수치 결정
+            // 2. 명세서 규칙 1~6번 완벽 매핑 (오차범위 경계값 오류 수정)
             if (isWin)
             {
                 if (diff > 100)
-                    arChange = 15; // 100 초과 상대 승리
-                else if (diff >= 50)
-                    arChange = 10; // 50~100 상대 승리
-                else
-                    arChange = 5; // 50 미만 상대 승리
+                {
+                    arChange = 15; // [규칙 2] 100 초과 상대 승리 -> +15
+                }
+                else if (diff >= 50 && diff <= 100)
+                {
+                    arChange = 10; // [규칙 1] 50 이상 100 이하 상대 승리 -> +10
+                }
+                else if (diff < 50)
+                {
+                    arChange = 5; // [규칙 3] 50 미만 상대 승리 -> +5
+                }
             }
             else
             {
                 if (diff > 100)
-                    arChange = -5; // 100 초과 상대 패배
-                else if (diff >= 50)
-                    arChange = -10; // 50~100 상대 패배
-                else
-                    arChange = -15; // 50 미만 상대 패배
+                {
+                    arChange = -5; // [규칙 5] 100 초과 상대 패배 -> -5
+                }
+                else if (diff >= 50 && diff <= 100)
+                {
+                    arChange = -10; // [규칙 4] 50 이상 100 이하 상대 패배 -> -10
+                }
+                else if (diff < 50)
+                {
+                    arChange = -15; // [규칙 6] 50 미만 상대 패배 -> -15
+                }
             }
 
-            // 3. 누적 레이팅 계산 및 100AR 단위 승급 로직
+            // 3. 누적 레이팅 계산 및 100AR 단위 승급 로직 (기존 유지)
             int cumulativeCurrentAR =
                 (ExperienceSession.UserProfile != null)
                     ? ExperienceSession.UserProfile.arena_rating
                     : 0;
             int cumulativeNextAR = Mathf.Max(0, cumulativeCurrentAR + arChange);
 
-            // UI 표시용 레이팅: 100점을 넘으면 0부터 다시 시작되는 느낌 구현 (0~99점)
+            // UI 표시용 레이팅: 0~99점 표기용 (기존 유지)
             int displayCurrentAR = cumulativeCurrentAR % 100;
             int displayNextAR = cumulativeNextAR % 100;
 
-            // 승급 여부 판단: 100단위 숫자가 바뀌었는지 확인
+            // 승급/강등 여부 판단 (기존 유지)
             bool isPromoted = (cumulativeNextAR / 100) > (cumulativeCurrentAR / 100);
             bool isDemoted = (cumulativeNextAR / 100) < (cumulativeCurrentAR / 100);
 
-            // 4. 티어 정보 갱신 (TierManager 사용)
+            // 4. 티어 정보 갱신 및 프로필 세션 반영 (기존 유지)
             var tierInfo = TierManager.GetTierInfo(cumulativeNextAR);
 
-            // 로비 및 프로필 즉시 반영을 위해 세션 데이터 갱신
             if (ExperienceSession.UserProfile != null)
             {
                 ExperienceSession.UserProfile.arena_rating = cumulativeNextAR;
                 ExperienceSession.UserProfile.tier_name = tierInfo.fullName;
             }
 
-            // 5. 아레나 결과창 출력
+            // 5. 아레나 결과창 출력 (기존 유지)
             if (arenaResultUI != null)
             {
                 arenaResultUI.gameObject.SetActive(true);
@@ -838,8 +940,8 @@ public class ExperienceBattleController : MonoBehaviour
                     arChange,
                     tierInfo.fullName,
                     Resources.Load<Sprite>($"Tiers/Tier_{tierInfo.tierIdx}_{tierInfo.gradeIdx}"),
-                    isPromoted, // 승급 시 결과창에 "티어 승급!" 알림 표시
-                    isDemoted // 추가
+                    isPromoted,
+                    isDemoted
                 );
             }
 
@@ -1109,8 +1211,9 @@ public class ExperienceBattleController : MonoBehaviour
     private void OnClickChoice(int index)
     {
         // 1. 이미 처리 중이면 즉시 리턴
-        if (isProcessingAnswer)
+        if (isProcessingAnswer || isArenaTickTriggered || Time.time < buttonEnableTime)
             return;
+
         isProcessingAnswer = true; // 자물쇠 잠금
 
         // [핵심 추가] 모든 객관식 버튼을 즉시 비활성화 (물리적 차단)
@@ -1147,46 +1250,28 @@ public class ExperienceBattleController : MonoBehaviour
         RefreshDesignOrderLabels();
     }
 
-    // 4. [설계] 최종 제출 버튼 클릭
+    // 4. [설계] 최종 제출 버튼 클릭 처리 보완
     public void OnClickSubmitDesign()
     {
-        // 1. 버튼이 눌렸는지 확인하는 로그
-        Debug.Log("[설계 제출] 버튼 클릭됨");
-
-        if (isProcessingAnswer)
-        {
-            Debug.LogWarning("[설계 제출] 이미 처리 중이라 무시됩니다.");
+        // [수정] 실시간 타임아웃 트리거 발동 시 입력 원천 차단
+        // 연타 방지 시간 체크 추가
+        if (isProcessingAnswer || isArenaTickTriggered || Time.time < buttonEnableTime)
             return;
-        }
 
         if (designCorrectSequence == null)
-        {
-            // [원인 가능성 1] 서버에서 answer_order를 제대로 못 받아온 경우
-            Debug.LogError(
-                "[설계 제출] 서버에서 정답 데이터(designCorrectSequence)를 받지 못했습니다!"
-            );
             return;
-        }
-
         if (designUserSequence.Count < designCorrectSequence.Length)
-        {
-            // [원인 가능성 2] 보기 개수를 다 채우지 않은 경우
-            Debug.LogWarning(
-                $"[설계 제출] 개수 부족: {designUserSequence.Count} / {designCorrectSequence.Length}"
-            );
             return;
-        }
 
         bool isAllCorrect = designUserSequence.SequenceEqual(designCorrectSequence);
-        Debug.Log($"[설계 판정] 결과: {isAllCorrect}");
-
         ExecuteResultSequence(isAllCorrect, string.Join("", designUserSequence));
     }
 
-    // 5. [OCR] 제출 버튼 클릭
+    // 5. [OCR] 제출 버튼 클릭 처리 보완
     public void OnClickSubmitOCR()
     {
-        if (isProcessingAnswer)
+        // [수정] 실시간 타임아웃 트리거 발동 시 입력 원천 차단
+        if (isProcessingAnswer || isArenaTickTriggered || Time.time < buttonEnableTime)
             return;
 
         string userDigits = new string(inputField.text.Where(char.IsDigit).ToArray());
@@ -1194,7 +1279,6 @@ public class ExperienceBattleController : MonoBehaviour
             return;
 
         bool isCorrect = (userDigits == correctAnswerText.Trim());
-        Debug.Log($"[OCR 제출] 입력: {userDigits}, 결과: {isCorrect}");
 
         drawingCanvas?.ClearCanvas();
         inputField.text = "입력된 숫자 : ";
@@ -1205,13 +1289,9 @@ public class ExperienceBattleController : MonoBehaviour
     // 6. [공용] 판정 연출 및 다음 문제 전환 (OX가 뜨게 하는 핵심)
     // ExperienceBattleController.cs 내의 ExecuteResultSequence 함수
     // [중요] ExecuteResultSequence 부분만 교체하시면 됩니다.
+    // 6. [공용] 판정 연출 및 다음 문제 전환 (OX가 뜨게 하는 핵심)
     private void ExecuteResultSequence(bool isPlayerCorrect, string answerForServer)
     {
-        // [수정] 본인이 잠근 자물쇠 때문에 실행이 취소되는 중복 체크 블록을 제거했습니다.
-        // 입구(OnClickChoice, OnClickSubmit 등)에서 이미 체크를 하고 들어오므로, 여기서는 바로 실행합니다.
-
-        // 1. 상태 잠금 유지 및 타이머 정지
-
         isProcessingAnswer = true;
 
         if (battleTimer != null)
@@ -1219,17 +1299,9 @@ public class ExperienceBattleController : MonoBehaviour
             battleTimer.StopTimer();
         }
 
-        // 2. 풀이 시간 계산 (초 단위)
         int solve_time_sec = Mathf.RoundToInt(Time.time - questionStartTime);
 
-        // 3. 점수 가산 및 기록 생성
-        if (isPlayerCorrect)
-        {
-            int earned = GetDifficultyScore(ParseDifficulty(currentDiffName));
-            ExperienceSession.TotalExpScore += earned;
-            UpdatePlayerScoreUI();
-        }
-
+        // 문제 기록 저장용 데이터 생성
         var resultData = new QuestionResultData
         {
             question_id = currentQuestionId,
@@ -1239,7 +1311,7 @@ public class ExperienceBattleController : MonoBehaviour
         };
         battleRecords.Add(resultData);
 
-        // 4. 서버 데이터 제출 (모드별 분기)
+        // 서버 전송용 패킷 조립
         BattleResultRequest submitReq = new BattleResultRequest
         {
             session_id = (mode == BattleMode.Arena) ? "" : currentSessionId,
@@ -1255,45 +1327,49 @@ public class ExperienceBattleController : MonoBehaviour
         else
             submitReq.answer = answerForServer;
 
-        // [중복 방지] 이미 제출한 문제면 스킵 ← submitReq 선언 후에 사용
-        if (solvedQuestionIds.Contains(currentQuestionId))
-        {
-            Debug.LogWarning($"[중복 방지] {currentQuestionId} 이미 제출됨, 서버 전송 스킵");
-        }
-        else
-        {
-            solvedQuestionIds.Add(currentQuestionId);
-            if (mode == BattleMode.Arena)
-                NetworkManager.Instance.SubmitMatch(submitReq, null, null);
-            else if (mode == BattleMode.Training)
-                NetworkManager.Instance.SubmitTraining(submitReq, null, null);
-            else
-                NetworkManager.Instance.SubmitExperience(submitReq, null, null);
-        }
-
-        // 5. 아레나 승패 판정 로직
+        // --- [실시간 공방 판정 규칙 로직] ---
         bool playerAttacks = false;
+        bool nobodyAttacks = false;
+
         if (mode == BattleMode.Arena)
         {
-            int currentQNum = ExperienceSession.CurrentQuestionCount + 1;
-            var opponentData = currentOpponentRecords?.Find(r =>
-                r.question_order_number == currentQNum
-            );
-
-            if (opponentData != null)
+            if (answerForServer == "OPPONENT_FAILED_FIRST")
             {
-                if (!isPlayerCorrect && !opponentData.is_correct)
-                    playerAttacks = false; // 둘 다 틀림 → 아무도 공격 안 함
-                else if (!isPlayerCorrect && opponentData.is_correct)
-                    playerAttacks = false; // 상대만 맞힘 → 상대가 공격
-                else if (isPlayerCorrect && !opponentData.is_correct)
-                    playerAttacks = true; // 나만 맞힘 → 내가 공격
-                else
-                    playerAttacks = (solve_time_sec < opponentData.solve_time_sec);
+                // 1. 상대방이 먼저 틀린 기록 시간에 도달한 상황 -> 내가 상대를 때림
+                playerAttacks = true;
+            }
+            else if (answerForServer == "PLAYER_TOO_SLOW")
+            {
+                // 2. 내가 제한 시간 내에 못 풀어서 상대가 날 때린 상황 -> 내가 맞음
+                playerAttacks = false;
             }
             else
             {
-                playerAttacks = isPlayerCorrect;
+                // 3. 내가 버튼을 직접 눌러서 판정이 일어난 경우
+                if (!isPlayerCorrect)
+                {
+                    // 내가 풀었는데 틀렸다 -> 무조건 내가 피격
+                    playerAttacks = false;
+                }
+                else
+                {
+                    int currentQNum = ExperienceSession.CurrentQuestionCount + 1;
+                    var opponentData = currentOpponentRecords?.Find(r =>
+                        r.question_order_number == currentQNum
+                    );
+
+                    if (opponentData != null && !opponentData.is_correct)
+                    {
+                        // 나는 맞췄는데 상대는 과거에 틀렸었다 -> 내가 상대를 때림
+                        playerAttacks = true;
+                    }
+                    else
+                    {
+                        // 둘 다 맞춘 경우 -> 순수 속도 경쟁 (내가 더 빠르면 내가 공격)
+                        int opTime = (opponentData != null) ? opponentData.solve_time_sec : 60;
+                        playerAttacks = (solve_time_sec <= opTime);
+                    }
+                }
             }
         }
         else
@@ -1301,22 +1377,140 @@ public class ExperienceBattleController : MonoBehaviour
             playerAttacks = isPlayerCorrect;
         }
 
-        // 6. 체력 UI 반영
-        if (playerAttacks)
-            opponentLife--;
+        // --- [서버 비동기 전송 및 콜백 연결] ---
+        if (!solvedQuestionIds.Contains(currentQuestionId))
+        {
+            solvedQuestionIds.Add(currentQuestionId);
+            isProcessingAnswer = true;
+
+            if (mode == BattleMode.Arena)
+            {
+                NetworkManager.Instance.SubmitMatch(
+                    submitReq,
+                    (res) =>
+                    {
+                        Debug.Log("<color=green>[서버 응답 완료]</color> 아레나 문제 제출 성공.");
+                        ProceedToSequenceAndNext(nobodyAttacks, playerAttacks);
+                    },
+                    (err) =>
+                    {
+                        Debug.LogWarning($"[서버 에러] 제출 실패({err}), 연출을 강제 진행합니다.");
+                        ProceedToSequenceAndNext(nobodyAttacks, playerAttacks);
+                    }
+                );
+            }
+            else if (mode == BattleMode.Training)
+            {
+                NetworkManager.Instance.SubmitTraining(
+                    submitReq,
+                    (res) => ProceedToSequenceAndNext(nobodyAttacks, playerAttacks),
+                    (err) => ProceedToSequenceAndNext(nobodyAttacks, playerAttacks)
+                );
+            }
+            else
+            {
+                NetworkManager.Instance.SubmitExperience(
+                    submitReq,
+                    (res) => ProceedToSequenceAndNext(nobodyAttacks, playerAttacks),
+                    (err) => ProceedToSequenceAndNext(nobodyAttacks, playerAttacks)
+                );
+            }
+        }
         else
-            ExperienceSession.CurrentLife--;
+        {
+            // 이미 풀었던 문제라면 대기 없이 바로 연출 진행
+            ProceedToSequenceAndNext(nobodyAttacks, playerAttacks);
+        }
+    }
+
+    // --- [새로 추가된 헬퍼 함수] 서버 응답이 확인된 후 안전하게 하트 깎고 연출 트는 함수 ---
+    // --- [수정] 서버 응답 확인 후 하트 차감, 상세 로그 출력, 연출 트리거 함수 ---
+    // --- [수정] 0으로 나누기 방어막이 추가된 헬퍼 함수 ---
+    private void ProceedToSequenceAndNext(bool nobodyAttacks, bool playerAttacks)
+    {
+        // 1. 하트 차감 반영 (아레나 모드 등 라이프 기반인 경우)
+        if (!nobodyAttacks)
+        {
+            if (playerAttacks)
+                opponentLife--;
+            else
+                ExperienceSession.CurrentLife--;
+        }
         UpdateLifeUI();
 
-        // 7. 애니메이션 실행 (완료 후 CheckBattleEndCondition 호출)
+        int currentQNum = ExperienceSession.CurrentQuestionCount + 1;
+
+        // --- 📊 [모드별 맞춤형 전광판 로그 시스템] ---
+        if (mode == BattleMode.Training)
+        {
+            // [훈련장 전용 로그]
+            string trainingState =
+                nobodyAttacks ? "<color=yellow><b>[무승부]</b></color> 시간 초과 혹은 처리 불능"
+                : playerAttacks ? "<color=lime><b>[정답!]</b></color> 문제를 맞췄습니다. 💥"
+                : "<color=red><b>[오답]</b></color> 문제를 틀렸습니다. 💔";
+
+            string diffName = currentDiffName;
+
+            // [★ 수정 포인트]: 실제 전광판이 확정된 이 시점에 난이도별 점수를 안전하게 연산합니다.
+            int earnedPoints =
+                (playerAttacks && !nobodyAttacks)
+                    ? GetDifficultyScore(ParseDifficulty(diffName))
+                    : 0;
+
+            // [★ 핵심 추가]: 로그를 찍기 직전에 세션 점수를 더하고 점수판 UI(?? BP 유지)를 동기화합니다.
+            if (earnedPoints > 0)
+            {
+                ExperienceSession.TotalExpScore += earnedPoints;
+                UpdatePlayerScoreUI();
+            }
+
+            string trainingLogBoard =
+                $"\n========================================\n"
+                + $"   <b>[훈련장 결과 판정] 제 {currentQNum} 문</b> (난이도: {diffName})\n"
+                + $"----------------------------------------\n"
+                + $" • <b>판정 결과 :</b> {trainingState}\n"
+                + $" • <b>이번 획득 점수 :</b> <color=cyan>+{earnedPoints} BP</color>\n"
+                + $" • <b>현재 누적 전투력 :</b> <color=yellow><b>{ExperienceSession.TotalExpScore} BP</b></color>\n"
+                + $"========================================";
+            Debug.Log(trainingLogBoard);
+        }
+        else
+        {
+            // [아레나 및 기본 모드 전용 로그]
+            int totalOpponentRecords =
+                (currentOpponentRecords != null) ? Mathf.Max(1, currentOpponentRecords.Count) : 1;
+            int virtualListIndex = (currentQNum - 1) % totalOpponentRecords;
+
+            int displayOpponentQNum =
+                (currentOpponentRecords != null && currentOpponentRecords.Count > virtualListIndex)
+                    ? currentOpponentRecords[virtualListIndex].question_order_number
+                    : currentQNum;
+
+            string battleState =
+                nobodyAttacks ? "<color=yellow><b>[무승부/무공격]</b></color> 둘 다 오답"
+                : playerAttacks ? "<color=lime><b>[플레이어 턴]</b></color> 상대방 피격! 💥"
+                : "<color=red><b>[상대방 턴]</b></color> 플레이어 피격! 💔";
+
+            string arenaLogBoard =
+                $"\n========================================\n"
+                + $"   <b>[아레나 결과 판정] 제 {currentQNum} 장</b> (상대 원본 {displayOpponentQNum}번 기록 매핑)\n"
+                + $"----------------------------------------\n"
+                + $" • <b>판정 결과 :</b> {battleState}\n"
+                + $" • <b>내 남은 하트 :</b> {ExperienceSession.CurrentLife} / {ExperienceSession.MaxLife}\n"
+                + $" • <b>상대 남은 하트 :</b> {opponentLife} / 4\n"
+                + $"========================================";
+            Debug.Log(arenaLogBoard);
+        }
+        // --------------------------------------------
+
+        // 2. 연출 실행 후 다음 문제 혹은 종료 처리
         if (sequenceManager != null && sequenceManager.gameObject.activeInHierarchy)
         {
-            sequenceManager.PlaySequence(playerAttacks);
+            sequenceManager.PlaySequence(nobodyAttacks ? false : playerAttacks);
             sequenceManager.OnSequenceComplete = () => CheckBattleEndCondition();
         }
         else
         {
-            // 애니메이션 매니저가 없으면 즉시 심판 함수 호출
             CheckBattleEndCondition();
         }
     }
